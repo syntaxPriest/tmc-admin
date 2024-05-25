@@ -1,0 +1,182 @@
+/*********************** REEF LANDING  ********************/
+
+/* Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Livvic:wght@100;200;300;400;500;600;700;900&family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+
+/* Variables */
+:root {
+ --primary-color: #147EFA;
+ --secondary-color: #012F65;
+ --text-black: #000000;
+ --main-bg: #fff;
+ --main-font: 'Livvic', sans-serif;
+ --generic-font: 'Merriweather', serif;
+ --header-font: 'Manrope', sans-serif;
+ --btn-font: 'Poppins', sans-serif;
+}
+
+a{
+  -webkit-tap-highlight-color:transparent;
+  text-decoration: none;
+  color:inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Necessaries and Basics */
+body {
+  margin: 0;
+  background:#fff;
+  box-sizing: border-box;
+  color: var(--text-black);
+  font-family: var(--main-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+input, button, textarea, select {
+  font-family: var(--main-font);
+  outline: none;
+  border: none;
+}
+
+input, select{
+  font-size: 14px;
+  outline:none;
+}
+
+@media (max-width:728px){
+  input{
+    font-size: 16px;
+  }
+}
+
+input::placeholder{
+  color: #B3B9BF;
+}
+
+button {
+  padding:0.9rem 3rem;
+  border-radius:6px;
+  font-weight: 500;
+}
+
+button:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.carousel-gap ul {
+  gap:46px !important;
+}
+
+@media (max-width:728px) {
+  .carousel-gap ul {
+    gap:0 !important;
+  }
+}
+
+.navigation-text:hover {
+  opacity:0.8;
+}
+
+/* General Style */
+.main-widget {
+  width:100%;
+  margin:0 auto;
+  padding: 0;
+}
+.nav-class {
+  color:#7081A0;
+  font-weight: 500;
+  
+}
+.active-nav {
+  color: var(--primary-color);
+  font-weight:700;
+}
+
+.active-nav > div {
+  border-right: 2px solid var(--primary-color);
+}
+
+.active-bottom-nav > div {
+  border-top: 2px solid var(--primary-color);
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1800px) {
+  .main-widget{
+    width:100%;
+  }
+}
+
+
+
+/* Scroll Bar Override */
+
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+  border-radius: 1rem;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ababab;
+  border-radius: 5px;
+  cursor:pointer;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b7b6b6;
+  width: 20px;
+  cursor:pointer;
+}
+
+@media (max-width:1028px){
+  ::-webkit-scrollbar-thumb{
+      height:1px;
+      display:none;
+  }
+  ::-webkit-scrollbar {
+    width: 5px;
+    height:1px;
+    display:none;
+    border-radius: 1rem;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background:none;
+    display:none;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: grey;
+    display:none;
+  }
+}
