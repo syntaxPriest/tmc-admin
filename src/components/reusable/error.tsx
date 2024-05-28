@@ -4,12 +4,13 @@ import * as Icon from 'iconsax-react';
 
 interface PropsArgs {
     message: string;
+    extraText?: string;
     color?: string;
     bg?: string;
     border?: string;
 }
 
-const Error = ({message, bg, border, color} : PropsArgs) => {
+const Error = ({extraText, message, bg, border, color} : PropsArgs) => {
     return(
         <>
             <ErrorWrap
@@ -17,10 +18,10 @@ const Error = ({message, bg, border, color} : PropsArgs) => {
                 border={border}
                 color={color}
             >
-                <Icon.InfoCircle />
-                <p>
+                <p className='!font-bold'>
                     {message}
                 </p>
+                <span className="text-[12px] !leading-1">{extraText}</span>
             </ErrorWrap>
         </>
     )

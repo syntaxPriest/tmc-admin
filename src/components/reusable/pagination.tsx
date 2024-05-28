@@ -32,9 +32,7 @@ const PaginationComp = ({page, limit, total, incrementAction, decrementAction, s
         <>
             <PaginationWrap>
                 <div>
-                    <i>
-                        <Icon.ArrowCircleLeft />
-                    </i>
+                    <p className='text-[14px] font-normal opacity-[0.25]'>Previous</p>
                     <PaginationText
                         active={true}
                     >
@@ -46,9 +44,7 @@ const PaginationComp = ({page, limit, total, incrementAction, decrementAction, s
                     <PaginationText>
                         3
                     </PaginationText>
-                    <i>
-                        <Icon.ArrowCircleRight />
-                    </i>
+                    <p className='text-[14px] font-normal'>Next</p>
                 </div>
             </PaginationWrap>
         </>
@@ -61,7 +57,7 @@ const PaginationWrap = styled.div`
     display:flex;
     align-items:center;
     justify-content:center;
-    margin:120px 0 0 0;
+    margin:50px 0 0 0;
 
     i {
         position:relative;
@@ -87,11 +83,11 @@ interface PaginationTextProps {
 
 const PaginationText = styled.p<PaginationTextProps>`
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400;
     font-size: 14px;
     color: ${p => p.active ? '#fff' : '#1B2229'};
     padding: 5px 10px;
-    border-radius: 100px;
+    border-radius: 10px;
     background: ${p => p.active ? 'var(--primary-color)' : '#fff'};
     cursor:pointer;
 `

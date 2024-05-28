@@ -8,10 +8,16 @@ export const DashboardFlex = styled.div`
 `
 
 export const DashboardMain = styled.div`
-    width: 57.8%;
-    max-width:720px;
+    width: 78%;
+    max-width:1040px;
+    position:relative;
+    left: 1.9%;
+    top: 2rem;
+    padding: 32px 24px;
 
     @media (max-width: 728px){
+        top:0;
+        left:0;
         width: 100%;
         max-width: 728px;
         padding: 0 0 20px 0;
@@ -75,12 +81,14 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = styled.div<DashboardHeaderProps>`
     background: #fff;
-    border-bottom: 1px solid #F0F3F6;
-    padding: ${p => p.padding || '32px 24px'};
+    padding: ${p => p.padding || '32px 0'};
     position:sticky;
     top:0;
     left:0;
     z-index:1000;
+    display: flex;
+    align-items:center;
+    justify-content: space-between;
 
     @media (max-width: 728px){
         padding: 25px 0;
@@ -173,7 +181,7 @@ interface DashboardInnerProps{
 }
 
 export const DashboardInner = styled.div<DashboardInnerProps>`
-  padding: ${p =>p.padding || '40px 70px'};
+  padding: ${p =>p.padding || '40px 0px'};
 
   @media (max-width:728px){
     padding: 5px 0;
@@ -240,11 +248,10 @@ export const TransactionCardWrap = styled.div`
 
 export const ProfileBoxWrap = styled.div`
     width: 90%;
-    max-width: 448px;
+    max-width: 685px;
     margin: 0 auto;
     border-radius: 20px;
-    padding: 24px;
-    border: 1px solid #F0F3F6;
+    padding: 0;
 
     @media (max-width:728px){
         width: 100%;
@@ -293,5 +300,29 @@ export const ProjectProgressImgFlex = styled.div`
         :hover {
             opacity: 0.3;
         }
+    }
+`
+export const SearchInput = styled.div`
+    position:relative;
+    width: 250.17px;
+
+    :focus-within{
+        outline:1px solid var(--primary-color);
+    }
+
+    > input {
+        width: 100%;
+        max-width: 300px;
+        border-radius: 10px;
+        border: 1px solid #E1E1E1;
+        padding:13px 18% 13px 20%;
+    }
+
+    > i:first-child {
+        position:absolute;
+        left:1.3rem;
+        margin-top:-2px;
+        top:50%;
+        transform: translate(0, -50%);
     }
 `

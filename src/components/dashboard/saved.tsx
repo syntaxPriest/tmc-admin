@@ -106,7 +106,6 @@ const DashboardSavedProperties = () => {
                         </DashboardInner>
                         <Line />
                     </DashboardMain>
-                    <QuickActionWidget />
                 </DashboardFlex>
                 <BottomNavComp />
             </MainWrap>

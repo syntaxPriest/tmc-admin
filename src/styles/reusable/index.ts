@@ -878,12 +878,10 @@ export const BoxFlex = styled.div<FlexProps>`
 
 export const PageToggleHeader = styled.div<FlexProps>`
     margin: 5px 0 0 0;
-    padding: 0 32px;
-    border-bottom: 1px solid #F0F3F6;
     display:flex;
-    align-items:Center;
+    align-items:center;
     justify-content: ${p => p.hAlign || 'flex-start'};
-    gap: ${p => p.gap || '12px'};
+    gap: ${p => p.gap || '10px'};
 
 
     @media (max-width:728px){
@@ -896,10 +894,12 @@ interface PageToggleTextProps {
     active?: boolean;
 }
 export const PageToggleText = styled.p<PageToggleTextProps>`
-    color: ${p => p.active ? 'var(--primary-color)' : '#091525'};
-    border-bottom: ${p => p.active ? '2px solid var(--primary-color)' : 'none'};
-    padding: 8px 12px 12px 12px;
-    font-size: 14px;
+    color: ${p => p.active ? '#fff' : 'var(--text-black)'};
+    border: ${p => p.active ? 'none' : '1px solid #E1E1E1'};
+    background: ${p => p.active ? 'var(--primary-color)' : 'transparent'};
+    padding: 6px 14px 4px 14px;
+    font-size: 12px;
+    border-radius: 20px;
     cursor:pointer;
 
     : hover {

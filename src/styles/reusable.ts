@@ -16,7 +16,7 @@ export const Button = styled.button<PropsArgs>`
     color: ${p => p.color || 'var(--text-black)'};
     border: ${p => p.border || 'none'};
     padding: ${p => p.padding || '12px 20px'};
-    border-radius:  ${p => p.borderRadius || '100px'};
+    border-radius:  ${p => p.borderRadius || '10px'};
     width: ${p => p.width || 'auto'};
     margin-top: ${p => p.top || '10px'};
     font-size:15px;
@@ -32,11 +32,8 @@ export const ErrorWrap = styled.div<PropsArgs>`
     width:100%;
     padding:12px 4%;
     margin:1rem 0;
-    border: ${p => p.border || '1px solid #D23B3B'};
+    border: ${p => p.border || '0.5px solid #D23B3B'};
     border-radius: 8px;
-    display:flex;
-    align-items:flex-start;
-    gap: 10px;
     color: ${p => p.color || '#D23B3B'};
     background: ${p => p.bg || '#FFF2F0'};
 

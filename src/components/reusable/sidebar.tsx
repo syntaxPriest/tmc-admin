@@ -4,7 +4,7 @@ import * as Icon from 'iconsax-react';
 import { NavLink, Link } from 'react-router-dom';
 import { useLocation, useNavigate } from 'react-router';
 import * as FeatherIcon from 'react-feather';
-import { HomeIcon, BuildingOfficeIcon, BookmarkIcon, WalletIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, BuildingOfficeIcon, BookmarkIcon, WalletIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { BoxFlex } from '../../styles/reusable/index';
 import { RandomCircle } from '../../styles/reusable/index';
 import Typography from './typography';
@@ -25,12 +25,24 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
 
     const overviewLinks = ['/dashboard'];
     const overviewActive = overviewLinks.includes(current);
-    const propertiesLinks = ['/dashboard/properties'];
-    const propertiesActive = propertiesLinks.includes(current);
-    const savedLinks = ['/dashboard/saved'];
-    const savedActive = savedLinks.includes(current);
-    const walletLinks = ['/dashboard/wallet'];
-    const walletActive = walletLinks.includes(current);
+    const membersLinks = ['/dashboard/members'];
+    const membersActive = membersLinks.includes(current);
+    const eventsLinks = ['/dashboard/events'];
+    const eventsActive = eventsLinks.includes(current);
+    const bookingsLinks = ['/dashboard/bookings'];
+    const bookingsActive = bookingsLinks.includes(current);
+    const ordersLinks = ['/dashboard/orders'];
+    const ordersActive = ordersLinks.includes(current);
+    const inventoryLinks = ['/dashboard/inventories'];
+    const inventoryActive = inventoryLinks.includes(current);
+    const transactionsLinks = ['/dashboard/transactions'];
+    const transactionsActive = transactionsLinks.includes(current);
+    const messagingLinks = ['/dashboard/messaging'];
+    const messagingActive = messagingLinks.includes(current);
+    const adminsLinks = ['/dashboard/admins'];
+    const adminsActive = adminsLinks.includes(current);
+    const settingsLinks = ['/dashboard/settings'];
+    const settingsActive = settingsLinks.includes(current);
 
     // Log User Out of app
 
@@ -50,33 +62,68 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
 
     const navList = [
         {
-            name: 'Home',
+            name: 'Dashboard',
             icon: HomeIcon,
             link: '/dashboard',
             activeClass: overviewActive,
             action: () => {}
         },
         {
-            name: 'Property',
-            icon: BuildingOfficeIcon,
-            link: '/dashboard/properties',
-            activeClass: propertiesActive,
+            name: 'Members',
+            icon: Icon.People,
+            link: '/dashboard/members',
+            activeClass: membersActive,
             action: () => {}
         },
         {
-            name: 'Saved',
-            icon: BookmarkIcon,
-            link: '/dashboard/saved',
-            activeClass: savedActive,
+            name: 'Events',
+            icon: Icon.Calendar,
+            link: '/dashboard/events',
+            activeClass: eventsActive,
             action: () => {}
         },
         {
-            name: 'Wallet',
-            icon: WalletIcon,
-            link: '/dashboard/wallet',
-            activeClass: walletActive,
+            name: 'Bookings',
+            icon: Icon.NoteText,
+            link: '/dashboard/bookings',
+            activeClass: bookingsActive,
             action: () => {}
-        }
+        },
+        {
+            name: 'Orders',
+            icon: Icon.Bag2,
+            link: '/dashboard/orders',
+            activeClass: ordersActive,
+            action: () => {}
+        },
+        {
+            name: 'Inventory',
+            icon: Icon.Bill,
+            link: '/dashboard/inventories',
+            activeClass: inventoryActive,
+            action: () => {}
+        },
+        {
+            name: 'Transactions',
+            icon: Icon.Wallet2,
+            link: '/dashboard/transactions',
+            activeClass: transactionsActive,
+            action: () => {}
+        },
+        {
+            name: 'Messaging',
+            icon: Icon.Messages1,
+            link: '/dashboard/messaging',
+            activeClass: messagingActive,
+            action: () => {}
+        },
+        {
+            name: 'Admins',
+            icon: Icon.Profile2User,
+            link: '/dashboard/admins',
+            activeClass: adminsActive,
+            action: () => {}
+        }    
     ]
 
     return(
@@ -89,8 +136,8 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                     <LogoImageWrap>
                         <LogoImage 
                             width='6rem'
-                            src='/c-logo.png'
-                            alt='Contribuild'
+                            src='/tmc.svg'
+                            alt='TMC'
                         />
                     </LogoImageWrap>
                 </NavLink>
@@ -113,27 +160,63 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                         </NavLink>
                     ))
                 }
+                <div className="mt-7">
+                    <NavLink
+                        to={"/dashboard/settings"}
+                    >
+                        <NavItem
+                            className={`nav-class ${settingsActive ? 'active-nav' : ''}`}
+                        >
+                            <div>
+                                <Icon.Setting2 
+                                    className='w-5 h-5'
+                                />
+                                <p>Settings</p>
+                            </div>
+                        </NavItem>
+                    </NavLink>
+                    <NavItem
+                        className={`nav-class`}
+                    >
+                        <div>
+                            <Icon.LogoutCurve 
+                                className='w-5 h-5'
+                            />
+                            <p>Logout</p>
+                        </div>
+                    </NavItem>
+                </div>
                 <NavLink to='/dashboard/profile'>
                     <BoxFlex
                         gap='8px'
                         margin='3rem 0 0 0'
                     >
                         <RandomCircle
-                            size={'32px'}
+                            size={'40px'}
                         >
                             <img 
-                                src='/images/dummy-user.png'
+                                src='/images/ola.png'
                                 alt='Avatar'
                             />
                         </RandomCircle>
-                        <Typography 
-                            text={`${currentUser?.first_name} ${currentUser?.last_name}`}
-                            color='#091525'
-                            fontWeight={500}
-                            fontSize='14px'
-                            lineHeight='21px'
-                        />
-                        
+                        <div>
+                            <Typography 
+                                // text={`${currentUser?.first_name} ${currentUser?.last_name}`}
+                                text="Olanrewaju Benjamin"
+                                color='#091525'
+                                fontWeight={500}
+                                fontSize='14px'
+                                lineHeight='21px'
+                            />
+                            <Typography 
+                                // text={`${currentUser?.first_name} ${currentUser?.last_name}`}
+                                text="olanrewaju@example.com"
+                                color='#091525'
+                                fontWeight={300}
+                                fontSize='12px'
+                                lineHeight='21px'
+                            />
+                        </div>
                     </BoxFlex>
                 </NavLink>
             </MainWidget>

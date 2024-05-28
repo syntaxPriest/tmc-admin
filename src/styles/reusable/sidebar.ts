@@ -6,15 +6,15 @@ interface MainProps {
 
 export const MainWidget = styled.div<MainProps>`
     width:21.1%;
-    max-width: 219px;
-    padding: 32px 0%;
+    max-width: 280px;
+    padding: 32px 1% 32px 1%;
     position: sticky;
     height:100vh;
     top:0;
     left:0;
     background: var(--main-bg);
-    border-right: 1px solid #F0F3F6;
     overflow-y:auto;
+    border-right: 1px solid #F3F1EF;
 
     @media (max-width:728px){
         display: ${p => p.mobileDisplay || 'none'};
@@ -52,10 +52,9 @@ export const NavItem = styled.div`
     display:flex;
     align-items:Center;
     justify-content:space-between;
-    padding:16px 0 16px 0;
+    padding:10px 0 10px 20px;
     cursor:pointer;
     position:relative;
-    border-bottom: 1px solid #F8F9F9;
 
     > div {
         width: 100%;
@@ -66,7 +65,7 @@ export const NavItem = styled.div`
 
     p {
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 400;
         line-height: 18px;
     }
 

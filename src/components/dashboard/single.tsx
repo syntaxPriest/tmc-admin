@@ -340,7 +340,6 @@ const DashboardSingleProperty = () => {
                             }
                         <Line />
                     </DashboardMain>
-                    <QuickActionWidget />
                 </DashboardFlex>
             </MainWrap>
             {

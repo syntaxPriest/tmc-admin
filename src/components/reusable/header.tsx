@@ -89,7 +89,7 @@ const Header = ({isSearchPage, isLanding, searchQuery, setSearchQuery} : HeaderP
                                     </RandomCircle>
                                 </Link>
                         }
-                        {
+                        { 
                             isSearchPage &&
                                 <>
                                     <i>

@@ -225,7 +225,6 @@ const DashboardWallet = () => {
                                 }
                             </DashboardInner>
                     </DashboardMain>
-                    <QuickActionWidget />
                 </DashboardFlex>
                 <BottomNavComp />
             </MainWrap>

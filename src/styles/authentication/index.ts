@@ -12,6 +12,7 @@ export const MainWrap = styled.div`
 
 export const AuthFlex = styled.div`
     display:flex;
+    justify-content:Center;
     gap:0;
 `
 
@@ -51,18 +52,19 @@ export const AuthLogoImage = styled.img`
     left:5%;
 `
 
-export const AuthRight = styled.form`
-    flex:3;
+export const AuthCenter = styled.form`
     background: var(--main-bg);
-    padding:0 5%;
+    padding:7rem 0 1rem 0;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
     position:relative;
+    width: 100%;
+    max-width: 330px;
 
     > div {
-        width:56%;
+        width:100%;
 
         > h3 {
             font-weight:600;
@@ -128,7 +130,7 @@ export const InputField = styled.div<InputWrapProps>`
     position:relative;
 
     > p {
-        font-size:14px;
+        font-size:13px;
         text-align:left;
         font-weight:400;
         margin: 0 0 3.5px 0;
@@ -140,7 +142,7 @@ export const InputField = styled.div<InputWrapProps>`
         padding:12px 12px;
         font-size:14px;
         text-align:left;
-        border: 1px solid #C6CACD;
+        border: 1px solid #E5DFD9;
         box-shadow: 0px 4px 8px 0px #0000000A;
         border-radius:8px;
         width:100%;

@@ -1,16 +1,17 @@
-/*********************** REEF LANDING  ********************/
+/*********************** TMC  ********************/
 
 /* Font Import */
+@import url('https://fonts.cdnfonts.com/css/graphik-trial');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Livvic:wght@100;200;300;400;500;600;700;900&family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
 
 /* Variables */
 :root {
- --primary-color: #147EFA;
+ --primary-color: #8B6C23;
  --secondary-color: #012F65;
- --text-black: #000000;
+ --text-black: #23211D;
  --main-bg: #fff;
- --main-font: 'Livvic', sans-serif;
+ font-family: 'Graphik Trial', sans-serif;
  --generic-font: 'Merriweather', serif;
  --header-font: 'Manrope', sans-serif;
  --btn-font: 'Poppins', sans-serif;
@@ -85,6 +86,12 @@ button:hover {
 .carousel-gap ul {
   gap:46px !important;
 }
+.ellipse {
+  width: 90%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 
 @media (max-width:728px) {
   .carousel-gap ul {
@@ -103,18 +110,20 @@ button:hover {
   padding: 0;
 }
 .nav-class {
-  color:#7081A0;
-  font-weight: 500;
+  color:#23211D;
+  font-weight: 400;
   
 }
 .active-nav {
   color: var(--primary-color);
   font-weight:700;
+  background: #FCF9F2;
+  border-radius: 10px;
 }
 
-.active-nav > div {
+/* .active-nav > div {
   border-right: 2px solid var(--primary-color);
-}
+} */
 
 .active-bottom-nav > div {
   border-top: 2px solid var(--primary-color);
