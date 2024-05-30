@@ -34,6 +34,7 @@ import Inventories from './components/dashboard/inventories';
 import Transactions from './components/dashboard/transactions';
 import Admins from './components/dashboard/admins';
 import Messaging from './components/dashboard/messaging';
+import MemberProfile from './components/dashboard/membersComps/single';
 
 function App() {
 
@@ -73,6 +74,10 @@ function App() {
 
           <Route path='/dashboard/members' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/members' element={<Members />} />
+          </Route>
+
+          <Route path='/dashboard/member/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/member/:id' element={<MemberProfile />} />
           </Route>
 
           <Route path='/dashboard/events' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >

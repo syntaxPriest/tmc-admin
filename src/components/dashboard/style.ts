@@ -85,7 +85,7 @@ export const DashboardHeader = styled.div<DashboardHeaderProps>`
     position:sticky;
     top:0;
     left:0;
-    z-index:1000;
+    z-index:1;
     display: flex;
     align-items:center;
     justify-content: space-between;
@@ -168,12 +168,12 @@ export const ProgressBar = styled.div`
 
   > progress[value]::-webkit-progress-value {
     border-radius: 100px;
-    background: var(--primary-color);
+    background: #09A060;
   }
 
   > progress[value]::-moz-progress-bar {
     border-radius: 100px;
-    background: var(--primary-color);
+    background: #09A060;
   }
 `
 interface DashboardInnerProps{

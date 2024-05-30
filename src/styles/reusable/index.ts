@@ -252,7 +252,7 @@ export const ModalChild = styled.div`
     width:500px;
     max-height:95%;
     overflow-y:auto;
-    padding:32px 32px 10px 32px;
+    padding:32px 32px 32px 32px;
     background: #fff;
     box-shadow: 0px 8px 40px rgba(9, 44, 76, 0.16);
     border-radius: 8px;
@@ -290,7 +290,7 @@ export const ModalHeader = styled.div`
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
-    margin: 0 0 0 0;
+    margin: 0 0 2rem 0;
 
     > h3 {
         width: 80%;

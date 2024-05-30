@@ -14,19 +14,16 @@ const TransactionCard = ({openDetails} : any) => {
                     gap='24px'
                     vAlign='flex-start'
                 >
-                    <i>
-                        <ArrowDownOnSquareIcon className='w-6 h-6' color='#8796AD' />
-                    </i>
                     <div
                         style={{
-                            width: '90%'
+                            width: '100%'
                         }}
                     >
                         <BoxFlex
                             hAlign='space-between'
                         >
                             <Typography 
-                                text='Wallet top-up'
+                                text='Membership Subscription'
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='15px'
@@ -34,7 +31,7 @@ const TransactionCard = ({openDetails} : any) => {
                             />
                             <Typography 
                                 text='₦500,000.00'
-                                color='#091525'
+                                color='#4B4B4B'
                                 fontWeight={600}
                                 fontSize='15px'
                                 lineHeight='21px'
@@ -51,13 +48,13 @@ const TransactionCard = ({openDetails} : any) => {
                                 fontSize='12px'
                                 lineHeight='21px'
                             />
-                            <Typography 
+                            {/* <Typography 
                                 text='10:15AM'
                                 color='#7081A0'
                                 fontWeight={400}
                                 fontSize='12px'
                                 lineHeight='21px'
-                            />
+                            /> */}
                         </BoxFlex>
                     </div>
                 </BoxFlex>

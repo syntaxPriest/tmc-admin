@@ -6,20 +6,27 @@ import QuickActionWidget from '../reusable/quickaction';
 import Typography from '../reusable/typography';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import { PageToggleHeader } from '../../styles/reusable/index';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BottomNavComp from '../reusable/bottomNav';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import PaginationComp from '../reusable/pagination';
 import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
+import InviteMembers from './modals/inviteMembers';
 
 const Members = () => {
     
+	const navigate = useNavigate();
     const [activePage, setActivePage] = useState('All');
+	const [showInviteMember, setShowInvite] = useState(false) 
 
     return(
         <>
+			<InviteMembers 
+				openToggle={showInviteMember}
+				closeFunc={() => setShowInvite(false)}
+			/>
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -49,6 +56,7 @@ const Members = () => {
                                     color='#fff'
                                     bg='#23211D'
                                     top="0"
+									onClick={() => setShowInvite(true)}
                                 >Invite Member</Button>
                             </div>
                         </DashboardHeader>
@@ -93,6 +101,7 @@ const Members = () => {
 								employees.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+										onClick={() => navigate(`/dashboard/member/${index + 1}`)}
 									>
 										<div className='flex flex-[6] items-center cursor-pointer gap-[10px]'>
 											<img
