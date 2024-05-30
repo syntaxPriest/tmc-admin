@@ -45,11 +45,17 @@ const Events = () => {
                                         placeholder='Search'
                                     />
                                 </SearchInput>
-                                <Button 
-                                    color='#fff'
-                                    bg='#23211D'
-                                    top="0"
-                                >Create Event</Button>
+                                <Link
+                                    to={'/dashboard/events/create'}
+                                >
+                                    <Button 
+                                        color='#fff'
+                                        bg='#23211D'
+                                        top="0"
+                                    >
+                                        Create Event
+                                    </Button>
+                                </Link>
                             </div>
                         </DashboardHeader>
                         <div className="flex justify-between items-center">

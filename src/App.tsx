@@ -35,6 +35,7 @@ import Transactions from './components/dashboard/transactions';
 import Admins from './components/dashboard/admins';
 import Messaging from './components/dashboard/messaging';
 import MemberProfile from './components/dashboard/membersComps/single';
+import CreateEvent from './components/dashboard/eventComps/create';
 
 function App() {
 
@@ -82,6 +83,10 @@ function App() {
 
           <Route path='/dashboard/events' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/events' element={<Events />} />
+          </Route>
+
+          <Route path='/dashboard/events/create' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/events/create' element={<CreateEvent />} />
           </Route>
 
           <Route path='/dashboard/bookings' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >

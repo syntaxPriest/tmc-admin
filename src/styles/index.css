@@ -111,9 +111,13 @@ button:hover {
 }
 .nav-class {
   color:#23211D;
-  font-weight: 400;
-  
+  font-weight: 400; 
 }
+
+input[type=radio]{
+  accent-color: var(--primary-color); 
+}
+
 .active-nav {
   color: var(--primary-color);
   font-weight:700;

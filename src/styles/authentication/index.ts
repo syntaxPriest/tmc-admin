@@ -155,12 +155,31 @@ export const InputField = styled.div<InputWrapProps>`
         }
     }
 
-    > select {
+    > textarea {
         background:#fff;
-        padding:12px 4%;
+        padding:12px 12px;
         font-size:14px;
         text-align:left;
-        border: 1px solid #C6CACD;
+        border: 1px solid #E5DFD9;
+        box-shadow: 0px 4px 8px 0px #0000000A;
+        border-radius:8px;
+        width:100%;
+        color: #1B2229;
+        outline:none;
+        resize:none;
+
+        @media (max-width:728px){
+            font-size:16px;
+            // padding:0.1rem 0 0.1rem 0.6rem; 
+        }
+    }
+
+    > select {
+        background:#fff;
+        padding:14.5px 4%;
+        font-size:14px;
+        text-align:left;
+        border: 1px solid #E5DFD9;
         box-shadow: 0px 4px 8px 0px #0000000A;
         border-radius:8px;
         width:100%;
@@ -179,10 +198,6 @@ export const InputField = styled.div<InputWrapProps>`
         right:3%;
         transform: tramslate(0, -50%);
         cursor:pointer;
-    }
-
-    :focus-within{
-       border: ${p => !p.shouldNotFocus ? "1px solid #147EFA" : ""};
     }
 `
 
