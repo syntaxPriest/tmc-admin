@@ -13,13 +13,19 @@ import PaginationComp from '../reusable/pagination';
 import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
+import BookingsInfo from './modals/booking';
 
 const Bookings = () => {
     
     const [activePage, setActivePage] = useState('Upcoming');
+    const [openBookingInfo, setOpenBookingInfo] = useState(false)
 
     return(
         <>
+            <BookingsInfo 
+                openToggle={openBookingInfo}
+                closeFunc={() => setOpenBookingInfo(false)}
+            />
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -86,6 +92,7 @@ const Bookings = () => {
 								members.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+                                        onClick={() => setOpenBookingInfo(true)}
 									>
 										<div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
 											<img

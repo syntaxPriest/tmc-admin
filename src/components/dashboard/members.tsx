@@ -96,9 +96,9 @@ const Members = () => {
                                 <p className='flex-[3] text-[14px]'>Last Login</p>
 								<p className='flex-[1] text-[14px]'></p>
 							</div>
-                            {employees &&
-								employees.length > 0 &&
-								employees.map((item: any, index: number) => (
+                            {members &&
+								members.length > 0 &&
+								members.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
 										onClick={() => navigate(`/dashboard/member/${index + 1}`)}
@@ -155,7 +155,7 @@ export default Members;
 
 const pageItems = ['All', 'Suspended', 'Deleted']
 
-export const employees = [
+export const members = [
 	{
         firstName: "Daniel",
 		lastName: "Adewale",

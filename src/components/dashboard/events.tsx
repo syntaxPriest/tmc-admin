@@ -6,7 +6,7 @@ import QuickActionWidget from '../reusable/quickaction';
 import Typography from '../reusable/typography';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import { PageToggleHeader } from '../../styles/reusable/index';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import BottomNavComp from '../reusable/bottomNav';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import PaginationComp from '../reusable/pagination';
@@ -16,6 +16,7 @@ import * as Icon from 'iconsax-react';
 
 const Events = () => {
     
+    const navigate = useNavigate();
     const [activePage, setActivePage] = useState('Upcoming');
 
     return(
@@ -98,6 +99,7 @@ const Events = () => {
 								events.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+                                        onClick={() => navigate(`/dashboard/event/${index + 1}`)}
 									>
 										<div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
 											<img
