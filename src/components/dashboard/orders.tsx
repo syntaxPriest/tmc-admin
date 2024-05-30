@@ -6,7 +6,7 @@ import QuickActionWidget from '../reusable/quickaction';
 import Typography from '../reusable/typography';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import { PageToggleHeader } from '../../styles/reusable/index';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BottomNavComp from '../reusable/bottomNav';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import PaginationComp from '../reusable/pagination';
@@ -17,6 +17,7 @@ import commaNumber from 'comma-number';
 
 const Orders = () => {
     
+    const navigate = useNavigate();
     const [activePage, setActivePage] = useState('All');
 
     return(
@@ -67,9 +68,10 @@ const Orders = () => {
                             {/* Table Header */}
 							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
 								<p className='flex-[4] text-[14px]'>Order No.</p>
-                                <p className='flex-[2] text-[14px]'>Items</p>
 								<p className='flex-[3] text-[14px]'>Date</p>
 								<p className='flex-[7] text-[14px]'>Customer</p>
+                                <p className='flex-[5] text-[14px]'>Status</p>
+                                <p className='flex-[2] text-[14px]'>Items</p>
                                 <p className='flex-[4] text-[14px]'>Amount</p>
 								<p className='flex-[2] text-[14px]'>Action</p>
 							</div>
@@ -78,6 +80,7 @@ const Orders = () => {
 								members.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+                                        onClick={() => navigate(`/dashboard/order/${index + 1}`)}
 									>
 										<div className='flex flex-[4] items-center cursor-pointer gap-[10px]'>
 								
@@ -87,14 +90,19 @@ const Orders = () => {
 												</h3>
 											</div>
 										</div>
-										<p className='flex-[2] cursor-pointer text-[14px]'>
-											{item.items}
-										</p>
 										<p className='flex-[3] cursor-pointer text-[14px]'>
-											{`${new Date().toLocaleDateString()}`}
+											{`${new Date().toDateString()}`}
 										</p>
 										<p className='flex-[7] cursor-pointer text-[14px]'>
 											{item?.customer ? item.customer : 'N/A'}
+										</p>
+                                        <div className='flex-[5] cursor-pointer text-[11px]'>
+											<p className="border border-[#ABEFC6] bg-[#ECFDF3] py-[3px] px-[2px] rounded-[100px] text-center max-w-[50%] capitalize text-[#067647]">
+                                                {"Delivered"?.replaceAll("_", " ")}
+                                            </p>
+										</div>
+                                        <p className='flex-[2] cursor-pointer text-[14px]'>
+											{item.items}
 										</p>
                                         <p className='flex-[4] cursor-pointer font-semibold text-[14px]'>
 											{item?.amount ? `₦${commaNumber(item.amount)}` : 'N/A'}

@@ -14,13 +14,19 @@ import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
+import InviteAdmin from './modals/inviteAdmin';
 
 const Transactions = () => {
     
     const [activePage, setActivePage] = useState('All');
+	const [showInviteAdmin, setShowInvite] = useState(false);
 
     return(
         <>
+            <InviteAdmin
+				openToggle={showInviteAdmin}
+				closeFunc={() => setShowInvite(false)}
+			/>
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -42,6 +48,7 @@ const Transactions = () => {
                                     color='#fff'
                                     bg='#23211D'
                                     top="0"
+									onClick={() => setShowInvite(true)}
                                 >Create Admin</Button>
                             </div>
                         </DashboardHeader>

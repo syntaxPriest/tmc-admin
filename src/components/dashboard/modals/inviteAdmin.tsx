@@ -20,14 +20,14 @@ interface PropArgs {
   closeFunc: any;
 }
 
-const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
+const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
   return (
     <>
       {openToggle && (
         <ModalWrap>
           <ModalChild>
             <ModalHeader>
-              <h3>Invite Member</h3>
+              <h3>Invite Admin</h3>
               <i>
                 <FeatherIcon.X strokeWidth={1} onClick={() => closeFunc()} />
               </i>
@@ -70,7 +70,16 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
                     />
                 </InputField>
                 <InputField width='48%'>
-                    <p>Membership Type</p>
+                    <p>Phone Number</p>
+                    <input 
+                        placeholder='Enter Phone Number'
+                        autoComplete="off"
+                        type="number"
+                        required
+                    />
+                </InputField>
+                <InputField width='48%'>
+                    <p>Admin Type</p>
                     <select 
                         required
                     >
@@ -85,7 +94,7 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
                 width='auto'
                 top='0'
             >
-                Send Invite
+                Create Admin
             </Button>
           </ModalChild>
         </ModalWrap>
@@ -94,4 +103,4 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
   );
 };
 
-export default InviteMembers;
+export default InviteAdmin;

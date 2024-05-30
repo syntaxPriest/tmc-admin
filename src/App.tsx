@@ -37,6 +37,9 @@ import Messaging from './components/dashboard/messaging';
 import MemberProfile from './components/dashboard/membersComps/single';
 import CreateEvent from './components/dashboard/eventComps/create';
 import SingleEvent from './components/dashboard/eventComps/single';
+import OrderInfo from './components/dashboard/orderComps/singleOrder';
+import SingleInventory from './components/dashboard/inventoryComps/singleInventory';
+import TransactionInfo from './components/dashboard/transactionComps/singleTransaction';
 
 function App() {
 
@@ -102,12 +105,24 @@ function App() {
             <Route path='/dashboard/orders' element={<Orders />} />
           </Route>
 
+          <Route path='/dashboard/order/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/order/:id' element={<OrderInfo />} />
+          </Route>
+
           <Route path='/dashboard/inventories' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/inventories' element={<Inventories />} />
           </Route>
 
+          <Route path='/dashboard/inventory/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/inventory/:id' element={<SingleInventory />} />
+          </Route>
+
           <Route path='/dashboard/transactions' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/transactions' element={<Transactions />} />
+          </Route>
+
+          <Route path='/dashboard/transaction/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/transaction/:id' element={<TransactionInfo />} />
           </Route>
 
           <Route path='/dashboard/admins' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >

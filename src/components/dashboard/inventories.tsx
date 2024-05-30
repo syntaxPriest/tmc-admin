@@ -6,7 +6,7 @@ import QuickActionWidget from '../reusable/quickaction';
 import Typography from '../reusable/typography';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import { PageToggleHeader } from '../../styles/reusable/index';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BottomNavComp from '../reusable/bottomNav';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import PaginationComp from '../reusable/pagination';
@@ -14,13 +14,20 @@ import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
+import AddInventoryItem from './modals/addInventoryItem';
 
 const Inventories = () => {
     
+    const navigate = useNavigate();
+    const [openAddItem, setOpenAddItem] = useState(false);
     const [activePage, setActivePage] = useState('All');
 
     return(
         <>
+            <AddInventoryItem 
+                openToggle={openAddItem}
+                closeFunc={() => setOpenAddItem(false)}
+            />
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -50,6 +57,7 @@ const Inventories = () => {
                                     color='#fff'
                                     bg='#23211D'
                                     top="0"
+                                    onClick={() => setOpenAddItem(true)}
                                 >Add Item</Button>
                             </div>
                         </DashboardHeader>
@@ -101,6 +109,7 @@ const Inventories = () => {
 								members.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+                                        onClick={() => navigate(`/dashboard/inventory/${index + 1}`)}
 									>
                                         <div className='flex-[1]'>
                                             <input 
