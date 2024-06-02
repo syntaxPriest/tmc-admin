@@ -1,30 +1,30 @@
 import axios, { type AxiosError, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 
-export const contribuildApi = axios.create({
-  baseURL: 'https://api.contribuild.ng',
+export const tmcApi = axios.create({
+  baseURL: 'https://api.guniglobal.com',
 });
 
 export const setToken = (token: string | undefined, user_id: string | undefined) => {
   if (token){
-    contribuildApi.defaults.headers["Authorization"] = token
+    tmcApi.defaults.headers["Authorization"] = token
       ? `Bearer ${token}`
       : "";
   }
   if (user_id){
-    contribuildApi.defaults.headers['User_id'] = user_id;
+    tmcApi.defaults.headers['User_id'] = user_id;
   }
-  contribuildApi.defaults.headers["Access-Control-Allow-Origin"] = "*";
-  contribuildApi.defaults.headers["Access-Control-Allow-Credentials"] = true;
+  tmcApi.defaults.headers["Access-Control-Allow-Origin"] = "*";
+  tmcApi.defaults.headers["Access-Control-Allow-Credentials"] = true;
 };
 
 export const removeAfterLogout = () => {
-  delete contribuildApi.defaults.headers["Authorization"];
-  delete contribuildApi.defaults.headers['User_id'];
+  delete tmcApi.defaults.headers["Authorization"];
+  delete tmcApi.defaults.headers['User_id'];
 }
 
 //  interceptor
-contribuildApi.interceptors.response.use(
+tmcApi.interceptors.response.use(
     function (response: AxiosResponse) {
       // Any status code that lie within the range of 2xx cause this function to trigger
       return response;

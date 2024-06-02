@@ -1,4 +1,4 @@
-import { contribuildApi } from "../instance";
+import { tmcApi } from "../instance";
 
 const LIMIT = process.env.REACT_APP_PRODUCT_FETCH_LIMIT || 18;
 
@@ -12,7 +12,7 @@ export const GET_PROPERTIES = async (data: {
     type?: string,
     search?: string 
 }) => {
-    return contribuildApi.get(`/propy/filter-properties`, {
+    return tmcApi.get(`/propy/filter-properties`, {
         params: {
             ...data,
             limit: LIMIT
@@ -23,7 +23,7 @@ export const GET_PROPERTIES = async (data: {
 export const GET_SAVED_PROPERTIES = async (data: {
     user_id: string
 }) => {
-    return contribuildApi.get(`/propy/list-saved-properties`, {
+    return tmcApi.get(`/propy/list-saved-properties`, {
         params: {
             ...data,
             limit: LIMIT
@@ -34,7 +34,7 @@ export const GET_SAVED_PROPERTIES = async (data: {
 export const GET_PROPERTIES_BY_ID = async (data: {
     id?: string | number
 }) => {
-    return contribuildApi.get(`/propy/get-property`, {
+    return tmcApi.get(`/propy/get-property`, {
         params: {
             id: data?.id
         }
@@ -44,11 +44,11 @@ export const GET_PROPERTIES_BY_ID = async (data: {
 export const SAVE_PROPERTIES_BY_ID = async (data: {
     id?: string | number
 }) => {
-    return contribuildApi.post(`/propy/save-property`, {...data});
+    return tmcApi.post(`/propy/save-property`, {...data});
 }
 
 export const UNSAVE_PROPERTIES_BY_ID = async (data: {
     id?: string | number
 }) => {
-    return contribuildApi.post(`/propy/unsave-property`, {...data});
+    return tmcApi.post(`/propy/unsave-property`, {...data});
 }

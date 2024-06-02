@@ -14,13 +14,19 @@ import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
+import SelectMessageChannel from './modals/selectMessageChannel';
 
 const Messaging = () => {
     
     const [activePage, setActivePage] = useState('All');
+    const [showSelectModal, setShowSelectModal] = useState(false);
 
     return(
         <>
+            <SelectMessageChannel 
+                closeFunc={() => setShowSelectModal(false)}
+                openToggle={showSelectModal}
+            />
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -42,6 +48,7 @@ const Messaging = () => {
                                     color='#fff'
                                     bg='#23211D'
                                     top="0"
+                                    onClick={() => setShowSelectModal(true)}
                                 >Create New</Button>
                             </div>
                         </DashboardHeader>

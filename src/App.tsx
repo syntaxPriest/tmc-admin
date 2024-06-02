@@ -40,6 +40,8 @@ import SingleEvent from './components/dashboard/eventComps/single';
 import OrderInfo from './components/dashboard/orderComps/singleOrder';
 import SingleInventory from './components/dashboard/inventoryComps/singleInventory';
 import TransactionInfo from './components/dashboard/transactionComps/singleTransaction';
+import CreateMessage from './components/dashboard/messagingComps.tsx/create';
+import PreviewMessage from './components/dashboard/messagingComps.tsx/preview';
 
 function App() {
 
@@ -131,6 +133,14 @@ function App() {
 
           <Route path='/dashboard/messaging' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/messaging' element={<Messaging />} />
+          </Route>
+
+          <Route path='/dashboard/messaging/create' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/messaging/create' element={<CreateMessage />} />
+          </Route>
+
+          <Route path='/dashboard/messaging/preview' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/messaging/preview' element={<PreviewMessage />} />
           </Route>
 
           <Route path='/dashboard/settings' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >

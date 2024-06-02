@@ -30,56 +30,36 @@ const Login = () => {
 
     // Async functions
 
-    // For Create Wallet
-    // const { mutateAsync: get_wallet } = useMutation({
-    //     mutationFn: GET_WALLET,
-    //     onSuccess: (data) => {
-    //         dispatch(setWallet(data?.data?.body?.wallet))
-    //     }
-    // })
-
-    // const { mutateAsync, isPending } = useMutation({
-    //     mutationFn: LOGIN_USER,
-    //     onSuccess: async (data) => {
-    //         await cookieUtils[1]("userToken", data ? data.data.body.token.authToken : '', {
-    //             secure:
-    //               process.env.NODE_ENV && process.env.NODE_ENV === "production"
-    //                 ? true
-    //                 : false,
-    //             sameSite: "strict",
-    //         });
-    //         setToken(data?.data?.body?.token?.authToken, `${data?.data?.body?.user?.id}`);
-    //         dispatch(setUser(data?.data.body.user));
-    //         localStorage.setItem(
-    //             'expire_time',
-    //             JSON.stringify(Date.now() + (3 * 60 * 60 * 1000)),
-    //         );
-            
-    //         if (data.data.body.user.phone_verified === false){
-    //             navigate('/verify-email?type=onboard');
-    //             enqueueSnackbar({
-    //                 variant: 'warning',
-    //                 message: 'Please verify your account!'
-    //             })
-    //         }else {
-    //             enqueueSnackbar({
-    //                 variant: 'success',
-    //                 message: 'Login Successful!'
-    //             })
-    //             navigate('/dashboard');
-    //             get_wallet({
-    //                 user_id: data?.data?.body?.user?.id
-    //             });
-    //         }
-    //     }
-    // })
+    const { mutateAsync, isPending } = useMutation({
+        mutationFn: LOGIN_USER,
+        onSuccess: async (data) => {
+            await cookieUtils[1]("userToken", data ? data.data.body.token : '', {
+                secure:
+                  process.env.NODE_ENV && process.env.NODE_ENV === "production"
+                    ? true
+                    : false,
+                sameSite: "strict",
+            });
+            setToken(data?.data?.body?.token, `${data?.data?.body?.user?.id}`);
+            dispatch(setUser(data?.data.body.user));
+            localStorage.setItem(
+                'expire_time',
+                JSON.stringify(Date.now() + (3 * 60 * 60 * 1000)),
+            );
+            enqueueSnackbar({
+                variant: 'success',
+                message: 'Login Successful!'
+            })
+            navigate('/dashboard');
+        }
+    })
 
     const loginUser = (e: any) => {
         e.preventDefault();
-        // mutateAsync({
-        //     identifier: email,
-        //     password
-        // })
+        mutateAsync({
+            identifier: email,
+            password
+        })
     }
 
     return(
@@ -96,10 +76,10 @@ const Login = () => {
                                 alt="TMC Logo"
                             />
                             <h3 className='text-center'>Sign In</h3>
-                            <Error 
+                            {/* <Error 
                                 message='Wrong email or password'
                                 extraText='Please, check that the details you entered are correct and try again.'
-                            />
+                            /> */}
                             <InputWrap>
                                 <InputField>
                                     <p>Email Address</p>
@@ -150,7 +130,7 @@ const Login = () => {
                                 top='30px'
                             >
                                 {
-                                    // isPending ? <Spinner /> : 
+                                    isPending ? <Spinner /> : 
                                     "Sign In"
                                 }
                             </Button>

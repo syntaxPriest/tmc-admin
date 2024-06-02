@@ -3,14 +3,14 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 // eslint-disable-next-line react/prop-types
 export const PrivateLoginRoute = ({isAuthenticated, isInVerifyLobby}) => {
-  // return isAuthenticated && isAuthenticated !== "undefined" && !isInVerifyLobby ? <Outlet /> : <Navigate to="/login" />;
-  return <Outlet />;
+  return isAuthenticated && isAuthenticated !== "undefined" && !isInVerifyLobby ? <Outlet /> : <Navigate to="/login" />;
+  // return <Outlet />;
 };
 
 // eslint-disable-next-line react/prop-types
 export const PreventAuthRoute = ({isAuthenticated}) => {
-  // return isAuthenticated && isAuthenticated !== "undefined" ? <Navigate to="/dashboard" /> : <Outlet />;
-  return <Outlet />;
+  return isAuthenticated && isAuthenticated !== "undefined" ? <Navigate to="/dashboard" /> : <Outlet />;
+  // return <Outlet />;
 };
 
 // eslint-disable-next-line react/prop-types
