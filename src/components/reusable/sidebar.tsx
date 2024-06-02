@@ -195,14 +195,14 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                             size={'40px'}
                         >
                             <img 
-                                src='/images/ola.png'
+                                src={currentUser?.avatar ? currentUser?.avatar : '/images/Avatar1.png'}
                                 alt='Avatar'
                             />
                         </RandomCircle>
                         <div>
                             <Typography 
                                 // text={`${currentUser?.first_name} ${currentUser?.last_name}`}
-                                text="Olanrewaju Benjamin"
+                                text={`${currentUser?.first_name} ${currentUser?.last_name}`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='14px'
@@ -210,7 +210,7 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                             />
                             <Typography 
                                 // text={`${currentUser?.first_name} ${currentUser?.last_name}`}
-                                text="olanrewaju@example.com"
+                                text={`${currentUser?.email}`}
                                 color='#091525'
                                 fontWeight={300}
                                 fontSize='12px'

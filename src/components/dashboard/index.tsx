@@ -16,16 +16,10 @@ import { events } from './events';
 const DashboardIndex = () => {
 
     const navigate = useNavigate();
-    const [copied, setCopied] = useState(false);
-    const wallet = useCurrentUser()?.wallet;
+    const {user} = useCurrentUser();
 
     return(
         <>
-            {
-                copied ?
-                    <CopiedNotifier />
-                    : null
-            }
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -36,7 +30,7 @@ const DashboardIndex = () => {
                     <DashboardMain>
                         <DashboardHeader>
                             <Typography 
-                                text='Welcome Olanrewaju!'
+                                text={`Welcome ${user?.first_name}!`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='24px'
