@@ -14,13 +14,13 @@ const EmptyState = ({noShowText, imgSize, img, text}: PropsArgs) => {
             <EmptyMainWrap>
                 <div>
                     <EmptyImage 
-                        src={img ? img : '/icons/box.png'}
+                        src={img ? img : '/images/empty.png'}
                         alt='Empty Icon'
                         width={imgSize}
                     />
                     {
                         !noShowText ?
-                            <p>{text ? text : "Nothing to show!"}</p>
+                            <p className='text-[#898579]'>{text ? text : "Nothing to show!"}</p>
                         : null
                     }
                 </div>

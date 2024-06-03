@@ -5,7 +5,7 @@ export const EmptyMainWrap = styled.div`
     display:flex;
     align-items:center;
     justify-content:Center;
-    margin:2rem 0;
+    margin:5rem 0 2rem 0;
 
     > div {
         display:flex;

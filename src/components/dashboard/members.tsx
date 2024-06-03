@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Line, MainWrap, PageToggleText,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
@@ -14,12 +14,53 @@ import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import InviteMembers from './modals/inviteMembers';
+import MembersSkeleton from '../skeletons/members';
+import { useMutation } from '@tanstack/react-query';
+import { GET_USERS } from '../../api/getApis';
+import EmptyState from '../reusable/emptyState';
+import { debounce } from '../../utils/debounceHoc';
 
 const Members = () => {
     
 	const navigate = useNavigate();
     const [activePage, setActivePage] = useState('All');
-	const [showInviteMember, setShowInvite] = useState(false) 
+	const [showInviteMember, setShowInvite] = useState(false);
+	const [debouncedValue, setDebouncedValue] = useState<string>('');
+
+	const [usersState, setUsersState] = useState({
+		page: 1,
+		searchQuery: "",
+		users: [],
+		usersCount: 0,
+	})
+
+	const {mutateAsync, isPending} = useMutation({
+		mutationFn: GET_USERS,
+		onSuccess: (data) => {
+			setUsersState((prev) => { return {
+				...prev,
+				users: data?.data?.body?.users,
+				usersCount: data?.data?.body?.total_count
+			}})
+		}
+	})
+
+	useEffect(() => {
+		mutateAsync({
+			offset: usersState?.page - 1,
+			search: debouncedValue || undefined,
+			suspended: activePage === 'Suspended',
+			with_trashed: activePage === 'Deleted',
+
+		})
+	}, [activePage, debouncedValue]);
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setUsersState((prev) => { return {
+			...prev, 
+			searchQuery: e.target.value
+		}})
+	};
 
     return(
         <>
@@ -37,7 +78,7 @@ const Members = () => {
                     <DashboardMain>
                         <DashboardHeader>
                             <Typography 
-                                text='Members (234)'
+                                text={`Members ${usersState?.usersCount ? `(${usersState?.usersCount})` : ''}`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='24px'
@@ -50,6 +91,13 @@ const Members = () => {
                                     </i>
                                     <input 
                                         placeholder='Search'
+										value={usersState?.searchQuery}
+										onChange={handleChange}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter'){
+												setDebouncedValue(e.currentTarget?.value);
+											}
+										}}
                                     />
                                 </SearchInput>
                                 <Button 
@@ -85,6 +133,11 @@ const Members = () => {
                                 />
                             </div>
                         </div>
+						{
+							isPending ?
+						<MembersSkeleton />
+						:
+						usersState?.users.length > 0 ?
                         <div className="mt-5">
                             {/* Table Header */}
 							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
@@ -96,9 +149,9 @@ const Members = () => {
                                 <p className='flex-[3] text-[14px]'>Last Login</p>
 								<p className='flex-[1] text-[14px]'></p>
 							</div>
-                            {members &&
-								members.length > 0 &&
-								members.map((item: any, index: number) => (
+                            {usersState?.users &&
+								usersState?.users.length > 0 &&
+								usersState?.users.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
 										onClick={() => navigate(`/dashboard/member/${index + 1}`)}
@@ -111,7 +164,7 @@ const Members = () => {
 											/>
 											<div className='w-[90%]'>
 												<h3 className='font-medium text-[14px] cursor-pointer'>
-													{item.firstName} {item.lastName}
+													{item.first_name} {item.last_name}
 												</h3>
 												<p className='font-light cursor-pointer text-[12px] text-[#70897B]'>
 													{item.email ? item.email : "N/A"}
@@ -122,16 +175,16 @@ const Members = () => {
 											{item.id ? item.id : "N/A"}
 										</p>
 										<p className='flex-[3] cursor-pointer text-[14px]'>
-											{item.phoneNo ? item.phoneNo : "N/A"}
+											{item.phone ? item.phone : "N/A"}
 										</p>
 										<p className='flex-[3] cursor-pointer text-[14px]'>
-											{`${new Date().toDateString()}`}
+											{`${new Date(item.created_at).toDateString()}`}
 										</p>
 										<p className='flex-[2] cursor-pointer text-[14px] capitalize'>
-											{item.type ? item.type : "---"}
+											{item.membership_type ? item.membership_type : "---"}
 										</p>
                                         <p className='flex-[3] cursor-pointer text-[14px] capitalize'>
-											{`${new Date().toDateString()}`}
+											{`${new Date(item.created_at).toDateString()}`}
 										</p>
 										<p className='flex-[1] text-[14px] flex justify-end text-right'>
 											<EllipsisVerticalIcon
@@ -143,6 +196,11 @@ const Members = () => {
 								))}
                                 <PaginationComp />
                         </div>
+						: 
+							<EmptyState 
+								text='There are no members at the moment'
+							/>
+						}
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

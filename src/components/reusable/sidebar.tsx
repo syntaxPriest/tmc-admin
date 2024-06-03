@@ -9,6 +9,12 @@ import { BoxFlex } from '../../styles/reusable/index';
 import { RandomCircle } from '../../styles/reusable/index';
 import Typography from './typography';
 import { useCurrentUser } from '../../store/user/useCurrentUser';
+import AskYesOrNo from '../dashboard/modals/askYesOrNo';
+import { removeAfterLogout } from '../../api/instance';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../store/user/reducer';
+import { clearState } from '../../store/properties/reducer';
+import { useCookies } from 'react-cookie';
 
 interface SideBarProps {
     closeNav?: any;
@@ -17,9 +23,12 @@ interface SideBarProps {
 
 const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
     // const navigate = useNavigate();
+    const dispatch = useDispatch();
     const location = useLocation();
+    const cookieUtils = useCookies(["userToken"]);
     const current = location.pathname;
     const currentUser = useCurrentUser().user;
+    const [askLogout, setAskLogout] = useState(false)
 
     // Routes current and active defining.
 
@@ -46,10 +55,18 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
 
     // Log User Out of app
 
-    // const redirectAfterLogOut = () => {
-    //     localStorage.clear();
-    //     navigate('/login');
-    // }
+    const redirectAfterLogOut = () => {
+        localStorage.clear();
+        removeAfterLogout();
+        window.location.href = '/login';
+        dispatch(setUser(null));
+        dispatch(clearState());
+        removeAfterLogout()
+        cookieUtils[2]("userToken");
+        localStorage.clear();
+        const origin = window.location.origin;
+        window.location.assign(`${origin}/login`);
+    }
 
     // Open Option
     // const [openOption, setOpenOption] = useState(false);
@@ -177,12 +194,14 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                     </NavLink>
                     <NavItem
                         className={`nav-class`}
+                        onClick={() => setAskLogout(true)}
                     >
                         <div>
                             <Icon.LogoutCurve 
                                 className='w-5 h-5'
+                                color='#c82b32'
                             />
-                            <p>Logout</p>
+                            <p className='text-[#c82b32]'>Logout</p>
                         </div>
                     </NavItem>
                 </div>
@@ -220,6 +239,15 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                     </BoxFlex>
                 </NavLink>
             </MainWidget>
+            <AskYesOrNo 
+                openToggle={askLogout}
+                headerText='Log Out'
+                question='Are you sure you want to log out of your account?'
+                declineText="Cancel"
+                actionText="Log Out"
+                yesAction={() => redirectAfterLogOut()}
+                noAction={() => setAskLogout(false)}
+            />
         </>
     )
 }
