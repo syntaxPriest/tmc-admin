@@ -9,11 +9,13 @@ export const DashboardFlex = styled.div`
 
 export const DashboardMain = styled.div`
     width: 78%;
+    height: 100vh;
+    overflow-y: auto;
     max-width:1040px;
     position:relative;
     left: 1.9%;
-    top: 2rem;
-    padding: 32px 24px;
+    top: 0rem;
+    padding: 0 24px 32px 24px;
 
     @media (max-width: 728px){
         top:0;
@@ -81,7 +83,7 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = styled.div<DashboardHeaderProps>`
     background: #fff;
-    padding: ${p => p.padding || '32px 0'};
+    padding: ${p => p.padding || '48px 0 32px 0'};
     position:sticky;
     top:0;
     left:0;
