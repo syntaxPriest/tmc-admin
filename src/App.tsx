@@ -48,7 +48,7 @@ function App() {
   const currentUser: User | null = useCurrentUser().user;
   const [cookie] = useCookies(["userToken"]);
   // const isAuthenticated = cookie?.userToken
-  const [isAuthenticated, setIsAuthenticated] = useState();
+  const [isAuthenticated, setIsAuthenticated] = useState(cookie.userToken);
 
   useEffect(() => {
     setIsAuthenticated(cookie.userToken);

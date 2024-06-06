@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line, MainWrap, PageToggleText,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
@@ -14,11 +14,54 @@ import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
+import { GET_TRANSACTIONS } from '../../api/getApis';
+import { useMutation } from '@tanstack/react-query';
+import TransactionsSkeleton from '../skeletons/transactions';
+import EmptyState from '../reusable/emptyState';
 
 const Transactions = () => {
     
     const navigate = useNavigate();
     const [activePage, setActivePage] = useState('All');
+
+    const [debouncedValue, setDebouncedValue] = useState<string>("");
+
+  const [transactionsState, setTransactionsState] = useState({
+    page: 1,
+    searchQuery: "",
+    transactions: [],
+    transactionsCount: 0,
+  });
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: GET_TRANSACTIONS,
+    onSuccess: (data) => {
+      setTransactionsState((prev) => {
+        return {
+          ...prev,
+          transactions: data?.data?.body?.transactions,
+          transactionsCount: data?.data?.body?.total_count,
+        };
+      });
+    },
+  });
+
+  useEffect(() => {
+    mutateAsync({
+      offset: transactionsState?.page - 1,
+      search: debouncedValue || undefined,
+      type: activePage !== 'All' ? activePage.toLowerCase() : undefined,
+    });
+  }, [activePage, debouncedValue]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTransactionsState((prev) => {
+      return {
+        ...prev,
+        searchQuery: e.target.value,
+      };
+    });
+  };
 
     return(
         <>
@@ -32,7 +75,11 @@ const Transactions = () => {
                     <DashboardMain>
                         <DashboardHeader>
                             <Typography 
-                                text='Transactions (50)'
+                                text={`Transactions ${
+                                    transactionsState?.transactionsCount
+                                      ? `(${transactionsState?.transactionsCount})`
+                                      : ""
+                                  }`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='24px'
@@ -45,17 +92,24 @@ const Transactions = () => {
                                     </i>
                                     <input 
                                         placeholder='Search'
+                                        value={transactionsState?.searchQuery}
+                                        onChange={handleChange}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter'){
+                                                setDebouncedValue(e.currentTarget?.value);
+                                            }
+                                        }}
                                     />
                                 </SearchInput>
                             </div>
                         </DashboardHeader>
                         <div className="grid grid-cols-2 gap-[24px] my-[2rem]">
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">&#8358;3,421,563</h3>
+                                <h3 className="text-[20px] font-black">&#8358;0.00</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Transaction Value</p>
                             </div>
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">&#8358;1,332,054</h3>
+                                <h3 className="text-[20px] font-black">&#8358;0.00</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Bar Account Balance</p>
                             </div>
                         </div>
@@ -74,6 +128,9 @@ const Transactions = () => {
                                 }
                             </PageToggleHeader>
                         </div>
+                        {isPending ? (
+                            <TransactionsSkeleton />
+                            ) : transactionsState?.transactions.length > 0 ? (
                         <div className="mt-5">
                             {/* Table Header */}
 							<div className='flex items-center mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
@@ -84,9 +141,9 @@ const Transactions = () => {
 								<p className='flex-[3] text-[14px]'>Price</p>
                                 <p className='flex-[3] text-[14px]'>Status</p>
 							</div>
-                            {members &&
-								members.length > 0 &&
-								members.map((item: any, index: number) => (
+                            {transactionsState.transactions &&
+								transactionsState.transactions.length > 0 &&
+								transactionsState.transactions.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
                                         onClick={() => navigate(`/dashboard/transaction/${index + 1}`)}
@@ -121,6 +178,9 @@ const Transactions = () => {
 								))}
                                 <PaginationComp />
                         </div>
+                        ) : (
+                            <EmptyState text="There are no transactions at the moment" />
+                          )}
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

@@ -29,6 +29,7 @@ const Members = () => {
 
 	const [usersState, setUsersState] = useState({
 		page: 1,
+		activeIndex: -1,
 		searchQuery: "",
 		users: [],
 		usersCount: 0,
@@ -73,7 +74,14 @@ const Members = () => {
                 width='100%'
                 maxWidth='1200px'
             >
-                <DashboardFlex>
+                <DashboardFlex
+					onClick={() => {
+						setUsersState((prev) => { return {
+							...prev,
+							activeIndex: -1
+						}})
+					}}
+				>
                     <SideBarWidget />
                     <DashboardMain>
                         <DashboardHeader>
@@ -153,7 +161,7 @@ const Members = () => {
 								usersState?.users.length > 0 &&
 								usersState?.users.map((item: any, index: number) => (
 									<div
-										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative'
 										onClick={() => navigate(`/dashboard/member/${index + 1}`)}
 									>
 										<div className='flex flex-[6] items-center cursor-pointer gap-[10px]'>
@@ -190,8 +198,30 @@ const Members = () => {
 											<EllipsisVerticalIcon
 												className='w-6 h-6 mr-[10px]'
 												color='#70897B'
+												onClick={(e) => {
+													e.stopPropagation();
+													setUsersState((prev) => { return {
+														...prev,
+														activeIndex: usersState?.activeIndex === index ? -1 : index
+													}})
+												}}
 											/>
 										</p>
+										{
+											usersState?.activeIndex === index && (
+												<div className="w-[120px] absolute top-[3.5rem] right-0 rounded-[10px] text-[14px] text-[#898579] border shadow-[0px_4px_8px_0px_#0000001A] bg-[#fff] text-center z-[1]">
+													<p className="py-[8px] px-[10px] border-b">
+														View
+													</p>
+													<p className="py-[8px] px-[10px] border-b">
+														Edit
+													</p>
+													<p className="py-[8px] px-[10px]">
+														Suspend
+													</p>
+												</div>
+											)
+										}
 									</div>
 								))}
                                 <PaginationComp />

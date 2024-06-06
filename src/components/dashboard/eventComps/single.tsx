@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../../styles/reusable/index';
 import SideBarWidget from '../../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap, ProgressBar } from './../style';
@@ -8,7 +8,7 @@ import { PageToggleHeader, IconFlex, ButtonFlex } from '../../../styles/reusable
 import * as Icon from 'react-feather';
 import * as IconSax from "iconsax-react";
 import { Button } from '../../../styles/reusable';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { InputWrap, InputField, AuthBacknav } from '../../../styles/authentication/index';
 import EditProfile from './../edit-profile';
 import BottomNavComp from '../../reusable/bottomNav';
@@ -22,17 +22,51 @@ import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { members } from '../members';
 import PaginationComp from '../../reusable/pagination';
+import { GET_SINGLE_EVENT } from '../../../api/getApis';
+import { useMutation } from '@tanstack/react-query';
+import { eventDataProps } from './create';
+import commaNumber from 'comma-number';
+import PageSpinner from '../../reusable/Spinner/Spinner';
+import { getCdnLink } from '../../../utils/imageParser';
+import EmptyState from '../../reusable/emptyState';
+
+interface EventStateProps {
+    data: eventDataProps
+}
 
 const SingleEvent = () => {
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const {id} = useParams();
     const cookieUtils = useCookies();
     const currentUser = useCurrentUser().user;
 
     const [activePage, setActivePage] = useState('Details');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showEdit, setShowEdit] = useState(false);
+
+    const [eventState, setEventState] = useState<EventStateProps>({
+        data: {},
+    });
+    
+      const { mutateAsync, isPending } = useMutation({
+        mutationFn: GET_SINGLE_EVENT,
+        onSuccess: (data) => {
+          setEventState((prev) => {
+            return {
+              ...prev,
+              data: data?.data?.body?.event,
+            };
+          });
+        },
+      });
+    
+      useEffect(() => {
+        if (id){
+            mutateAsync({
+                id,
+            });
+        }
+      }, [id]);
 
     return(
         <>
@@ -44,6 +78,16 @@ const SingleEvent = () => {
                 <DashboardFlex>
                     <SideBarWidget />
                     <DashboardMain>
+                    {
+                        isPending ?
+                        <div className="h-[80vh] flex items-center justify-center">
+                            <PageSpinner
+                                // className="border-[#000]"
+                                size={"lg"}
+                            />
+                        </div>
+                        :
+                        <>
                         <AuthBacknav
                             onClick={() => navigate(-1)}
                         >
@@ -60,7 +104,7 @@ const SingleEvent = () => {
                                 vAlign='center'
                             >
                                 <img 
-                                    src='/images/food1.png'
+                                    src={`${getCdnLink(eventState?.data?.cover?.url, 'event')}`}
                                     alt='User'
                                     className='w-[80px]'
                                 />
@@ -68,7 +112,7 @@ const SingleEvent = () => {
                                     className='w-[80%]'
                                 >
                                     <Typography 
-                                        text={'Karaoke & Games with Alali VI'}
+                                        text={`${eventState?.data?.title}`}
                                         color='#091525'
                                         fontWeight={700}
                                         fontSize='20px'
@@ -76,15 +120,15 @@ const SingleEvent = () => {
                                         margin='0 0 0.4rem 0'
                                     />
                                     <Typography 
-                                        text={'₦10,000.00'}
+                                        text={`₦${commaNumber(Number(eventState?.data?.amount))}`}
                                         color='#091525'
                                         fontWeight={500}
                                         fontSize='16px'
                                         lineHeight='22px'
                                         margin='0 0 0.4rem 0'
                                     />
-                                    <div className="bg-[#FCF9F2] border border-[#EBD7AD] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-auto inline-block">
-                                        Upcoming
+                                    <div className="bg-[#FCF9F2] border border-[#EBD7AD] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-auto inline-block capitalize">
+                                        {`${eventState?.data?.status}`}
                                     </div>
                                 </div>
                             </BoxFlex>
@@ -138,38 +182,38 @@ const SingleEvent = () => {
                                             <div className="grid grid-cols-3 gap-[30px]">
                                                 <div>
                                                     <p className='text-[13px]'>Location</p>
-                                                    <h3 className='text-[15px] font-[600]'>Club Main Hall</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${eventState?.data?.location}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Date</p>
-                                                    <h3 className='text-[15px] font-[600]'>14/06/2024</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${new Date(`${eventState?.data?.time}`).toDateString()}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Time</p>
-                                                    <h3 className='text-[15px] font-[600]'>2:30 PM</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${new Date(`${eventState?.data?.time}`).toLocaleTimeString()}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Attendees</p>
-                                                    <h3 className='text-[15px] font-[600]'>500</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${eventState?.data?.expected_number_of_attendees}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Reminders</p>
-                                                    <h3 className='text-[15px] font-[600]'>2 days to event</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${eventState?.data?.reminder_time_to_event_in_days}`} {Number(eventState?.data?.reminder_time_to_event_in_days) > 1 ? "days" : "day"} to event</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Special Guest(s)</p>
-                                                    <h3 className='text-[15px] font-[600]'>Chief Commander Ebenezer Obey</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${eventState?.data?.special_guests}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Total Payment Collected</p>
-                                                    <h3 className='text-[15px] font-[600]'>₦5,000,000</h3>
+                                                    <h3 className='text-[15px] font-[600]'>---</h3>
                                                 </div>
                                             </div>
                                             <div>
                                                 <p className='text-[13px] mt-[2rem] mb-[0.6rem] font-[500] text-[#898579]'>About Event</p>
-                                                <h3 className='text-[15px] font-[400]'>Karaoke & Games meet-ups connect food tech entrepreneurs, investors, researchers, seasoned executives and managers from producers, retailers and service providers from the most relevant companies and institutions in the agri-food scene. This event will focus on the advantages and challenges of partnering with Big Food companies to propel your growth. Leaders at some of the largest national and international food companies will tell you the secrets and trials of embarking on partnerships with these giants to grow your business.</h3>
+                                                <h3 className='text-[15px] font-[400]'>{`${eventState?.data?.about}`}</h3>
                                             </div>
-                                            <div>
+                                            {/* <div>
                                                 <p className='text-[16px] mt-[2rem] mb-[0.6rem] font-[500] text-[#898579]'>Uploads</p>
                                                 <div className="flex items-center gap-[24px]">
                                                     <div className="flex items-center gap-[10px] bg-[#FCF9F2] border border-[#E1E1E1] rounded-[10px] py-2 px-9 w-[30%]">
@@ -187,15 +231,33 @@ const SingleEvent = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div>
                                                 <p className='text-[16px] mt-[2rem] mb-[0.6rem] font-[500] text-[#898579]'>Cover Image</p>
                                                 <img 
-                                                    src="/images/karaoke.png" 
+                                                    src={`${getCdnLink(eventState?.data?.cover?.url, 'event')}`}
                                                     alt="Event Cover" 
                                                     className="w-[120px] h-[120px]"
                                                 />
                                             </div>
+                                            {
+                                                (eventState?.data?.media && eventState?.data?.media.length > 0) &&
+                                                    <div>
+                                                        <p className='text-[16px] mt-[2rem] mb-[0.6rem] font-[500] text-[#898579]'>Gallery</p>
+                                                        <div className="flex flex-wrap gap-[15px] my-[1.5rem]">
+                                                            {
+                                                                eventState?.data?.media.map((item:any, index:number) => (
+                                                                    <img 
+                                                                        key={index}
+                                                                        src={`${getCdnLink(item?.url, 'event')}`}
+                                                                        alt="Event Cover" 
+                                                                        className="w-[120px] h-[120px]"
+                                                                    />
+                                                                ))
+                                                            }
+                                                        </div>
+                                                    </div>
+                                            }
                                         </DashboardInner>
                                     </>
                                     : null
@@ -210,7 +272,10 @@ const SingleEvent = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <div className="">
+                                            <EmptyState 
+                                                text="No registered attendee yet"
+                                            />
+                                            <div className="hidden">
                                                 {/* Table Header */}
                                                 <div className='flex items-end mt-[0rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
                                                     <p className='flex-[6] text-[14px]'>Member</p>
@@ -262,7 +327,9 @@ const SingleEvent = () => {
                                             </div>
                                         </DashboardInner>
                                     </>
-                            }
+                                }
+                            </>
+                        }
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

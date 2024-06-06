@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line, MainWrap,} from '../../styles/reusable/index';
 import { useCurrentUser } from '../../store/user/useCurrentUser';
 import { useNavigate } from 'react-router-dom';
@@ -12,11 +12,44 @@ import { copyText } from '../../utils/copyText';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import BottomNavComp from '../reusable/bottomNav';
 import { events } from './events';
+import { useMutation } from '@tanstack/react-query';
+import { GET_EVENTS } from '../../api/getApis';
+import EmptyState from '../reusable/emptyState';
+import EventsSkeleton from '../skeletons/events';
+import classNames from 'classnames';
 
 const DashboardIndex = () => {
 
     const navigate = useNavigate();
     const {user} = useCurrentUser();
+
+    const [eventsState, setEventsState] = useState({
+        page: 1,
+        activeIndex: -1,
+        searchQuery: "",
+        events: [],
+        eventsCount: 0,
+    });
+    
+    const { mutateAsync, isPending:gettingEvents } = useMutation({
+        mutationFn: GET_EVENTS,
+        onSuccess: (data) => {
+            setEventsState((prev) => {
+            return {
+                ...prev,
+                events: data?.data?.body?.events,
+                eventsCount: data?.data?.body?.total_count,
+            };
+            });
+        },
+    });
+    
+    useEffect(() => {
+        mutateAsync({
+            offset: 0,
+            status: 'upcoming',
+        });
+    }, []);
 
     return(
         <>
@@ -24,6 +57,12 @@ const DashboardIndex = () => {
                 top='0rem'
                 width='100%'
                 maxWidth='1200px'
+                onClick={() => {
+                    setEventsState((prev) => { return {
+                        ...prev,
+                        activeIndex: -1
+                    }})
+                }}
             >
                 <DashboardFlex>
                     <SideBarWidget />
@@ -71,6 +110,11 @@ const DashboardIndex = () => {
                                 <p className='text-[var(--primary-color)]'>View All</p>
                             </div>
                             <div className="">
+                            {gettingEvents ? (
+                                <div className="px-4">
+                                    <EventsSkeleton />
+                                </div>
+                                ) : eventsState?.events.length > 0 ? (
                                 <div className="">
                                     {/* Table Header */}
                                     <div className='flex items-end mt-[1rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] px-4'>
@@ -81,45 +125,68 @@ const DashboardIndex = () => {
                                         <p className='flex-[2] text-[14px]'>Attendees</p>
                                         <p className='flex-[1] text-[14px]'></p>
                                     </div>
-                                    {events &&
-                                        events.length > 0 &&
-                                        events.map((item: any, index: number) => (
+                                    {eventsState.events &&
+                                        eventsState.events.length > 0 &&
+                                        eventsState.events.map((item: any, index: number) => (
                                             <div
-                                                className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] px-4'
+                                                className={classNames("flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative px-4", index === eventsState.events.length - 1 ? "border-none" : "" )}
+                                                onClick={() => navigate(`/dashboard/event/${item.id}`)}
                                             >
-                                                <div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
+                                                <div className="flex flex-[7] items-center cursor-pointer gap-[10px]">
                                                     <img
-                                                        src={item.image}
-                                                        className="w-[35px] h-[35px]"
-                                                        alt='user'
+                                                    src={item.cover ? item?.cover : "/images/dummy.jpeg"}
+                                                    className="w-[35px] h-[35px] rounded-[6px]"
+                                                    alt="user"
                                                     />
-                                                    <div className='w-[90%]'>
-                                                        <h3 className='font-medium text-[14px] cursor-pointer'>
-                                                            {item.name}
-                                                        </h3>
+                                                    <div className="w-[90%]">
+                                                    <h3 className="font-medium text-[14px] cursor-pointer">
+                                                        {item.title}
+                                                    </h3>
                                                     </div>
                                                 </div>
-                                                <p className='flex-[3] cursor-pointer text-[14px]'>
-                                                    {`${new Date().toDateString()}`}
+                                                <p className="flex-[3] cursor-pointer text-[14px]">
+                                                    {`${new Date(item.time).toDateString()}`}
                                                 </p>
-                                                <p className='flex-[3] cursor-pointer text-[14px]'>
-                                                    {`${new Date().toLocaleTimeString()}`}
+                                                <p className="flex-[3] cursor-pointer text-[14px]">
+                                                    {`${new Date(item.time).toLocaleTimeString()}`}
                                                 </p>
-                                                <p className='flex-[5] cursor-pointer text-[14px]'>
-                                                    {item?.location ? item.location : 'N/A'}
+                                                <p className="flex-[5] cursor-pointer text-[14px]">
+                                                    {item?.location ? item.location : "N/A"}
                                                 </p>
-                                                <p className='flex-[2] cursor-pointer text-[14px] capitalize'>
-                                                    {item.attendees ? item.attendees : "---"}
+                                                <p className="flex-[2] cursor-pointer text-[14px] capitalize">
+                                                    {item.expected_number_of_attendees ? item.expected_number_of_attendees : "---"}
                                                 </p>
-                                                <p className='flex-[1] text-[14px] flex justify-end text-right'>
+                                                <p className="flex-[1] text-[14px] flex justify-end text-right">
                                                     <EllipsisVerticalIcon
-                                                        className='w-6 h-6 mr-[10px]'
-                                                        color='#70897B'
+                                                    className='w-6 h-6 mr-[10px]'
+                                                    color='#70897B'
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setEventsState((prev) => { return {
+                                                        ...prev,
+                                                        activeIndex: eventsState?.activeIndex === index ? -1 : index
+                                                        }})
+                                                    }}
                                                     />
                                                 </p>
+                                                {
+                                                    eventsState?.activeIndex === index && (
+                                                    <div className="w-[120px] absolute top-[3.5rem] right-0 rounded-[10px] text-[14px] text-[#898579] border shadow-[0px_4px_8px_0px_#0000001A] bg-[#fff] text-center z-[1]">
+                                                        <p className="py-[8px] px-[10px] border-b">
+                                                        View
+                                                        </p>
+                                                        <p className="py-[8px] px-[10px] border-b">
+                                                        Edit
+                                                        </p>
+                                                    </div>
+                                                    )
+                                                }
                                             </div>
                                     ))}
                                 </div>
+                                ) : (
+                                    <EmptyState text="There are no upcoming events at the moment" />
+                                  )}
                             </div>
                         </div>
                     </DashboardMain>

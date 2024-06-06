@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { type Dispatch, ChangeEvent, useState, SetStateAction, useEffect } from "react";
 import {
   BoxFlex,
   Line,
@@ -37,6 +37,31 @@ import { clearState } from "../../../store/properties/reducer";
 import { useCurrentUser } from "../../../store/user/useCurrentUser";
 import { removeAfterLogout } from "../../../api/instance";
 import CustomRadio from "../../reusable/customRadio";
+import { NumericFormat } from "react-number-format";
+import classNames from "classnames";
+import { useMutation } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import { CREATE_EVENT } from "../../../api/action";
+import { Spinner } from "../../reusable/spinner";
+
+export interface eventDataProps {
+  title?: string,
+  location?: string,
+  amount?: number,
+  reminder_time_to_event_in_days?: string,
+  expected_number_of_attendees?: string,
+  special_guests?: string,
+  about?: string,
+  date?: string,
+  time?: string,
+  status?: string,
+  cover?: {
+    url: string;
+  },
+  media?: Array<{
+    url: string;
+  }>
+}
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -45,17 +70,101 @@ const CreateEvent = () => {
   const currentUser = useCurrentUser().user;
 
   const [eventType, setEventType] = useState<string | boolean>('');
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [galleryFormDataArray, setGalleryFormDataArray] = useState<FormData[]>([]);
+  const [uploadsFiles, setUploadsFiles] = useState<File[]>([]);
+  const [uploadsFormDataArray, setUploadsFormDataArray] = useState<FormData[]>([]);
+  const [coverFiles, setCoverFiles] = useState<File[]>([]);
+  const [coverFormDataArray, setCoverFormDataArray] = useState<FormData[]>([]);
   const [activePage, setActivePage] = useState("Profile");
   const [showPassword, setShowPassword] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 
-  const logoutUser = async () => {
-    await cookieUtils[2]("userToken", undefined);
-    dispatch(setUser(null));
-    dispatch(clearState());
-    removeAfterLogout();
-    window.location.href = "/login";
+  // Event creation datas
+  const [eventCreationData, setEventCreationData] = useState<eventDataProps>({
+    amount: 0
+  })
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+
+    const {id, value} = e.target;
+
+    setEventCreationData((prev) => {  return {
+      ...prev,
+      [id]: value
+    }})
+  }
+
+   const handleFileChange = (event: ChangeEvent<HTMLInputElement>, files:any, setFiles: Dispatch<SetStateAction<any>>, setFormDataArray: Dispatch<SetStateAction<any>>) => {
+    if (event.target.files) {
+      const selectedFiles = Array.from(event.target.files);
+
+      // Merge new files with existing files
+      const updatedFiles = [...files, ...selectedFiles];
+      setFiles(updatedFiles);
+
+      // Create FormData objects for each file and merge with existing formDataArray
+      
+      const formData = new FormData();
+      const newFormDataArray = selectedFiles.map((file) => {
+        formData.append('fieldname', file.name);
+        formData.append('file', file);
+        return formData;
+      });
+
+      setFormDataArray((prevFormDataArray:any) => [...prevFormDataArray, ...newFormDataArray]);
+    }
   };
+
+  const handleRemoveFile = (index: number, files: any, formDataArray:any, setFiles: Dispatch<SetStateAction<any>>, setFormDataArray: Dispatch<SetStateAction<any>>) => {
+    const updatedFiles = files.filter((_:any, i:number) => i !== index);
+    setFiles(updatedFiles);
+
+    const updatedFormDataArray = formDataArray.filter((_:any, i:number) => i !== index);
+    setFormDataArray(updatedFormDataArray);
+  };
+
+  const {mutateAsync, isPending} = useMutation({
+    mutationFn: CREATE_EVENT,
+    onSuccess: (data) => {
+      enqueueSnackbar({
+        variant: 'success',
+        message: 'Event created successfully!'
+      })
+      navigate("/dashboard/events")
+    }
+  })
+
+  const handleCreate = () => {
+
+    const formData:any = new FormData();
+    if (eventCreationData && Object.keys(eventCreationData).length > 0){
+      Object.entries(eventCreationData).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      formData.delete("time")
+      formData.append("time", `${eventCreationData?.date} ${eventCreationData?.time}`)
+      formData.delete("date")
+
+      galleryFiles.forEach((file) => {
+        formData.append('media', file); // Use the same key for all files
+      });
+
+
+      uploadsFiles.forEach((file) => {
+        formData.append('docs', file); // Use the same key for all files
+      });
+
+      coverFiles.forEach((file) => {
+        formData.append('cover', file); // Use the same key for all files
+      });
+      formData.append('type', `${eventType.toString().replace("_", " ").toLocaleUpperCase()}`); // Use the same key for all files
+    }
+    mutateAsync(formData)
+  }
+
+
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <>
@@ -104,35 +213,71 @@ const CreateEvent = () => {
                     autoComplete="off"
                     type="text"
                     required
+                    id='title'
+                    onChange={handleChange}
                   />
                 </InputField>
                 <InputField width="48%">
                   <p>Location</p>
-                  <select name="" id="">
-                    <option value="">Select Location</option>
-                  </select>
+                  <input
+                    placeholder="Enter Location"
+                    autoComplete="off"
+                    type="text"
+                    required
+                    id='location'
+                    onChange={handleChange}
+                  />
                 </InputField>
                 <InputField width="48%">
                   <p>Date</p>
-                  <input autoComplete="off" type="date" required />
+                  <input 
+                    autoComplete="off" 
+                    type="date" 
+                    required 
+                    id='date'
+                    onChange={handleChange}
+                    min={today}
+                  />
                 </InputField>
                 <InputField width="48%">
                   <p>Time</p>
-                  <input autoComplete="off" type="time" required />
+                  <input 
+                    autoComplete="off" 
+                    type="time" 
+                    required 
+                    id='time'
+                    onChange={handleChange}
+                  />
                 </InputField>
                 <InputField width="48%">
-                  <p>Amount</p>
-                  <input
+                  <p>Amount(&#8358;)</p>
+                  <NumericFormat
                     placeholder="Enter Amount"
                     autoComplete="off"
-                    type="number"
+                    type="tel"
+                    value={eventCreationData?.amount}
                     required
+                    id='amount'
+                    onChange={(e) => setEventCreationData((prev) => { return {
+                      ...prev,
+                      amount: Number(e.target.value.replaceAll(",", "")),
+                    }})}
+                    thousandSeparator
                   />
                 </InputField>
                 <InputField width="48%">
                   <p>Set Reminder</p>
-                  <select name="" id="">
+                  <select 
+                    name="" 
+                    id='reminder_time_to_event_in_days'
+                    onChange={handleChange}
+                  >
                     <option value="">Select</option>
+                    {
+                      [1, 2, 3, 4, 5].map((item) => (
+                        <option value={item}>{item} {item > 1 ? "days" : "day"} to event</option>
+                      ))
+                    }
                   </select>
                 </InputField>
                 <InputField width="48%">
@@ -141,7 +286,9 @@ const CreateEvent = () => {
                     autoComplete="off"
                     type="number"
                     required
-                    placeholder="Enter Number"
+                    placeholder="Enter Number of expected attendees"
+                    id='expected_number_of_attendees'
+                    onChange={handleChange}
                   />
                 </InputField>
                 <InputField width="48%">
@@ -150,7 +297,8 @@ const CreateEvent = () => {
                     placeholder="Enter Special Guest"
                     autoComplete="off"
                     type="text"
-                    required
+                    id='special_guests'
+                    onChange={handleChange}
                   />
                 </InputField>
                 <InputField width="100%">
@@ -160,23 +308,110 @@ const CreateEvent = () => {
                     autoComplete="off"
                     required
                     className="!h-[10rem]"
+                    id='about'
+                    onChange={handleChange}
+                    maxLength={500}
                   ></textarea>
                 </InputField>
               </InputWrap>
               <div className="border-b pt-[2rem] pb-[0.5rem]">
                 <div className="flex items-center justify-between">
                   <div className="w-[40%]">
+                    <h3 className="font-[500] text-[#898579]">Add Event Cover Image</h3>
+                  </div>
+                  <input 
+                    className="hidden" 
+                    id="cover_images" 
+                    type="file" 
+                    multiple={false} 
+                    onChange={(e) => handleFileChange(
+                      e,
+                      coverFiles,
+                      setCoverFiles,
+                      setCoverFormDataArray
+                    )} 
+                  />
+                  <label htmlFor={coverFiles && coverFiles.length > 0 ? "" : "cover_images"}>
+                    <div
+                      className={classNames("cursor-pointer bg-[#F3F1EF] text-[#23211D] rounded-[8px] py-3 px-5 font-[500]", coverFiles && coverFiles.length > 0 ? "opacity-[0.4]" :"")}
+                    >
+                      Add
+                    </div>
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-[15px] my-[1.5rem]">
+                  {
+                    (coverFiles && coverFiles.length > 0) && 
+                      coverFiles.map((file, index) => (
+                        <div 
+                          key={index}
+                          className="relative"
+                        >
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt=""
+                            className="w-[100px] h-[100px] rounded-[8px] object-cover" 
+                            onClick={() => handleRemoveFile(
+                              index,
+                              coverFiles,
+                              coverFormDataArray,
+                              setCoverFiles,
+                              setCoverFormDataArray
+                            )}
+                          />
+                        </div>
+                      ))
+                  }
+                </div>
+              </div>
+              <div className="border-b pt-[2rem] pb-[0.5rem]">
+                <div className="flex items-center justify-between">
+                  <div className="w-[40%]">
                     <h3 className="font-[500] text-[#898579]">Uploads</h3>
                   </div>
-                  <Button
-                    bg="#F3F1EF"
-                    color="#23211D"
-                    type="button"
-                    width="auto"
-                    top="0"
-                  >
-                    Add
-                  </Button>
+                  <input 
+                    className="hidden" 
+                    id="uploads_images" 
+                    type="file" 
+                    multiple 
+                    onChange={(e) => handleFileChange(
+                      e,
+                      uploadsFiles,
+                      setUploadsFiles,
+                      setUploadsFormDataArray
+                    )} 
+                  />
+                  <label htmlFor="uploads_images">
+                    <div
+                      className="cursor-pointer bg-[#F3F1EF] text-[#23211D] rounded-[8px] py-3 px-5 font-[500]"
+                    >
+                      Add
+                    </div>
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-[15px] my-[1.5rem]">
+                  {
+                    (uploadsFiles && uploadsFiles.length > 0) && 
+                      uploadsFiles.map((file, index) => (
+                        <div 
+                          key={index}
+                          className="relative"
+                        >
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt=""
+                            className="w-[100px] h-[100px] rounded-[8px] object-cover" 
+                            onClick={() => handleRemoveFile(
+                              index,
+                              uploadsFiles,
+                              uploadsFormDataArray,
+                              setUploadsFiles,
+                              setUploadsFormDataArray
+                            )}
+                          />
+                        </div>
+                      ))
+                  }
                 </div>
               </div>
               <div className="border-b pt-[2rem] pb-[0.5rem]">
@@ -184,15 +419,49 @@ const CreateEvent = () => {
                   <div className="w-[40%]">
                     <h3 className="font-[500] text-[#898579]">Gallery</h3>
                   </div>
-                  <Button
-                    bg="#F3F1EF"
-                    color="#23211D"
-                    type="button"
-                    width="auto"
-                    top="0"
-                  >
-                    Add
-                  </Button>
+                  <input 
+                    className="hidden" 
+                    id="gallery_images" 
+                    type="file" 
+                    multiple 
+                    onChange={(e) => handleFileChange(
+                      e,
+                      galleryFiles,
+                      setGalleryFiles,
+                      setGalleryFormDataArray
+                    )} 
+                  />
+                  <label htmlFor="gallery_images">
+                    <div
+                      className="cursor-pointer bg-[#F3F1EF] text-[#23211D] rounded-[8px] py-3 px-5 font-[500]"
+                    >
+                      Add
+                    </div>
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-[15px] my-[1.5rem]">
+                  {
+                    (galleryFiles && galleryFiles.length > 0) && 
+                      galleryFiles.map((file, index) => (
+                        <div 
+                          key={index}
+                          className="relative"
+                        >
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt=""
+                            className="w-[100px] h-[100px] rounded-[8px] object-cover" 
+                            onClick={() => handleRemoveFile(
+                              index,
+                              galleryFiles,
+                              galleryFormDataArray,
+                              setGalleryFiles,
+                              setGalleryFormDataArray
+                            )}
+                          />
+                        </div>
+                      ))
+                  }
                 </div>
               </div>
               <Button
@@ -201,8 +470,21 @@ const CreateEvent = () => {
                 type="button"
                 width="auto"
                 top="2rem"
+                onClick={() => handleCreate()}
+                disabled={
+                  isPending || 
+                  !eventCreationData?.title ||
+                  !eventCreationData?.about || 
+                  !eventCreationData?.location ||
+                  !eventCreationData?.amount ||
+                  !eventCreationData?.date ||
+                  !eventCreationData?.time ||
+                  !eventCreationData?.expected_number_of_attendees ||
+                  !eventCreationData?.reminder_time_to_event_in_days ||
+                  coverFiles.length < 1
+                }
               >
-                Create Event
+                {isPending ? <Spinner /> : "Create Event"}
               </Button>
             </div>
           </DashboardMain>

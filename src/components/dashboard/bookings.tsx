@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line, MainWrap, PageToggleText,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
@@ -14,12 +14,54 @@ import { LeftCont } from '../../styles/reusable/header';
 import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import BookingsInfo from './modals/booking';
+import { GET_BOOKINGS } from '../../api/getApis';
+import { useMutation } from '@tanstack/react-query';
+import BookingsSkeleton from '../skeletons/bookings';
+import EmptyState from '../reusable/emptyState';
 
 const Bookings = () => {
     
     const [activePage, setActivePage] = useState('Upcoming');
     const [openBookingInfo, setOpenBookingInfo] = useState(false)
+    const [debouncedValue, setDebouncedValue] = useState<string>("");
 
+    const [bookingsState, setBookingsState] = useState({
+      page: 1,
+      activeIndex: -1,
+      searchQuery: "",
+      bookings: [],
+      bookingsCount: 0,
+    });
+  
+    const { mutateAsync, isPending } = useMutation({
+      mutationFn: GET_BOOKINGS,
+      onSuccess: (data) => {
+        setBookingsState((prev) => {
+          return {
+            ...prev,
+            bookings: data?.data?.body?.bookings,
+            bookingsCount: data?.data?.body?.total_count,
+          };
+        });
+      },
+    });
+  
+    useEffect(() => {
+      mutateAsync({
+        offset: bookingsState?.page - 1,
+        search: debouncedValue || undefined,
+        status: activePage.toLowerCase(),
+      });
+    }, [activePage, debouncedValue]);
+  
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setBookingsState((prev) => {
+        return {
+          ...prev,
+          searchQuery: e.target.value,
+        };
+      });
+    };
     return(
         <>
             <BookingsInfo 
@@ -36,7 +78,11 @@ const Bookings = () => {
                     <DashboardMain>
                         <DashboardHeader>
                             <Typography 
-                                text='Bookings (50)'
+                                text={`Bookings ${
+                                    bookingsState?.bookingsCount
+                                      ? `(${bookingsState?.bookingsCount})`
+                                      : ""
+                                  }`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='24px'
@@ -49,6 +95,13 @@ const Bookings = () => {
                                     </i>
                                     <input 
                                         placeholder='Search'
+                                        value={bookingsState?.searchQuery}
+                                        onChange={handleChange}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter'){
+                                                setDebouncedValue(e.currentTarget?.value);
+                                            }
+                                        }}
                                     />
                                 </SearchInput>
                             </div>
@@ -78,6 +131,9 @@ const Bookings = () => {
                                 />
                             </div>
                         </div>
+                        {isPending ? (
+                        <BookingsSkeleton />
+                        ) : bookingsState?.bookings.length > 0 ? (
                         <div className="mt-5">
                             {/* Table Header */}
 							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
@@ -121,7 +177,10 @@ const Bookings = () => {
 									</div>
 								))}
                                 <PaginationComp />
-                        </div>
+                                </div>
+                            ) : (
+                            <EmptyState text="There are no bookings at the moment" />
+                            )}
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

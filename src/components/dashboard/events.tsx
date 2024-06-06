@@ -32,6 +32,7 @@ const Events = () => {
 
   const [eventsState, setEventsState] = useState({
     page: 1,
+		activeIndex: -1,
     searchQuery: "",
     events: [],
     eventsCount: 0,
@@ -70,7 +71,14 @@ const Events = () => {
   return (
     <>
       <MainWrap top="0rem" width="100%" maxWidth="1200px">
-        <DashboardFlex>
+        <DashboardFlex
+          onClick={() => {
+						setEventsState((prev) => { return {
+							...prev,
+							activeIndex: -1
+						}})
+					}}
+        >
           <SideBarWidget />
           <DashboardMain>
             <DashboardHeader>
@@ -146,43 +154,62 @@ const Events = () => {
                   <p className="flex-[2] text-[14px]">Attendees</p>
                   <p className="flex-[1] text-[14px]"></p>
                 </div>
-                {events &&
-                  events.length > 0 &&
-                  events.map((item: any, index: number) => (
+                {eventsState.events &&
+                  eventsState.events.length > 0 &&
+                  eventsState.events.map((item: any, index: number) => (
                     <div
-                      className="flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]"
-                      onClick={() => navigate(`/dashboard/event/${index + 1}`)}
+                      className="flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative"
+                      onClick={() => navigate(`/dashboard/event/${item.id}`)}
                     >
                       <div className="flex flex-[7] items-center cursor-pointer gap-[10px]">
                         <img
-                          src={item.image}
-                          className="w-[35px] h-[35px]"
+                          src={item.cover ? item?.cover : "/images/dummy.jpeg"}
+                          className="w-[35px] h-[35px] rounded-[6px]"
                           alt="user"
                         />
                         <div className="w-[90%]">
                           <h3 className="font-medium text-[14px] cursor-pointer">
-                            {item.name}
+                            {item.title}
                           </h3>
                         </div>
                       </div>
                       <p className="flex-[3] cursor-pointer text-[14px]">
-                        {`${new Date().toDateString()}`}
+                        {`${new Date(item.time).toDateString()}`}
                       </p>
                       <p className="flex-[3] cursor-pointer text-[14px]">
-                        {`${new Date().toLocaleTimeString()}`}
+                        {`${new Date(item.time).toLocaleTimeString()}`}
                       </p>
                       <p className="flex-[5] cursor-pointer text-[14px]">
                         {item?.location ? item.location : "N/A"}
                       </p>
                       <p className="flex-[2] cursor-pointer text-[14px] capitalize">
-                        {item.attendees ? item.attendees : "---"}
+                        {item.expected_number_of_attendees ? item.expected_number_of_attendees : "---"}
                       </p>
                       <p className="flex-[1] text-[14px] flex justify-end text-right">
                         <EllipsisVerticalIcon
-                          className="w-6 h-6 mr-[10px]"
-                          color="#70897B"
+                          className='w-6 h-6 mr-[10px]'
+                          color='#70897B'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEventsState((prev) => { return {
+                              ...prev,
+                              activeIndex: eventsState?.activeIndex === index ? -1 : index
+                            }})
+                          }}
                         />
                       </p>
+                      {
+                        eventsState?.activeIndex === index && (
+                          <div className="w-[120px] absolute top-[3.5rem] right-0 rounded-[10px] text-[14px] text-[#898579] border shadow-[0px_4px_8px_0px_#0000001A] bg-[#fff] text-center z-[1]">
+                            <p className="py-[8px] px-[10px] border-b">
+                              View
+                            </p>
+                            <p className="py-[8px] px-[10px] border-b">
+                              Edit
+                            </p>
+                          </div>
+                        )
+                      }
                     </div>
                   ))}
                 <PaginationComp />
