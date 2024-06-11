@@ -53,6 +53,16 @@ export const GET_TRANSACTIONS = async (data: {
     });
 }
 
+export const GET_SINGLE_TRANSACTIONS = async (data: {
+    transaction_id: string | number
+}) => {
+    return tmcApi.get(`/wallet/get-transaction`, {
+        params: {
+            ...data,
+        }
+    });
+}
+
 export const GET_BOOKINGS = async (data: {
     search?: string;
     status?: string;
@@ -63,6 +73,52 @@ export const GET_BOOKINGS = async (data: {
         params: {
             ...data,
             limit: 20
+        }
+    });
+}
+
+export const GET_INVENTORIES = async (data: {
+    search?: string;
+    status?: string;
+    offset?: number
+}) => {
+    return tmcApi.get(`/inventory/filter-products`, {
+        params: {
+            ...data,
+            limit: 20
+        }
+    });
+}
+
+export const GET_SINGLE_INVENTORY = async (data: {
+    id: string | number
+}) => {
+    return tmcApi.get(`/inventory/get-product`, {
+        params: {
+            ...data,
+        }
+    });
+}
+
+export const GET_ORDERS = async (data: {
+    search?: string;
+    status?: string;
+    offset?: number
+}) => {
+    return tmcApi.get(`/order/filter-order`, {
+        params: {
+            ...data,
+            limit: 20
+        }
+    });
+}
+
+export const GET_SINGLE_ORDER = async (data: {
+    id: string | number
+}) => {
+    return tmcApi.get(`/order/get-order`, {
+        params: {
+            ...data,
         }
     });
 }

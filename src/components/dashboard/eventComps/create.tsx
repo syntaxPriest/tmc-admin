@@ -65,9 +65,6 @@ export interface eventDataProps {
 
 const CreateEvent = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const cookieUtils = useCookies();
-  const currentUser = useCurrentUser().user;
 
   const [eventType, setEventType] = useState<string | boolean>('');
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
@@ -76,9 +73,6 @@ const CreateEvent = () => {
   const [uploadsFormDataArray, setUploadsFormDataArray] = useState<FormData[]>([]);
   const [coverFiles, setCoverFiles] = useState<File[]>([]);
   const [coverFormDataArray, setCoverFormDataArray] = useState<FormData[]>([]);
-  const [activePage, setActivePage] = useState("Profile");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
 
   // Event creation datas
   const [eventCreationData, setEventCreationData] = useState<eventDataProps>({
@@ -136,7 +130,6 @@ const CreateEvent = () => {
   })
 
   const handleCreate = () => {
-
     const formData:any = new FormData();
     if (eventCreationData && Object.keys(eventCreationData).length > 0){
       Object.entries(eventCreationData).forEach(([key, value]) => {

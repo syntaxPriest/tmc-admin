@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../../styles/reusable/index';
 import SideBarWidget from '../../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap, ProgressBar } from './../style';
@@ -8,7 +8,7 @@ import { PageToggleHeader, IconFlex, ButtonFlex } from '../../../styles/reusable
 import * as Icon from 'react-feather';
 import * as IconSax from "iconsax-react";
 import { Button } from '../../../styles/reusable';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { InputWrap, InputField, AuthBacknav } from '../../../styles/authentication/index';
 import EditProfile from './../edit-profile';
 import BottomNavComp from '../../reusable/bottomNav';
@@ -22,17 +22,70 @@ import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { members } from '../members';
 import PaginationComp from '../../reusable/pagination';
+import { GET_SINGLE_TRANSACTIONS } from '../../../api/getApis';
+import { useMutation } from '@tanstack/react-query';
+import PageSpinner from '../../reusable/Spinner/Spinner';
+import commaNumber from 'comma-number';
+import { colorEncoder } from '../../../utils/colorHandle';
+
+export interface User {
+    id: number;
+    first_name: string;
+    last_name: string;
+    middle_name: string;
+    // Include other fields if needed
+}
+  
+interface Transaction {
+    amount: string;
+    created_at: string;
+    deleted_at: string | null;
+    desc: string;
+    id: number;
+    order_id: number;
+    provider: string | null;
+    ref: string | null;
+    status: string;
+    type: string;
+    updated_at: string;
+    user: User;
+    user_id: number;
+    wallet_id: number;
+}
+
+interface TransactionsStateProps {
+    data: Transaction
+}
 
 const TransactionInfo = () => {
     
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const cookieUtils = useCookies();
-    const currentUser = useCurrentUser().user;
+    const {id} = useParams();
 
-    const [activePage, setActivePage] = useState('Details');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showEdit, setShowEdit] = useState(false);
+    const [activePage, setActivePage] = useState('Details');;
+
+    const [transactionsState, setTransactionsState] = useState<TransactionsStateProps>();
+    
+    const { mutateAsync, isPending } = useMutation({
+        mutationFn: GET_SINGLE_TRANSACTIONS
+        ,
+        onSuccess: (data) => {
+            setTransactionsState((prev) => {
+            return {
+                ...prev,
+                data: data?.data?.body?.transaction,
+            };
+            });
+        },
+    });
+    
+      useEffect(() => {
+        if (id){
+            mutateAsync({
+                transaction_id: id,
+            });
+        }
+      }, [id]);
 
     return(
         <>
@@ -44,6 +97,16 @@ const TransactionInfo = () => {
                 <DashboardFlex>
                     <SideBarWidget />
                     <DashboardMain>
+                    {
+                        isPending ?
+                        <div className="h-[80vh] flex items-center justify-center">
+                            <PageSpinner
+                                // className="border-[#000]"
+                                size={"lg"}
+                            />
+                        </div>
+                        :
+                        <>
                         <AuthBacknav
                             onClick={() => navigate(-1)}
                         >
@@ -63,7 +126,7 @@ const TransactionInfo = () => {
                                     className='w-[80%]'
                                 >
                                     <Typography 
-                                        text={'₦8,000'}
+                                        text={commaNumber(`${transactionsState?.data?.amount}`)}
                                         color='#091525'
                                         fontWeight={700}
                                         fontSize='20px'
@@ -71,7 +134,7 @@ const TransactionInfo = () => {
                                         margin='0 0 0.4rem 0'
                                     />
                                     <Typography 
-                                        text={'On May 25, 2024, 09:10'}
+                                        text={`${new Date(`${transactionsState?.data?.created_at}`).toUTCString()}`}
                                         color='#091525'
                                         fontWeight={500}
                                         fontSize='14px'
@@ -81,8 +144,8 @@ const TransactionInfo = () => {
                                 </div>
                             </BoxFlex>
                             <div className="flex gap-[10px]">
-                                <div className="bg-[#FEF3F2] border border-[#FECDCA] text-[11px] text-[#B42318] py-[4px] px-[12px] rounded-[300px] text-center w-auto inline-block mt-3">
-                                    Debit
+                                <div className={`bg-[${colorEncoder(`${transactionsState?.data?.type}`)?.bg}] border border-[${colorEncoder(`${transactionsState?.data?.type}`)?.border}] py-[6px] px-[10px] rounded-[100px] text-center inline-block capitalize text-[14px] text-[${colorEncoder(`${transactionsState?.data?.type}`)?.color}] font-[500] mt-3`}>
+                                    {transactionsState?.data?.type}
                                 </div>
                             </div>
                         </div>
@@ -99,38 +162,35 @@ const TransactionInfo = () => {
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Date</p>
-                                                    <h3 className='text-[15px] font-[600]'>May 25, 2024, 09:10</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${new Date(`${transactionsState?.data?.created_at}`).toUTCString()}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Transaction Reference</p>
-                                                    <h3 className='text-[15px] font-[600]'>QSH29345495b343f34c</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.ref ? transactionsState?.data?.ref : "---"}`}</h3>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Transaction Narration</p>
-                                                    <h3 className='text-[15px] font-[600]'>Spaces-Booking-Fee</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.desc ? transactionsState?.data?.desc : "---"}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Bar Account ID</p>
-                                                    <h3 className='text-[15px] font-[600]'>203293</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.wallet_id ? transactionsState?.data?.wallet_id : "---"}`}</h3>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Member</p>
-                                                    <h3 className='text-[15px] font-[600]'>Olanrewaju Oredipe</h3>
-                                                </div>
-                                                <div>
-                                                    <p className='text-[13px]'>Bar Account ID</p>
-                                                    <h3 className='text-[15px] font-[600]'>203293</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.user?.first_name} ${transactionsState?.data?.user?.last_name}`}</h3>
                                                 </div>
                                             </div>   
                                         </DashboardInner>
                                     </>
                                     : null
                             }
-                            
+                                </>
+                        }
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

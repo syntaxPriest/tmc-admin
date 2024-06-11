@@ -17,7 +17,6 @@ import CalculatorPage from './pages/search/calculatorPage';
 import PaymentAccInfoPage from './pages/search/paymentAccPage';
 import ContributionSuccess from './components/search/contributionSuccess';
 import DashboardIndexPage from './pages/dashboard';
-import DashboardSingleProperty from './components/dashboard/single';
 import DashboardSavedProperties from './components/dashboard/saved';
 import DashboardWallet from './components/dashboard/wallet';
 import DashboardProfile from './components/dashboard/settings';

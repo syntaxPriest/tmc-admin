@@ -62,6 +62,22 @@ input, select{
   outline:none;
 }
 
+button:disabled {
+  background-color: #F3F1EF;
+  color: #D4CEBF;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Optional: Disabled button with specific styles */
+button:disabled.custom-disabled {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  color: #D4CEBF;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
 @media (max-width:728px){
   input{
     font-size: 16px;
@@ -192,4 +208,48 @@ input[type=radio]{
     background: grey;
     display:none;
   }
+}
+
+/* Checkbox style */
+
+/* .input[type='checkbox'] {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #8B6C23;
+  border-radius: 3px;
+  position: relative;
+  transition: background-color 0.3s, border-color 0.3s;
+} */
+
+/* Checkbox checked state */
+
+input[type=radio], input[type=checkbox]{
+  accent-color: #8B6C23; 
+}
+
+input[type='checkbox']:checked {
+  background-color: #8B6C23;
+  border-color: #8B6C23;
+}
+
+input[type='checkbox']:checked + input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Optional: Hover state */
+input[type='checkbox']:hover {
+  border-color: #0056b3;
+}
+
+input[type='checkbox']:hover input[type='checkbox']:checked + input[type='checkbox'] {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }

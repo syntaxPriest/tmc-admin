@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line, MainWrap, PageToggleText,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
@@ -15,18 +15,70 @@ import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
 import AddInventoryItem from './modals/addInventoryItem';
+import { useMutation } from '@tanstack/react-query';
+import { GET_INVENTORIES } from '../../api/getApis';
+import EmptyState from '../reusable/emptyState';
+import InventorySkeleton from '../skeletons/inventory';
+import classNames from 'classnames';
+import { colorEncoder } from '../../utils/colorHandle';
 
 const Inventories = () => {
     
     const navigate = useNavigate();
     const [openAddItem, setOpenAddItem] = useState(false);
     const [activePage, setActivePage] = useState('All');
+    const [debouncedValue, setDebouncedValue] = useState<string>("");
 
+    const [inventoryState, setInventoryState] = useState({
+      page: 1,
+      activeIndex: -1,
+      searchQuery: "",
+      inventory: [],
+      inventoryCount: 0,
+    });
+  
+    const { mutateAsync, isPending } = useMutation({
+      mutationFn: GET_INVENTORIES,
+      onSuccess: (data) => {
+        setInventoryState((prev) => {
+          return {
+            ...prev,
+            inventory: data?.data?.body?.products,
+            inventoryCount: data?.data?.body?.total_count,
+          };
+        });
+      },
+    });
+  
+    useEffect(() => {
+      mutateAsync({
+        offset: inventoryState?.page - 1,
+        search: debouncedValue || undefined,
+        status:  activePage !== 'All' ? activePage.toLowerCase().replaceAll(" ", "_") : undefined,
+      });
+    }, [activePage, debouncedValue]);
+  
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInventoryState((prev) => {
+        return {
+          ...prev,
+          searchQuery: e.target.value,
+        };
+      });
+    };
+
+    const triggerReload = () => {
+        mutateAsync({
+            offset: 0,
+        }); 
+    }
+  
     return(
         <>
             <AddInventoryItem 
                 openToggle={openAddItem}
                 closeFunc={() => setOpenAddItem(false)}
+                triggerReload={triggerReload}
             />
             <MainWrap
                 top='0rem'
@@ -38,7 +90,11 @@ const Inventories = () => {
                     <DashboardMain>
                         <DashboardHeader>
                             <Typography 
-                                text='Inventory (50)'
+                                text={`Inventories ${
+                                    inventoryState?.inventoryCount
+                                      ? `(${inventoryState?.inventoryCount})`
+                                      : ""
+                                  }`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='24px'
@@ -51,6 +107,13 @@ const Inventories = () => {
                                     </i>
                                     <input 
                                         placeholder='Search'
+                                        value={inventoryState?.searchQuery}
+                                        onChange={handleChange}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter'){
+                                                setDebouncedValue(e.currentTarget?.value);
+                                            }
+                                        }}
                                     />
                                 </SearchInput>
                                 <Button 
@@ -87,6 +150,9 @@ const Inventories = () => {
                                 </select>
                             </div>
                         </div>
+                        {isPending ? (
+                        <InventorySkeleton />
+                        ) : inventoryState?.inventory.length > 0 ? (
                         <div className="mt-5">
                             {/* Table Header */}
 							<div className='flex items-center mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
@@ -104,12 +170,12 @@ const Inventories = () => {
 								<p className='flex-[3] text-[14px]'>Price</p>
                                 <p className='flex-[3] text-[14px]'>Status</p>
 							</div>
-                            {members &&
-								members.length > 0 &&
-								members.map((item: any, index: number) => (
+                            {inventoryState?.inventory &&
+								inventoryState?.inventory.length > 0 &&
+								inventoryState?.inventory.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
-                                        onClick={() => navigate(`/dashboard/inventory/${index + 1}`)}
+                                        onClick={() => navigate(`/dashboard/inventory/${item.id}`)}
 									>
                                         <div className='flex-[1]'>
                                             <input 
@@ -124,16 +190,16 @@ const Inventories = () => {
 												alt='user'
 											/>
 											<div className='w-[90%]'>
-												<h3 className='font-medium text-[14px] ellipse cursor-pointer'>
-													{item.name}
+												<h3 className='font-medium text-[14px] ellipse max-w-[180px] cursor-pointer'>
+													{item.title}
 												</h3>
-												<p className='font-light cursor-pointer ellipse text-[12px] text-[#70897B]'>
-													{item.description ? item.description : "N/A"}
+												<p className='font-light cursor-pointer ellipse text-[12px] text-[#70897B] max-w-[180px]'>
+													{item.desc ? item.desc : "N/A"}
 												</p>
 											</div>
 										</div>
 										<p className='flex-[2] cursor-pointer text-[14px]'>
-											{item.sku}
+											{item.product_id}
 										</p>
 										<div className='flex-[3] cursor-pointer text-[12px]'>
 											<p className="border border-[#d0d5dd] shadow-[0px_1px_2px_0px_#1018280D] py-[4px] px-[10px] rounded-[6px] text-center max-w-[80%]">
@@ -141,23 +207,26 @@ const Inventories = () => {
                                             </p>
 										</div>
 										<p className='flex-[2] cursor-pointer text-[14px]'>
-											{item?.qty ? item.qty : 'N/A'}
+											{item?.quantity ? item.quantity : 'N/A'}
 										</p>
                                         <p className='flex-[2] cursor-pointer font-semibold text-[14px]'>
-											{item?.sold ? item.sold : 'N/A'}
+											{item?.sold ? item.sold : '---'}
 										</p>
 										<p className='flex-[3] text-[12px] font-semibold cursor-pointer flex text-center'>
                                             {item?.amount ? `₦${commaNumber(item.amount)}` : 'N/A'}
 										</p>
                                         <div className='flex-[3] cursor-pointer text-[11px]'>
-											<p className="border border-[#FECDCA] bg-[#FEF3F2] py-[6px] px-[10px] rounded-[100px] text-center max-w-[100%] capitalize text-[#B42318]">
+											<p className={`bg-[${colorEncoder(item.status)?.bg}] border border-[${colorEncoder(item.status)?.border}] py-[6px] px-[10px] rounded-[100px] text-center max-w-[100%] capitalize text-[${colorEncoder(item.status)?.color}] font-[700]`}>
                                                 {item.status?.replaceAll("_", " ")}
                                             </p>
 										</div>
 									</div>
 								))}
                                 <PaginationComp />
-                        </div>
+                            </div>
+                        ) : (
+                            <EmptyState text="There are no inventories at the moment" />
+                        )}
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

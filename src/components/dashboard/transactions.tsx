@@ -18,6 +18,7 @@ import { GET_TRANSACTIONS } from '../../api/getApis';
 import { useMutation } from '@tanstack/react-query';
 import TransactionsSkeleton from '../skeletons/transactions';
 import EmptyState from '../reusable/emptyState';
+import { colorEncoder } from '../../utils/colorHandle';
 
 const Transactions = () => {
     
@@ -139,39 +140,39 @@ const Transactions = () => {
 								<p className='flex-[6] text-[14px]'>Member</p>
                                 <p className='flex-[3] text-[14px]'>Account ID</p>
 								<p className='flex-[3] text-[14px]'>Price</p>
-                                <p className='flex-[3] text-[14px]'>Status</p>
+                                <p className='flex-[3] text-[14px]'>Type</p>
 							</div>
                             {transactionsState.transactions &&
 								transactionsState.transactions.length > 0 &&
 								transactionsState.transactions.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
-                                        onClick={() => navigate(`/dashboard/transaction/${index + 1}`)}
+                                        onClick={() => navigate(`/dashboard/transaction/${item.id}`)}
                                     >
 										<div className='flex flex-[4] items-center cursor-pointer gap-[10px]'>
 											<div className='w-[90%]'>
 												<p className='cursor-pointer ellipse text-[14px]'>
-                                                    {`${new Date().toDateString()}`}
+                                                    {`${new Date(item.created_at).toDateString()}`}
 												</p>
 											</div>
 										</div>
-										<p className='flex-[3] cursor-pointer text-[14px]'>
-											{item.reference}
+										<p className='flex-[3] cursor-pointer text-[14px] ellipse'>
+                                            {item.ref ? item.ref : "---"}
 										</p>
 										<div className='flex-[6] font-semibold cursor-pointer text-[14px]'>
 											<p className="">
-                                                {item.member}
+                                                {item?.user?.first_name} {item?.user?.last_name}
                                             </p>
 										</div>
                                         <p className='flex-[3] cursor-pointer text-[14px]'>
-											{item?.accountId ? item.accountId : 'N/A'}
+											{item?.wallet_id ? item.wallet_id : 'N/A'}
 										</p>
 										<p className='flex-[3] text-[12px] font-semibold cursor-pointer flex text-center'>
                                             {item?.amount ? `₦${commaNumber(item.amount)}` : 'N/A'}
 										</p>
                                         <div className='flex-[3] cursor-pointer text-[11px]'>
-											<p className="border border-[#FECDCA] bg-[#FEF3F2] py-[6px] px-[10px] rounded-[100px] text-center max-w-[55px] capitalize text-[#B42318]">
-                                                {item.status?.replaceAll("_", " ")}
+											<p className={`bg-[${colorEncoder(item.type)?.bg}] border border-[${colorEncoder(item.type)?.border}] py-[6px] px-[10px] rounded-[100px] text-center inline-block capitalize text-[${colorEncoder(item.type)?.color}] font-[500]`}>
+                                                {item.type?.replaceAll("_", " ")}
                                             </p>
 										</div>
 									</div>

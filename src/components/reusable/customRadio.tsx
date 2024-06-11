@@ -25,7 +25,7 @@ const CustomRadio = ({id, width, name, img, labelText, activeValue, setActiveVal
                         className='py-3 px-5 rounded-[8px]'
                     >
                         <div className='flex items-center justify-between'>
-                            <div className='w-[80%] flex items-center gap-[6px]'>
+                            <div className='w-[90%] flex items-center gap-[6px]'>
                                 {
                                     img &&
                                     <img 
@@ -34,7 +34,7 @@ const CustomRadio = ({id, width, name, img, labelText, activeValue, setActiveVal
                                         className="h-[25px]"
                                     />
                                 }
-                                <p className='w-[80%]'>{labelText}</p>
+                                <p className='w-[90%] text-[14px]'>{labelText}</p>
                             </div>
                             <input 
                                 name={name} 

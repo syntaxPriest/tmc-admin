@@ -16,6 +16,7 @@ export const DashboardMain = styled.div`
     left: 1.9%;
     top: 0rem;
     padding: 0 24px 32px 24px;
+    margin-top: 24px;
 
     @media (max-width: 728px){
         top:0;

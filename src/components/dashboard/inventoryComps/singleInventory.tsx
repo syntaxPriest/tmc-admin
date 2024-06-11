@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../../styles/reusable/index';
 import SideBarWidget from '../../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap, ProgressBar } from './../style';
@@ -8,7 +8,7 @@ import { PageToggleHeader, IconFlex, ButtonFlex } from '../../../styles/reusable
 import * as Icon from 'react-feather';
 import * as IconSax from "iconsax-react";
 import { Button } from '../../../styles/reusable';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { InputWrap, InputField, AuthBacknav } from '../../../styles/authentication/index';
 import EditProfile from './../edit-profile';
 import BottomNavComp from '../../reusable/bottomNav';
@@ -22,17 +22,50 @@ import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { members } from '../members';
 import PaginationComp from '../../reusable/pagination';
+import { GET_SINGLE_INVENTORY } from '../../../api/getApis';
+import { useMutation } from '@tanstack/react-query';
+import { inventoryDataProps } from '../modals/addInventoryItem';
+import PageSpinner from '../../reusable/Spinner/Spinner';
+import commaNumber from 'comma-number';
+import { colorEncoder } from '../../../utils/colorHandle';
+
+
+interface InventoryStateProps {
+    data: inventoryDataProps
+}
 
 const SingleInventory = () => {
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const cookieUtils = useCookies();
-    const currentUser = useCurrentUser().user;
+    const {id} = useParams();
 
     const [activePage, setActivePage] = useState('Details');
-    const [showPassword, setShowPassword] = useState(false);
-    const [showEdit, setShowEdit] = useState(false);
+
+    const [inventoryState, setInventoryState] = useState<InventoryStateProps>({
+        data: {},
+    });
+    
+      const { mutateAsync, isPending } = useMutation({
+        mutationFn: GET_SINGLE_INVENTORY
+        ,
+        onSuccess: (data) => {
+          setInventoryState((prev) => {
+            return {
+              ...prev,
+              data: data?.data?.body?.product,
+            };
+          });
+        },
+      });
+    
+      useEffect(() => {
+        if (id){
+            mutateAsync({
+                id,
+            });
+        }
+      }, [id]);
 
     return(
         <>
@@ -44,6 +77,16 @@ const SingleInventory = () => {
                 <DashboardFlex>
                     <SideBarWidget />
                     <DashboardMain>
+                    {
+                        isPending ?
+                        <div className="h-[80vh] flex items-center justify-center">
+                            <PageSpinner
+                                // className="border-[#000]"
+                                size={"lg"}
+                            />
+                        </div>
+                        :
+                        <>
                         <AuthBacknav
                             onClick={() => navigate(-1)}
                         >
@@ -68,7 +111,7 @@ const SingleInventory = () => {
                                     className='w-[80%]'
                                 >
                                     <Typography 
-                                        text={'Salad Nicoise'}
+                                        text={`${inventoryState?.data?.title}`}
                                         color='#091525'
                                         fontWeight={700}
                                         fontSize='20px'
@@ -76,9 +119,9 @@ const SingleInventory = () => {
                                         margin='0 0 0.4rem 0'
                                     />
                                     <Typography 
-                                        text={'Mixed Vegetable with Sardine & Boiled Egg'}
+                                        text={`${inventoryState?.data?.desc}`}
                                         color='#091525'
-                                        fontWeight={500}
+                                        fontWeight={400}
                                         fontSize='14px'
                                         lineHeight='22px'
                                         margin='0 0 0.4rem 0'
@@ -119,35 +162,35 @@ const SingleInventory = () => {
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Price</p>
-                                                    <h3 className='text-[15px] font-[600]'>₦8,000</h3>
+                                                    <h3 className='text-[15px] font-[600]'>₦{`${commaNumber(Number(inventoryState?.data?.amount))}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Quantity Available</p>
-                                                    <h3 className='text-[15px] font-[600]'>300</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${inventoryState?.data?.quantity}`}</h3>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Category</p>
                                                     <div className="bg-[#fff] border border-[#D0D5DD] text-[11px] py-[4px] px-[12px] rounded-[8px] text-center w-auto inline-block mt-3">
-                                                        Salad
+                                                        {`${inventoryState?.data?.category}`}
                                                     </div>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Status</p>
-                                                    <div className="bg-[#FEF3F2] border border-[#FECDCA] text-[11px] text-[#B42318] py-[4px] px-[12px] rounded-[300px] text-center w-auto inline-block mt-3">
-                                                        Upcoming
-                                                    </div>
+                                                    <p className={`bg-[${colorEncoder(`${inventoryState?.data?.status}`)?.bg}] border border-[${colorEncoder(`${inventoryState?.data?.status}`)?.border}] py-[6px] px-[10px] rounded-[100px] text-center text-[12px] mt-1 max-w-[100%] capitalize inline-block text-[${colorEncoder(`${inventoryState?.data?.status}`)?.color}] font-[700]`}>
+                                                        {inventoryState?.data?.status?.replaceAll("_", " ")}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Product ID</p>
-                                                    <h3 className='text-[15px] font-[600]'>2033</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${inventoryState?.data?.id}`}</h3>
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>SKU</p>
-                                                    <h3 className='text-[15px] font-[600]'>#RTG-24245</h3>
+                                                    <h3 className='text-[15px] font-[600]'>{`${inventoryState?.data?.product_id}`}</h3>
                                                 </div>
                                             </div>
                                             <div className="border-t py-[2rem]">
@@ -170,8 +213,9 @@ const SingleInventory = () => {
                                         </DashboardInner>
                                     </>
                                     : null
-                            }
-                            
+                                }
+                                </>
+                        }
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />
