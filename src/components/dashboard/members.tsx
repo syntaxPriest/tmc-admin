@@ -19,10 +19,12 @@ import { useMutation } from '@tanstack/react-query';
 import { GET_USERS } from '../../api/getApis';
 import EmptyState from '../reusable/emptyState';
 import { debounce } from '../../utils/debounceHoc';
+import { Paginate } from '../reusable/paginationComp';
 
 const Members = () => {
     
 	const navigate = useNavigate();
+	const [page, setPage] = useState<number | undefined>(1)
     const [activePage, setActivePage] = useState('All');
 	const [showInviteMember, setShowInvite] = useState(false);
 	const [debouncedValue, setDebouncedValue] = useState<string>('');
@@ -48,13 +50,13 @@ const Members = () => {
 
 	useEffect(() => {
 		mutateAsync({
-			offset: usersState?.page - 1,
+			offset: Number(page) - 1,
 			search: debouncedValue || undefined,
 			suspended: activePage === 'Suspended',
 			with_trashed: activePage === 'Deleted',
 
 		})
-	}, [activePage, debouncedValue]);
+	}, [activePage, debouncedValue, page]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setUsersState((prev) => { return {
@@ -224,7 +226,15 @@ const Members = () => {
 										}
 									</div>
 								))}
-                                <PaginationComp />
+                                {usersState?.usersCount > 20 && (
+                                    <Paginate
+                                        itemsPerPage={20}
+                                        pageCount={Math.ceil(Number(usersState?.usersCount) / 20)}
+                                        page={page}
+                                        setPage={setPage}
+                                        totalItems={usersState?.usersCount}
+                                    />
+                                )}
                         </div>
 						: 
 							<EmptyState 

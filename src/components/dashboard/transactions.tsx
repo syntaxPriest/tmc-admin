@@ -19,12 +19,13 @@ import { useMutation } from '@tanstack/react-query';
 import TransactionsSkeleton from '../skeletons/transactions';
 import EmptyState from '../reusable/emptyState';
 import { colorEncoder } from '../../utils/colorHandle';
+import { Paginate } from '../reusable/paginationComp';
 
 const Transactions = () => {
     
     const navigate = useNavigate();
     const [activePage, setActivePage] = useState('All');
-
+    const [page, setPage] = useState<number | undefined>(1)
     const [debouncedValue, setDebouncedValue] = useState<string>("");
 
   const [transactionsState, setTransactionsState] = useState({
@@ -49,11 +50,11 @@ const Transactions = () => {
 
   useEffect(() => {
     mutateAsync({
-      offset: transactionsState?.page - 1,
+      offset: Number(page) - 1,
       search: debouncedValue || undefined,
       type: activePage !== 'All' ? activePage.toLowerCase() : undefined,
     });
-  }, [activePage, debouncedValue]);
+  }, [activePage, debouncedValue, page]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTransactionsState((prev) => {
@@ -177,7 +178,15 @@ const Transactions = () => {
 										</div>
 									</div>
 								))}
-                                <PaginationComp />
+                                {transactionsState?.transactionsCount > 20 && (
+                                    <Paginate
+                                        itemsPerPage={20}
+                                        pageCount={Math.ceil(Number(transactionsState?.transactionsCount) / 20)}
+                                        page={page}
+                                        setPage={setPage}
+                                        totalItems={transactionsState?.transactionsCount}
+                                    />
+                                )}
                         </div>
                         ) : (
                             <EmptyState text="There are no transactions at the moment" />

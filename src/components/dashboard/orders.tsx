@@ -19,12 +19,13 @@ import { useMutation } from '@tanstack/react-query';
 import EmptyState from '../reusable/emptyState';
 import OrdersSkeleton from '../skeletons/orders';
 import { colorEncoder } from '../../utils/colorHandle';
+import { Paginate } from '../reusable/paginationComp';
 
 const Orders = () => {
     
     const navigate = useNavigate();
     const [activePage, setActivePage] = useState('All');
-
+    const [page, setPage] = useState<number | undefined>(1)
     const [ordersState, setOrdersState] = useState({
         page: 1,
         activeIndex: -1,
@@ -48,10 +49,10 @@ const Orders = () => {
     
       useEffect(() => {
         mutateAsync({
-          offset: ordersState?.page - 1,
+          offset: Number(page) - 1,
           status:  activePage !== 'All' ? activePage.toLowerCase().replaceAll(" ", "_") : undefined,
         });
-      }, [activePage]);
+      }, [activePage, page]);
 
     return(
         <>
@@ -152,7 +153,15 @@ const Orders = () => {
 										</p>
 									</div>
 								))}
-                                <PaginationComp />
+                                {ordersState?.ordersCount > 20 && (
+                                    <Paginate
+                                        itemsPerPage={20}
+                                        pageCount={Math.ceil(Number(ordersState?.ordersCount) / 20)}
+                                        page={page}
+                                        setPage={setPage}
+                                        totalItems={ordersState?.ordersCount}
+                                    />
+                                )}
                                 </div>
                         ) : (
                             <EmptyState text="There are no orders at the moment" />

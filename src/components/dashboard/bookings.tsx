@@ -18,9 +18,10 @@ import { GET_BOOKINGS } from '../../api/getApis';
 import { useMutation } from '@tanstack/react-query';
 import BookingsSkeleton from '../skeletons/bookings';
 import EmptyState from '../reusable/emptyState';
+import { Paginate } from '../reusable/paginationComp';
 
 const Bookings = () => {
-    
+    const [page, setPage] = useState<number | undefined>(1)
     const [activePage, setActivePage] = useState('Upcoming');
     const [openBookingInfo, setOpenBookingInfo] = useState(false)
     const [debouncedValue, setDebouncedValue] = useState<string>("");
@@ -48,11 +49,11 @@ const Bookings = () => {
   
     useEffect(() => {
       mutateAsync({
-        offset: bookingsState?.page - 1,
+        offset: Number(page) - 1,
         search: debouncedValue || undefined,
-        status: activePage.toLowerCase(),
+        status: activePage === 'Completed' ? 'past' : activePage.toLowerCase(),
       });
-    }, [activePage, debouncedValue]);
+    }, [activePage, debouncedValue, page]);
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setBookingsState((prev) => {
@@ -143,9 +144,9 @@ const Bookings = () => {
 								<p className='flex-[5] text-[14px]'>Scheduled By</p>
 								<p className='flex-[2] text-[14px]'>Action</p>
 							</div>
-                            {members &&
-								members.length > 0 &&
-								members.map((item: any, index: number) => (
+                            {bookingsState?.bookings &&
+								bookingsState?.bookings.length > 0 &&
+								bookingsState?.bookings.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
                                         onClick={() => setOpenBookingInfo(true)}
@@ -176,7 +177,15 @@ const Bookings = () => {
 										</p>
 									</div>
 								))}
-                                <PaginationComp />
+                                {bookingsState?.bookingsCount > 20 && (
+                                    <Paginate
+                                        itemsPerPage={20}
+                                        pageCount={Math.ceil(Number(bookingsState?.bookingsCount) / 20)}
+                                        page={page}
+                                        setPage={setPage}
+                                        totalItems={bookingsState?.bookingsCount}
+                                    />
+                                )}
                                 </div>
                             ) : (
                             <EmptyState text="There are no bookings at the moment" />
@@ -192,42 +201,3 @@ const Bookings = () => {
 export default Bookings;
 
 const pageItems = ['Upcoming', 'Completed']
-
-export const members = [
-	{
-        name: "Main Hall",
-        image: "/images/hall.png",
-        date: "",
-		scheduledBy: "Prof. Oluwole Soyinka",
-		attendees: "107",
-	},
-	{
-        name: "Swimming Lessons",
-        image: "/images/swimming-pool.png",
-        date: "",
-		scheduledBy: "Prof. Oluwole Soyinka",
-		attendees: "58",
-	},
-	{
-        name: "Swimming Lessons",
-        image: "/images/swimming-pool.png",
-        date: "",
-		scheduledBy: "Prof. Oluwole Soyinka",
-		attendees: "60",
-	},
-
-	{
-        name: "Swimming Lessons",
-        image: "/images/swimming-pool.png",
-        date: "",
-		scheduledBy: "Prof. Oluwole Soyinka",
-		attendees: "37",
-	},
-	{
-        name: "Swimming Lessons",
-        image: "/images/swimming-pool.png",
-        date: "",
-		scheduledBy: "Prof. Oluwole Soyinka",
-		attendees: "107",
-	},
-];

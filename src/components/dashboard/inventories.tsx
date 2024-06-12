@@ -21,10 +21,12 @@ import EmptyState from '../reusable/emptyState';
 import InventorySkeleton from '../skeletons/inventory';
 import classNames from 'classnames';
 import { colorEncoder } from '../../utils/colorHandle';
+import { Paginate } from '../reusable/paginationComp';
 
 const Inventories = () => {
     
     const navigate = useNavigate();
+    const [page, setPage] = useState<number | undefined>(1)
     const [openAddItem, setOpenAddItem] = useState(false);
     const [activePage, setActivePage] = useState('All');
     const [filterType, setFilterType] = useState("")
@@ -53,12 +55,12 @@ const Inventories = () => {
   
     useEffect(() => {
       mutateAsync({
-        offset: inventoryState?.page - 1,
+        offset: Number(page) - 1,
         search: debouncedValue || undefined,
         type: filterType !== "" ? filterType : undefined,
         status:  activePage !== 'All' ? activePage.toLowerCase().replaceAll(" ", "_") : undefined,
       });
-    }, [activePage, debouncedValue, filterType]);
+    }, [activePage, debouncedValue, filterType, page]);
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setInventoryState((prev) => {
@@ -230,7 +232,15 @@ const Inventories = () => {
 										</div>
 									</div>
 								))}
-                                <PaginationComp />
+                                {inventoryState?.inventoryCount > 20 && (
+                                    <Paginate
+                                        itemsPerPage={20}
+                                        pageCount={Math.ceil(Number(inventoryState?.inventoryCount) / 20)}
+                                        page={page}
+                                        setPage={setPage}
+                                        totalItems={inventoryState?.inventoryCount}
+                                    />
+                                )}
                             </div>
                         ) : (
                             <EmptyState text="There are no inventories at the moment" />
@@ -246,72 +256,3 @@ const Inventories = () => {
 export default Inventories;
 
 const pageItems = ['All', 'In Stock', 'Out of Stock', 'Low stock']
-
-export const members = [
-	{
-        name: "Salad Nicoise",
-        description: "Mixed Vegetable with Sardine & Boiled Egg",
-        sku: "#RTG-24245",
-        category: "Salad",
-        qty: "10",
-        sold: "5",
-        date: "",
-		amount: "15000",
-        status: "out_of_stock"
-	},
-	{
-        name: "Salad Nicoise",
-        description: "Mixed Vegetable with Sardine & Boiled Egg",
-        sku: "#RTG-24245",
-        category: "Salad",
-        qty: "10",
-        sold: "5",
-        date: "",
-		amount: "15000",
-        status: "out_of_stock"
-	},
-	{
-        name: "Salad Nicoise",
-        description: "Mixed Vegetable with Sardine & Boiled Egg",
-        sku: "#RTG-24245",
-        category: "Salad",
-        qty: "10",
-        sold: "5",
-        date: "",
-		amount: "15000",
-        status: "out_of_stock"
-	},
-    {
-        name: "Salad Nicoise",
-        description: "Mixed Vegetable with Sardine & Boiled Egg",
-        sku: "#RTG-24245",
-        category: "Salad",
-        qty: "10",
-        sold: "5",
-        date: "",
-		amount: "15000",
-        status: "out_of_stock"
-	},
-    {
-        name: "Salad Nicoise",
-        description: "Mixed Vegetable with Sardine & Boiled Egg",
-        sku: "#RTG-24245",
-        category: "Salad",
-        qty: "10",
-        sold: "5",
-        date: "",
-		amount: "15000",
-        status: "out_of_stock"
-	},
-    {
-        name: "Salad Nicoise",
-        description: "Mixed Vegetable with Sardine & Boiled Egg",
-        sku: "#RTG-24245",
-        category: "Salad",
-        qty: "10",
-        sold: "5",
-        date: "",
-		amount: "15000",
-        status: "out_of_stock"
-	},
-];

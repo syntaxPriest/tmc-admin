@@ -23,11 +23,12 @@ import { useMutation } from "@tanstack/react-query";
 import { GET_EVENTS } from "../../api/getApis";
 import EventsSkeleton from "../skeletons/events";
 import EmptyState from "../reusable/emptyState";
+import { Paginate } from "../reusable/paginationComp";
 
 const Events = () => {
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("Upcoming");
-
+  const [page, setPage] = useState<number | undefined>(1)
   const [debouncedValue, setDebouncedValue] = useState<string>("");
 
   const [eventsState, setEventsState] = useState({
@@ -53,11 +54,11 @@ const Events = () => {
 
   useEffect(() => {
     mutateAsync({
-      offset: eventsState?.page - 1,
+      offset: Number(page) - 1,
       search: debouncedValue || undefined,
       status: activePage.toLowerCase(),
     });
-  }, [activePage, debouncedValue]);
+  }, [activePage, debouncedValue, page]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEventsState((prev) => {
@@ -212,7 +213,15 @@ const Events = () => {
                       }
                     </div>
                   ))}
-                <PaginationComp />
+                {eventsState?.eventsCount > 20 && (
+                    <Paginate
+                        itemsPerPage={20}
+                        pageCount={Math.ceil(Number(eventsState?.eventsCount) / 20)}
+                        page={page}
+                        setPage={setPage}
+                        totalItems={eventsState?.eventsCount}
+                    />
+                )}
               </div>
             ) : (
               <EmptyState text="There are no events at the moment" />
