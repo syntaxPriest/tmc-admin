@@ -27,6 +27,7 @@ const Inventories = () => {
     const navigate = useNavigate();
     const [openAddItem, setOpenAddItem] = useState(false);
     const [activePage, setActivePage] = useState('All');
+    const [filterType, setFilterType] = useState("")
     const [debouncedValue, setDebouncedValue] = useState<string>("");
 
     const [inventoryState, setInventoryState] = useState({
@@ -54,9 +55,10 @@ const Inventories = () => {
       mutateAsync({
         offset: inventoryState?.page - 1,
         search: debouncedValue || undefined,
+        type: filterType !== "" ? filterType : undefined,
         status:  activePage !== 'All' ? activePage.toLowerCase().replaceAll(" ", "_") : undefined,
       });
-    }, [activePage, debouncedValue]);
+    }, [activePage, debouncedValue, filterType]);
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setInventoryState((prev) => {
@@ -139,14 +141,20 @@ const Inventories = () => {
                                 }
                             </PageToggleHeader>
                             <div className="flex items-center gap-[8px]">
-                                <p className="text-[14px] text-[#091525] font-medium">Filter by:</p>
+                                <p className="text-[14px] text-[#091525] font-medium">Inventory Type:</p>
                                 <select 
                                     className="w-[10rem] py-2 px-1 text-[14px] rounded-[8px] !border !border-[1px] !border-[#E5DFD9]"
                                     style={{
                                         border: "1px solid #E5DFD9"
                                     }}
+                                    value={filterType}
+                                    onChange={(e) => setFilterType(e.target.value)}
                                 >
-                                    <option value="booking_type">booking type</option>
+                                    <option value="">All</option>
+                                    <option value="restaurant_item">Restaurant Item</option>
+                                    <option value="booking">Bookings</option>
+                                    <option value="lessons">Lessons</option>
+                                    <option value="store_item">Store Item</option>
                                 </select>
                             </div>
                         </div>

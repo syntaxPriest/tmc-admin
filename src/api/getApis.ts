@@ -80,7 +80,8 @@ export const GET_BOOKINGS = async (data: {
 export const GET_INVENTORIES = async (data: {
     search?: string;
     status?: string;
-    offset?: number
+    offset?: number;
+    type?: string;
 }) => {
     return tmcApi.get(`/inventory/filter-products`, {
         params: {

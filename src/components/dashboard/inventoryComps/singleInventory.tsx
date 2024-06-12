@@ -24,10 +24,13 @@ import { members } from '../members';
 import PaginationComp from '../../reusable/pagination';
 import { GET_SINGLE_INVENTORY } from '../../../api/getApis';
 import { useMutation } from '@tanstack/react-query';
-import { inventoryDataProps } from '../modals/addInventoryItem';
+import AddInventoryItem, { inventoryDataProps } from '../modals/addInventoryItem';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import commaNumber from 'comma-number';
 import { colorEncoder } from '../../../utils/colorHandle';
+import AskYesOrNo from '../modals/askYesOrNo';
+import { enqueueSnackbar } from 'notistack';
+import { DELETE_INVENTORY } from '../../../api/action';
 
 
 interface InventoryStateProps {
@@ -42,6 +45,9 @@ const SingleInventory = () => {
 
     const [activePage, setActivePage] = useState('Details');
 
+
+    const [openEditItem, setOpenEditItem] = useState(false);
+    const [askDelete, setAskDelete] = useState(false)
     const [inventoryState, setInventoryState] = useState<InventoryStateProps>({
         data: {},
     });
@@ -58,6 +64,18 @@ const SingleInventory = () => {
           });
         },
       });
+
+      const { mutateAsync: deleteInventory, isPending: isDeleting } = useMutation({
+        mutationFn: DELETE_INVENTORY
+        ,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: 'Inventor deleted successfully!'
+          })
+          navigate("/dashboard/inventories")
+        },
+      });
     
       useEffect(() => {
         if (id){
@@ -67,8 +85,40 @@ const SingleInventory = () => {
         }
       }, [id]);
 
+
+      const handleDelete = () => {
+        deleteInventory({
+            id: id ? id: ""
+        })
+      }
+
+      const triggerReload = () => {
+        if (id){
+            mutateAsync({
+                id,
+            });
+        }
+    }
+
     return(
         <>
+            <AskYesOrNo 
+                openToggle={askDelete}
+                headerText='Delete Item'
+                question='Are you sure you want to delete this item?'
+                declineText="Cancel"
+                actionText="Delete"
+                yesAction={() => handleDelete()}
+                noAction={() => setAskDelete(false)}
+                actionInProgress={isDeleting}
+            />
+            <AddInventoryItem 
+                openToggle={openEditItem}
+                closeFunc={() => setOpenEditItem(false)}
+                triggerReload={triggerReload}
+                actionType='edit'
+                inventoryData={inventoryState?.data}
+            />
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -96,11 +146,11 @@ const SingleInventory = () => {
                             />
                             <p>Back</p>
                         </AuthBacknav>
-                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1]">
+                        <div className="flex items-start justify-between py-8 border-b border-[#E1E1E1]">
                             <BoxFlex
                                 width='60%'
                                 gap="16px"
-                                vAlign='center'
+                                vAlign='flex-start'
                             >
                                 <img 
                                     src='/images/food1.png'
@@ -129,21 +179,26 @@ const SingleInventory = () => {
                                 </div>
                             </BoxFlex>
                             <div className="flex gap-[10px]">
-                                <Button
-                                    bg='#F3F1EF'
-                                    color='#23211D'
-                                    type='button'
-                                    width='auto'
-                                    top='0'
-                                >
-                                    Restock
-                                </Button>
+                                {
+                                    (inventoryState?.data?.type === 'restaurant_item') &&
+                                        <Button
+                                            bg='#F3F1EF'
+                                            color='#23211D'
+                                            type='button'
+                                            width='auto'
+                                            top='0'
+                                            onClick={() => setOpenEditItem(true)}
+                                        >
+                                            Restock
+                                        </Button>
+                                }
                                 <Button
                                     bg='#23211D'
                                     color='#fff'
                                     type='button'
                                     width='auto'
                                     top='0'
+                                    onClick={() => setOpenEditItem(true)}
                                 >
                                     Edit Item
                                 </Button>
@@ -205,6 +260,7 @@ const SingleInventory = () => {
                                                         type='button'
                                                         width='auto'
                                                         top='0'
+                                                        onClick={() => setAskDelete(true)}
                                                     >
                                                         Delete Item
                                                     </Button>

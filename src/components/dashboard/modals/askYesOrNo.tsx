@@ -8,6 +8,7 @@ import Typography from "../../reusable/typography";
 import { InputWrap } from "../../../styles/authentication";
 import CustomRadio from "../../reusable/customRadio";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "../../reusable/spinner";
 
 interface PropArgs {
     openToggle: boolean;
@@ -17,6 +18,7 @@ interface PropArgs {
     actionText: string;
     yesAction: () => void;
     noAction: () => void;
+    actionInProgress?: boolean;
 }
 
 const AskYesOrNo = ({
@@ -27,6 +29,7 @@ const AskYesOrNo = ({
     actionText,
     yesAction,
     noAction,
+    actionInProgress
 } : PropArgs) => {
 
     const navigate = useNavigate();
@@ -71,7 +74,7 @@ const AskYesOrNo = ({
                     </div>
                     <div className="flex items-center justify-between mt-[1rem]">
                         <Button
-                            bg='#F3F1EF'
+                            bg={'#F3F1EF'}
                             type='button'
                             width='48%'
                             top='0'
@@ -80,14 +83,14 @@ const AskYesOrNo = ({
                             {declineText}
                         </Button>
                         <Button
-                            bg='#23211D'
+                            bg={actionText.includes("Delete") ? '#D23B3B' : '#23211D'}
                             color='#fff'
                             type='button'
                             width='48%'
                             top='0'
                             onClick={() => yesAction()}
                         >
-                            {actionText}
+                            {actionInProgress ? <Spinner /> :  actionText}
                         </Button>
                     </div>
                     </div>
