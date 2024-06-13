@@ -32,6 +32,10 @@ tmcApi.interceptors.response.use(
     function (error: any) {
         try{
           // Any status codes that falls outside the range of 2xx cause this function to trigger
+          if (error.response?.status === 403){
+            localStorage.clear();
+            window.location.href = '/login'
+          }
           enqueueSnackbar({
             variant: "error",
             message: error && error.response && error.response.data && error.response.data.message ? error.response.data.message : 'An error occurred!'

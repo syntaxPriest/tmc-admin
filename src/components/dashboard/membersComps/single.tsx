@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../../styles/reusable/index';
 import SideBarWidget from '../../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap, ProgressBar } from './../style';
@@ -8,7 +8,7 @@ import { PageToggleHeader, IconFlex, ButtonFlex } from '../../../styles/reusable
 import * as Icon from 'react-feather';
 import * as IconSax from "iconsax-react";
 import { Button } from '../../../styles/reusable';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { InputWrap, InputField, AuthBacknav } from '../../../styles/authentication/index';
 import EditProfile from './../edit-profile';
 import BottomNavComp from '../../reusable/bottomNav';
@@ -20,14 +20,30 @@ import { clearState } from '../../../store/properties/reducer';
 import { useCurrentUser } from '../../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
+import { useMutation } from '@tanstack/react-query';
+import { GET_SINGLE_USERS } from '../../../api/getApis';
+import PageSpinner from '../../reusable/Spinner/Spinner';
+import { User } from '../../../utils/types';
+import { DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
+import { enqueueSnackbar } from 'notistack';
+import { Spinner } from '../../reusable/spinner';
+import AskYesOrNo from '../modals/askYesOrNo';
+
+interface userStateProps {
+    data: User
+}
 
 const MemberProfile = () => {
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const {id} = useParams();
+    const [actionType, setActiontype] = useState("")
     const cookieUtils = useCookies();
     const currentUser = useCurrentUser().user;
 
+    const [askSuspend, setAskSuspend] = useState(false)
+    const [askDelete, setAskDelete] = useState(false)
     const [activePage, setActivePage] = useState('Overview');
     const [showPassword, setShowPassword] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
@@ -40,8 +56,125 @@ const MemberProfile = () => {
         window.location.href = '/login';
     };
 
+    const [userState, setUserState] = useState<userStateProps>({
+        data: {},
+    });
+
+    const [mutableUser, setMutableUser] = useState<User>();
+    const [isSuspended, setIsSuspended] = useState()
+    
+    const handleChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+      ) => {
+        const { id, value } = e.target;
+    
+        setMutableUser((prev) => {
+          return {
+            ...prev,
+            [id]: value,
+          };
+        });
+      };
+
+    const { mutateAsync, isPending } = useMutation({
+        mutationFn: GET_SINGLE_USERS
+        ,
+        onSuccess: (data) => {
+          setUserState((prev) => {
+            return {
+              ...prev,
+              data: data?.data?.body?.user,
+            };
+          });
+          setMutableUser((prev) => {
+            return {
+              user_id: data?.data?.body?.user.id,
+              title: data?.data?.body?.user?.title,
+              first_name: data?.data?.body?.user?.first_name,
+              last_name: data?.data?.body?.user?.last_name,
+              email: data?.data?.body?.user?.email,
+              phone: data?.data?.body?.user?.phone,
+              middle_name: data?.data?.body?.user?.middle_name,
+            };
+          });
+          setIsSuspended(data?.data?.body?.user?.suspended)
+        },
+    });
+
+    // EDIT USER INFORMATION
+    const { mutateAsync:editUser, isPending:isEditing } = useMutation({
+        mutationFn: EDIT_USER,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: 'Save changes made successfully!'
+          })
+        },
+    });
+
+    const { mutateAsync: suspend_action, isPending: isSuspending } = useMutation({
+        mutationFn: SUSPEND_UNSUSPEND_ACTION,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: `${isSuspended ? "You have suspended this user successfully!" : "You have reverted suspension on this user successfully!"}`
+          })
+          if (id){
+            mutateAsync({
+                user_id: id,
+            });
+          }
+          setAskSuspend(false)
+        },
+    });
+
+    const { mutateAsync: deleting_action, isPending: isDeleting } = useMutation({
+        mutationFn: DELETE_USER,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: "You have deleted this member's account successfully!"
+          })
+          navigate('/dashboard/members')
+        },
+    });
+
+    useEffect(() => {
+        if (id){
+            mutateAsync({
+                user_id: id,
+            });
+        }
+      }, [id]);
+
     return(
         <>
+            {/* FOR SUSPENSION */}
+            <AskYesOrNo 
+                openToggle={askSuspend}
+                headerText={`${isSuspended ? "Unsuspend User" : "Suspend User"}`}
+                question={`Are you sure you want to ${isSuspended ? "unsuspend" : "suspend"} this user?`}
+                declineText="Cancel"
+                actionText={`${isSuspended ? "Unsuspend" : "Suspend"}`}
+                yesAction={() => suspend_action({
+                    user_id: mutableUser?.user_id
+                })}
+                noAction={() => setAskSuspend(false)}
+                actionInProgress={isSuspending}
+            />
+            {/* FOR DELETION */}
+            <AskYesOrNo 
+                openToggle={askDelete}
+                headerText={`Delete Member Account`}
+                question={`Are you sure you want to delete this member's account?`}
+                declineText="Cancel"
+                actionText={`Delete`}
+                yesAction={() => deleting_action({
+                    user_id: mutableUser?.user_id
+                })}
+                noAction={() => setAskDelete(false)}
+                actionInProgress={isDeleting}
+            />
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -50,6 +183,16 @@ const MemberProfile = () => {
                 <DashboardFlex>
                     <SideBarWidget />
                     <DashboardMain>
+                    {
+                        isPending ?
+                        <div className="h-[80vh] flex items-center justify-center">
+                            <PageSpinner
+                                // className="border-[#000]"
+                                size={"lg"}
+                            />
+                        </div>
+                        :
+                        <>
                         <AuthBacknav
                             onClick={() => navigate(-1)}
                         >
@@ -69,7 +212,7 @@ const MemberProfile = () => {
                                     size='64px'
                                 >
                                     <img 
-                                        src='/images/ola.png'
+                                        src='/images/avatar1.png'
                                         alt='User'
                                     />
                                 </RandomCircle>
@@ -77,16 +220,16 @@ const MemberProfile = () => {
                                     className='w-[80%]'
                                 >
                                     <Typography 
-                                        text={'Olanrewaju Benjamin'}
+                                        text={`${userState?.data?.first_name} ${userState?.data?.last_name}`}
                                         color='#091525'
                                         fontWeight={700}
                                         fontSize='20px'
                                         lineHeight='22px'
                                         margin='0 0 0.4rem 0'
                                     />
-                                    <div className="bg-[#FCF9F2] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-[10rem] inline-block flex gap-[4px] items-center">
+                                    <div className="bg-[#FCF9F2] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-[12rem] inline-block flex gap-[4px] items-center">
                                         <img src="/icons/Medal.png" className='w-[25px]' alt="Medal" />
-                                        {'Ordinary Member'}
+                                        {userState?.data?.membership_type}
                                     </div>
                                 </div>
                             </BoxFlex>
@@ -97,6 +240,7 @@ const MemberProfile = () => {
                                     type='button'
                                     width='auto'
                                     top='0'
+                                    disabled
                                 >
                                     Export
                                 </Button>
@@ -106,8 +250,17 @@ const MemberProfile = () => {
                                     type='button'
                                     width='auto'
                                     top='0'
+                                    onClick={() => {
+                                        if (actionType !== 'edit'){
+                                            setActiontype('edit')
+                                        }else {
+                                            editUser({
+                                                ...mutableUser
+                                            })
+                                        }
+                                    }}
                                 >
-                                    Edit profile
+                                    {isEditing ? <Spinner /> : actionType === 'edit' ? 'Save Changes' : 'Edit profile'}
                                 </Button>
                             </div>
                         </div>
@@ -144,37 +297,53 @@ const MemberProfile = () => {
                                                     <InputField width='32%'>
                                                         <p>Title</p>
                                                         <input 
+                                                            id="title"
+                                                            onChange={handleChange}
                                                             placeholder='Enter Title'
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            disabled={actionType !== 'edit'}
+                                                            value={mutableUser?.title}
                                                         />
                                                     </InputField>
                                                     <InputField width='32%'>
                                                         <p>First Name</p>
                                                         <input 
+                                                            id="first_name"
+                                                            onChange={handleChange}
                                                             placeholder='Enter First Name'
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            disabled={actionType !== 'edit'}
+                                                            value={mutableUser?.first_name}
                                                         />
                                                     </InputField>
                                                     <InputField width='32%'>
                                                         <p>Middle Name</p>
                                                         <input 
+                                                            id="middle_name"
+                                                            onChange={handleChange}
                                                             placeholder='Enter Middle Name'
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            disabled={actionType !== 'edit'}
+                                                            value={mutableUser?.middle_name}
                                                         />
                                                     </InputField>
                                                     <InputField width='32%'>
                                                         <p>Last Name</p>
                                                         <input 
+                                                            id="last_name"
+                                                            onChange={handleChange}
                                                             placeholder='Enter Last Name'
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            disabled={actionType !== 'edit'}
+                                                            value={mutableUser?.last_name}
                                                         />
                                                     </InputField>
                                                     <InputField width='32%'>
@@ -184,15 +353,21 @@ const MemberProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            disabled
+                                                            value={mutableUser?.email}
                                                         />
                                                     </InputField>
                                                     <InputField width='32%'>
                                                         <p>Phone Number</p>
                                                         <input 
+                                                            id="phone"
+                                                            onChange={handleChange}
                                                             placeholder='Enter Phone Number'
                                                             autoComplete="off"
                                                             type="number"
                                                             required
+                                                            disabled={actionType !== 'edit'}
+                                                            value={mutableUser?.phone}
                                                         />
                                                     </InputField>
                                                 </InputWrap>
@@ -209,6 +384,7 @@ const MemberProfile = () => {
                                                         type='button'
                                                         width='auto'
                                                         top='0'
+                                                        onClick={() => setAskDelete(true)}
                                                     >
                                                         Delete Member
                                                     </Button>
@@ -226,8 +402,9 @@ const MemberProfile = () => {
                                                         type='button'
                                                         width='auto'
                                                         top='0'
+                                                        onClick={() => setAskSuspend(true)}
                                                     >
-                                                        Suspend Member
+                                                        {isSuspended ? "Unsuspend" : "Suspend"} Member
                                                     </Button>
                                                 </div>
                                             </div>
@@ -483,7 +660,9 @@ const MemberProfile = () => {
                                         </DashboardInner>
                                     </>
                                     : null
-                            }
+                                }
+                            </>
+                        }
                     </DashboardMain>
                 </DashboardFlex>
                 {

@@ -15,6 +15,16 @@ export const GET_USERS = async (data: {
     });
 }
 
+export const GET_SINGLE_USERS = async (data: {
+    user_id: string | number
+}) => {
+    return tmcApi.get(`/user/get-user`, {
+        params: {
+            ...data,
+        }
+    });
+}
+
 export const GET_EVENTS = async (data: {
     search?: string;
     status?: string;

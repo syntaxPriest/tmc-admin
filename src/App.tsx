@@ -50,8 +50,10 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(cookie.userToken);
 
   useEffect(() => {
-    setIsAuthenticated(cookie.userToken);
-    setToken(cookie?.userToken ? cookie?.userToken : undefined, currentUser ? `${currentUser?.id.toString()}` : undefined);
+    if (cookie.userToken){
+      setIsAuthenticated(cookie.userToken);
+      setToken(cookie?.userToken ? cookie?.userToken : undefined, currentUser ? `${currentUser?.id.toString()}` : undefined);
+    }
   }, [cookie?.userToken]);
 
   return (

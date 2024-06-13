@@ -164,7 +164,7 @@ const Members = () => {
 								usersState?.users.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative'
-										onClick={() => navigate(`/dashboard/member/${index + 1}`)}
+										onClick={() => navigate(`/dashboard/member/${item.id}`)}
 									>
 										<div className='flex flex-[6] items-center cursor-pointer gap-[10px]'>
 											<img
