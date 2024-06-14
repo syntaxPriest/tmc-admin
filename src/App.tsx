@@ -53,8 +53,11 @@ function App() {
     if (cookie.userToken){
       setIsAuthenticated(cookie.userToken);
       setToken(cookie?.userToken ? cookie?.userToken : undefined, currentUser ? `${currentUser?.id.toString()}` : undefined);
+    }else {
+      cookie.userToken = undefined;
+      // window.location.href = ('/login');
     }
-  }, [cookie?.userToken]);
+  }, []);
 
   return (
     <>

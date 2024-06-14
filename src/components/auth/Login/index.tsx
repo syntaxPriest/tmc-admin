@@ -50,7 +50,7 @@ const Login = () => {
                 variant: 'success',
                 message: 'Login Successful!'
             })
-            navigate('/dashboard');
+            window.location.href = ('/dashboard');
         }
     })
 

@@ -21,12 +21,16 @@ const IdleTimerContainer: FC<any> = () => {
 
   useEffect(() => {
     if (Date.now() >= expireTime) {
-        localStorage.clear();
-        cookieUtils[2]('userToken', undefined);
-        dispatch(setUser(null));
-        dispatch(clearState());
-        removeAfterLogout();
-        window.location.href = '/login';
+      localStorage.clear();
+      removeAfterLogout();
+      window.location.href = '/login';
+      dispatch(setUser(null));
+      dispatch(clearState());
+      removeAfterLogout()
+      cookieUtils[2]("userToken");
+      localStorage.clear();
+      const origin = window.location.origin;
+      window.location.assign(`${origin}/login`);
     }
   }, [count]);
 
