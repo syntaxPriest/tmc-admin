@@ -133,3 +133,14 @@ export const GET_SINGLE_ORDER = async (data: {
         }
     });
 }
+
+export const GET_MESSAGES = async (data: {
+    offset?: number
+}) => {
+    return tmcApi.get(`/message/list-messages`, {
+        params: {
+            ...data,
+            limit: 20
+        }
+    });
+}

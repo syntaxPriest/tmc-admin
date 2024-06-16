@@ -6,10 +6,17 @@ type GeneralState = {
    * detect if a route is changing
    */
   routeIsChanging: boolean;
+  proposedMessageData: {
+    channels?: string[],
+    receivers?: Array<string | number>,
+    headline?: string,
+    message?: string;
+  }
 };
 
 const initialState: GeneralState = {
   routeIsChanging: false,
+  proposedMessageData: {}
 };
 
 export const GeneralStateSlice = createSlice({
@@ -17,6 +24,12 @@ export const GeneralStateSlice = createSlice({
   initialState,
   reducers: {
     toggleRouteIsChanging: (state, action: PayloadAction<boolean>) => {
+      return {
+        ...state,
+        routeIsChanging: action.payload,
+      };
+    },
+    updateProposed: (state, action: PayloadAction<boolean>) => {
       return {
         ...state,
         routeIsChanging: action.payload,

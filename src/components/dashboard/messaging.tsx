@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoxFlex, Line, MainWrap, PageToggleText, RandomCircle,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
@@ -15,11 +15,43 @@ import { Button } from '../../styles/reusable';
 import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
 import SelectMessageChannel from './modals/selectMessageChannel';
+import { useMutation } from '@tanstack/react-query';
+import { GET_MESSAGES } from '../../api/getApis';
+import EmptyState from '../reusable/emptyState';
+import { Paginate } from '../reusable/paginationComp';
+import MessagesSkeleton from '../skeletons/messages';
 
 const Messaging = () => {
     
-    const [activePage, setActivePage] = useState('All');
     const [showSelectModal, setShowSelectModal] = useState(false);
+
+    const [page, setPage] = useState<number | undefined>(1)
+    const [messagesState, setMessagesState] = useState({
+        page: 1,
+        activeIndex: -1,
+        searchQuery: "",
+        messages: [],
+        messagesCount: 0,
+      });
+    
+      const { mutateAsync, isPending } = useMutation({
+        mutationFn: GET_MESSAGES,
+        onSuccess: (data) => {
+          setMessagesState((prev) => {
+            return {
+              ...prev,
+              messages: data?.data?.body?.messages,
+              messagesCount: data?.data?.body?.total_count,
+            };
+          });
+        },
+      });
+    
+      useEffect(() => {
+        mutateAsync({
+          offset: Number(page) - 1,
+        });
+      }, [page]);
 
     return(
         <>
@@ -37,7 +69,11 @@ const Messaging = () => {
                     <DashboardMain>
                         <DashboardHeader>
                             <Typography 
-                                text='Messaging (50)'
+                                text={`Messages ${
+                                    messagesState?.messagesCount
+                                      ? `(${messagesState?.messagesCount})`
+                                      : ""
+                                  }`}
                                 color='#091525'
                                 fontWeight={500}
                                 fontSize='24px'
@@ -52,10 +88,13 @@ const Messaging = () => {
                                 >Create New</Button>
                             </div>
                         </DashboardHeader>
+                        {isPending ? (
+                            <MessagesSkeleton />
+                            ) : messagesState?.messages.length > 0 ? (
                         <div className="mt-5">
-                            {members &&
-								members.length > 0 &&
-								members.map((item: any, index: number) => (
+                            {messagesState?.messages &&
+								messagesState?.messages.length > 0 &&
+								messagesState?.messages.map((item: any, index: number) => (
 									<div
 										className='w-full flex justify-between gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
 									>
@@ -97,8 +136,19 @@ const Messaging = () => {
                                         </BoxFlex>
 									</div>
 								))}
-                                <PaginationComp />
-                        </div>
+                                {messagesState?.messagesCount > 20 && (
+                                    <Paginate
+                                        itemsPerPage={20}
+                                        pageCount={Math.ceil(Number(messagesState?.messagesCount) / 20)}
+                                        page={page}
+                                        setPage={setPage}
+                                        totalItems={messagesState?.messagesCount}
+                                    />
+                                )}
+                                </div>
+                        ) : (
+                            <EmptyState text="There are no messages at the moment" />
+                        )}
                     </DashboardMain>
                 </DashboardFlex>
                 <BottomNavComp />

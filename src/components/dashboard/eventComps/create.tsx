@@ -204,9 +204,6 @@ const CreateEvent = () => {
 
   const today = new Date().toISOString().split('T')[0];
 
-
-  console.log(eventCreationData)
-
   return (
     <>
       <MainWrap top="0rem" width="100%" maxWidth="1200px">
