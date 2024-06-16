@@ -41,7 +41,7 @@ import { NumericFormat } from "react-number-format";
 import classNames from "classnames";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
-import { CREATE_EVENT } from "../../../api/action";
+import { CREATE_EVENT, EDIT_EVENT } from "../../../api/action";
 import { Spinner } from "../../reusable/spinner";
 import { EventStateProps } from "./single";
 import { GET_SINGLE_EVENT } from "../../../api/getApis";
@@ -67,7 +67,7 @@ export interface eventDataProps {
   media?: Array<{
     url: string;
   }>
-  intialMedia?: Array<{
+  initialMedia?: Array<{
     url: string;
   }>
 }
@@ -132,11 +132,11 @@ const CreateEvent = () => {
   };
 
   const {mutateAsync, isPending} = useMutation({
-    mutationFn: CREATE_EVENT,
+    mutationFn: isStringInRoute ? EDIT_EVENT : CREATE_EVENT,
     onSuccess: (data) => {
       enqueueSnackbar({
         variant: 'success',
-        message: 'Event created successfully!'
+        message: isStringInRoute ? 'Saved changes made successfully' : 'Event created successfully!'
       })
       navigate("/dashboard/events")
     }
@@ -148,9 +148,12 @@ const CreateEvent = () => {
       Object.entries(eventCreationData).forEach(([key, value]) => {
         formData.append(key, value);
       });
+      formData.append("id", id)
       formData.delete("time")
       formData.append("time", `${eventCreationData?.date} ${eventCreationData?.time}`)
       formData.delete("date")
+      formData.delete("initialCover")
+      formData.delete("initialMedia")
 
       galleryFiles.forEach((file) => {
         formData.append('media', file); // Use the same key for all files
@@ -175,10 +178,17 @@ const CreateEvent = () => {
     mutationFn: GET_SINGLE_EVENT,
     onSuccess: (data) => {
       setEventCreationData({
-        ...data?.data?.body?.event,
+        title: data?.data?.body?.event?.title,
+        about: data?.data?.body?.event?.about,
+        location: data?.data?.body?.event?.location,
+        amount: data?.data?.body?.event?.amount,
+        expected_number_of_attendees: data?.data?.body?.event?.expected_number_of_attendees,
+        special_guests: data?.data?.body?.event?.special_guests,
+        time: `${data?.data?.body?.event?.time.split('T')[1].split('.')[0]}`,
+        date: data?.data?.body?.event?.time.split('T')[0],
+        reminder_time_to_event_in_days: data?.data?.body?.event?.reminder_time_to_event_in_days,
         initialCover: data?.data?.body?.event?.cover,
-        initialUploads: data?.data?.body?.event?.docs,
-        initialGallery: data?.data?.body?.event?.media,
+        initialMedia: data?.data?.body?.event?.media,
       });
       setEventType(data?.data?.body?.event?.type.replaceAll(" ", "_").toLowerCase());
     },
@@ -193,6 +203,9 @@ const CreateEvent = () => {
   }, [id]);
 
   const today = new Date().toISOString().split('T')[0];
+
+
+  console.log(eventCreationData)
 
   return (
     <>
@@ -267,6 +280,7 @@ const CreateEvent = () => {
                     id='date'
                     onChange={handleChange}
                     min={today}
+                    value={eventCreationData?.date}
                   />
                 </InputField>
                 <InputField width="48%">
@@ -276,6 +290,7 @@ const CreateEvent = () => {
                     type="time" 
                     required 
                     id='time'
+                    value={eventCreationData?.time}
                     onChange={handleChange}
                   />
                 </InputField>
@@ -509,6 +524,28 @@ const CreateEvent = () => {
                       ))
                   }
                 </div>
+                {(eventCreationData?.initialMedia && eventCreationData?.initialMedia.length > 0) && (
+                  <div>
+                    <h3>Current Gallery</h3>
+                      <div className="flex flex-wrap gap-[15px] my-[1.5rem]">
+                        {
+                          (eventCreationData?.initialMedia && eventCreationData?.initialMedia.length > 0) && 
+                            eventCreationData?.initialMedia.map((file, index) => (
+                              <div 
+                                key={index}
+                                className="relative"
+                              >
+                                <img 
+                                  src={`${getCdnLink(file.url,'event')}`} 
+                                  alt=""
+                                  className="w-[100px] h-[100px] rounded-[8px] object-cover" 
+                                />
+                              </div>
+                            ))
+                        }
+                      </div>
+                  </div>
+                )}
               </div>
               <Button
                 bg="#23211D"
@@ -527,10 +564,11 @@ const CreateEvent = () => {
                   !eventCreationData?.time ||
                   !eventCreationData?.expected_number_of_attendees ||
                   !eventCreationData?.reminder_time_to_event_in_days ||
-                  coverFiles.length < 1
+                  (!isStringInRoute && 
+                  coverFiles.length < 1 )
                 }
               >
-                {isPending ? <Spinner /> : "Create Event"}
+                {isPending ? <Spinner /> : isStringInRoute ? "Save Changes" : "Create Event"}
               </Button>
             </div>
           </DashboardMain>

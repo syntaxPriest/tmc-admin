@@ -5,6 +5,10 @@ export const CREATE_EVENT = async (data: FormData) => {
     return tmcApi.post(`/event/create-event`, data);
 }
 
+export const EDIT_EVENT = async (data: FormData) => {
+    return tmcApi.post(`/event/edit-event`, data);
+}
+
 export const CREATE_INVENTORY = async (data: FormData) => {
     return tmcApi.post(`/inventory/create-product`, data);
 }

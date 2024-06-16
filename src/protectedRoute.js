@@ -1,15 +1,16 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
+const isLoggedIn = localStorage.getItem('expire_time');
 // eslint-disable-next-line react/prop-types
 export const PrivateLoginRoute = ({isAuthenticated, isInVerifyLobby}) => {
-  return isAuthenticated && isAuthenticated !== "undefined" && !isInVerifyLobby ? <Outlet /> : <Navigate to="/login" />;
+  return isLoggedIn && isLoggedIn !== "undefined" && !isInVerifyLobby ? <Outlet /> : <Navigate to="/login" />;
   // return <Outlet />;
 };
 
 // eslint-disable-next-line react/prop-types
 export const PreventAuthRoute = ({isAuthenticated}) => {
-  return isAuthenticated && isAuthenticated !== "undefined" ? <Navigate to="/dashboard" /> : <Outlet />;
+  return isLoggedIn && isLoggedIn !== "undefined" ? <Navigate to="/dashboard" /> : <Outlet />;
   // return <Outlet />;
 };
 

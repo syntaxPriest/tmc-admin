@@ -172,8 +172,6 @@ const AddInventoryItem = ({
     mutateAsync(formData);
   };
 
-  console.log(inventoryCreationData)
-
   return (
     <>
       {openToggle && (
