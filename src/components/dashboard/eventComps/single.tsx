@@ -30,7 +30,7 @@ import PageSpinner from '../../reusable/Spinner/Spinner';
 import { getCdnLink } from '../../../utils/imageParser';
 import EmptyState from '../../reusable/emptyState';
 
-interface EventStateProps {
+export interface EventStateProps {
     data: eventDataProps
 }
 
@@ -139,6 +139,7 @@ const SingleEvent = () => {
                                     type='button'
                                     width='auto'
                                     top='0'
+                                    disabled
                                 >
                                     Export
                                 </Button>
@@ -148,6 +149,7 @@ const SingleEvent = () => {
                                     type='button'
                                     width='auto'
                                     top='0'
+                                    onClick={() => navigate(`/dashboard/event/edit/${id}`)}
                                 >
                                     Edit Event
                                 </Button>

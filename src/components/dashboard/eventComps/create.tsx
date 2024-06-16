@@ -25,7 +25,7 @@ import {
 } from "../../../styles/reusable/index";
 import * as Icon from "react-feather";
 import { Button } from "../../../styles/reusable";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
 import EditProfile from "./../edit-profile";
 import BottomNavComp from "../../reusable/bottomNav";
@@ -43,6 +43,9 @@ import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import { CREATE_EVENT } from "../../../api/action";
 import { Spinner } from "../../reusable/spinner";
+import { EventStateProps } from "./single";
+import { GET_SINGLE_EVENT } from "../../../api/getApis";
+import { getCdnLink } from "../../../utils/imageParser";
 
 export interface eventDataProps {
   title?: string,
@@ -58,13 +61,23 @@ export interface eventDataProps {
   cover?: {
     url: string;
   },
+  initialCover?: {
+    url: string;
+  },
   media?: Array<{
+    url: string;
+  }>
+  intialMedia?: Array<{
     url: string;
   }>
 }
 
 const CreateEvent = () => {
   const navigate = useNavigate();
+  const {id} = useParams();
+  const location = useLocation();
+
+  const isStringInRoute = location.pathname.includes('edit');
 
   const [eventType, setEventType] = useState<string | boolean>('');
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
@@ -156,6 +169,28 @@ const CreateEvent = () => {
     mutateAsync(formData)
   }
 
+  // EDIT ACTIONS
+
+  const { mutateAsync:getEvent, isPending:isGettingEvent } = useMutation({
+    mutationFn: GET_SINGLE_EVENT,
+    onSuccess: (data) => {
+      setEventCreationData({
+        ...data?.data?.body?.event,
+        initialCover: data?.data?.body?.event?.cover,
+        initialUploads: data?.data?.body?.event?.docs,
+        initialGallery: data?.data?.body?.event?.media,
+      });
+      setEventType(data?.data?.body?.event?.type.replaceAll(" ", "_").toLowerCase());
+    },
+  });
+
+  useEffect(() => {
+    if (id){
+        getEvent({
+            id,
+        });
+    }
+  }, [id]);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -167,9 +202,9 @@ const CreateEvent = () => {
           <DashboardMain>
             <DashboardHeader>
               <div className="flex gap-[8px] items-center">
-                <Icon.ArrowLeft />
+                <Icon.ArrowLeft onClick={() => navigate(-1)} className="cursor-pointer" />
                 <Typography
-                  text="Create Event"
+                  text={isStringInRoute ? "Edit Event" : "Create Event"}
                   color="#091525"
                   fontWeight={500}
                   fontSize="24px"
@@ -207,6 +242,7 @@ const CreateEvent = () => {
                     type="text"
                     required
                     id='title'
+                    value={eventCreationData?.title}
                     onChange={handleChange}
                   />
                 </InputField>
@@ -217,6 +253,7 @@ const CreateEvent = () => {
                     autoComplete="off"
                     type="text"
                     required
+                    value={eventCreationData?.location}
                     id='location'
                     onChange={handleChange}
                   />
@@ -264,6 +301,7 @@ const CreateEvent = () => {
                     name="" 
                     id='reminder_time_to_event_in_days'
                     onChange={handleChange}
+                    value={eventCreationData?.reminder_time_to_event_in_days}
                   >
                     <option value="">Select</option>
                     {
@@ -282,6 +320,7 @@ const CreateEvent = () => {
                     placeholder="Enter Number of expected attendees"
                     id='expected_number_of_attendees'
                     onChange={handleChange}
+                    value={eventCreationData?.expected_number_of_attendees}
                   />
                 </InputField>
                 <InputField width="48%">
@@ -292,6 +331,7 @@ const CreateEvent = () => {
                     type="text"
                     id='special_guests'
                     onChange={handleChange}
+                    value={eventCreationData?.special_guests}
                   />
                 </InputField>
                 <InputField width="100%">
@@ -304,6 +344,7 @@ const CreateEvent = () => {
                     id='about'
                     onChange={handleChange}
                     maxLength={500}
+                    value={eventCreationData?.about}
                   ></textarea>
                 </InputField>
               </InputWrap>
@@ -332,7 +373,7 @@ const CreateEvent = () => {
                     </div>
                   </label>
                 </div>
-                <div className="flex flex-wrap gap-[15px] my-[1.5rem]">
+                <div className="flex justify-between flex-wrap gap-[15px] my-[1.5rem]">
                   {
                     (coverFiles && coverFiles.length > 0) && 
                       coverFiles.map((file, index) => (
@@ -354,6 +395,18 @@ const CreateEvent = () => {
                           />
                         </div>
                       ))
+                  }
+                  {
+                    (eventCreationData?.initialCover && Object.keys(eventCreationData?.initialCover).length > 0) && 
+                        <div 
+                          className="relative"
+                        >
+                          <img 
+                            src={`${getCdnLink(eventCreationData?.initialCover?.url, 'event')}`} 
+                            alt=""
+                            className="w-[100px] h-[100px] rounded-[8px] object-cover" 
+                          />
+                        </div>
                   }
                 </div>
               </div>

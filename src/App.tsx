@@ -99,6 +99,10 @@ function App() {
             <Route path='/dashboard/events/create' element={<CreateEvent />} />
           </Route>
 
+          <Route path='/dashboard/event/edit/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/event/edit/:id' element={<CreateEvent />} />
+          </Route>
+
           <Route path='/dashboard/event/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/event/:id' element={<SingleEvent />} />
           </Route>
