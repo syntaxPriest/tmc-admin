@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap } from './style';
@@ -18,28 +18,99 @@ import { setUser } from '../../store/user/reducer';
 import { clearState } from '../../store/properties/reducer';
 import { useCurrentUser } from '../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../api/instance';
+import { User } from '../../utils/types';
+import { EDIT_USER } from '../../api/action';
+import { useMutation } from '@tanstack/react-query';
+import { enqueueSnackbar } from 'notistack';
+import { Spinner } from '../reusable/spinner';
+import OTPVerifyScreen from './modals/otp-input';
+import { INIT_PASSWORD_CHANGE } from '../../api/auth/onboarding';
 
 const DashboardProfile = () => {
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const cookieUtils = useCookies();
+
+    const [actionType, setActiontype] = useState("")
+    const [openOtpscreen, setOpenOtpScreen] = useState(false);
     const currentUser = useCurrentUser().user;
+    const [mutableUser, setMutableUser] = useState<User>();
+    const [passwordObject, setPasswordObject] = useState<{
+        password: string;
+        confirmPassword: string;
+    }>({
+        password: "",
+        confirmPassword: ""
+    })
 
     const [activePage, setActivePage] = useState('Profile');
     const [showPassword, setShowPassword] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
 
-    const logoutUser = async () => {
-        await cookieUtils[2]('userToken', undefined);
-        dispatch(setUser(null));
-        dispatch(clearState());
-        removeAfterLogout();
-        window.location.href = '/login';
-    };
+    useEffect(() => {
+        setMutableUser((prev) => {
+            return {
+              user_id: currentUser?.id,
+              title: currentUser?.title,
+              first_name: currentUser?.first_name,
+              last_name: currentUser?.last_name,
+              email: currentUser?.email,
+              phone: currentUser?.phone,
+              middle_name: currentUser?.middle_name,
+            };
+        });
+    }, [currentUser])
+
+    const handleChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+      ) => {
+        const { id, value } = e.target;
+    
+        if (id.toLowerCase().includes('password')){
+            setPasswordObject((prev) => {
+                return {
+                  ...prev,
+                  [id]: value,
+                };
+              });
+        }else {
+            setMutableUser((prev) => {
+            return {
+                ...prev,
+                [id]: value,
+            };
+            });
+        }
+      };
+    // EDIT USER INFORMATION
+    const { mutateAsync:editUser, isPending:isEditing } = useMutation({
+        mutationFn: EDIT_USER,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: 'Save changes made successfully!'
+          })
+        },
+    });
+
+    // REQUEST PASSWORD RESET
+    const { mutateAsync:initPasswordChange, isPending:isInitializingRequest } = useMutation({
+        mutationFn: INIT_PASSWORD_CHANGE,
+        onSuccess: (data) => {
+            setOpenOtpScreen(true);
+        },
+    });
 
     return(
         <>
+            <OTPVerifyScreen
+                openToggle={openOtpscreen}
+                closeFunc={() => {
+                    setOpenOtpScreen(false);
+                }}
+                resendOnProcess={false}
+                resendOtp={() => {}}
+            />
             <MainWrap
                 top='0rem'
                 width='100%'
@@ -85,7 +156,7 @@ const DashboardProfile = () => {
                                                     size='64px'
                                                 >
                                                     <img 
-                                                        src='/images/ola.png'
+                                                        src='/images/avatar1.png'
                                                         alt='User'
                                                     />
                                                 </RandomCircle>
@@ -93,15 +164,15 @@ const DashboardProfile = () => {
                                                     className='w-[80%]'
                                                 >
                                                     <Typography 
-                                                        text={'Olanrewaju Benjamin'}
+                                                        text={`${currentUser?.first_name} ${currentUser?.last_name}`}
                                                         color='#091525'
                                                         fontWeight={700}
                                                         fontSize='20px'
                                                         lineHeight='22px'
                                                         margin='0 0 0.4rem 0'
                                                     />
-                                                    <div className="bg-[#FCF9F2] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-[auto] inline-block">
-                                                        {'Super Admin'}
+                                                    <div className="bg-[#FCF9F2] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-[auto] inline-block capitalize">
+                                                        {`${currentUser?.role}`}
                                                     </div>
                                                 </div>
                                             </BoxFlex>
@@ -111,9 +182,17 @@ const DashboardProfile = () => {
                                                 type='button'
                                                 width='auto'
                                                 top='0'
-                                                onClick={() => setShowEdit(true)}
+                                                onClick={() => {
+                                                    if (actionType !== 'edit'){
+                                                        setActiontype('edit')
+                                                    }else {
+                                                        editUser({
+                                                            ...mutableUser
+                                                        })
+                                                    }
+                                                }}
                                             >
-                                                Edit profile
+                                                 {isEditing ? <Spinner /> : actionType === 'edit' ? 'Save Changes' : 'Edit profile'}
                                             </Button>
                                         </div>
                                         <DashboardInner
@@ -133,6 +212,9 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            id='first_name'
+                                                            value={mutableUser?.first_name}
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -142,6 +224,9 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            id='last_name'
+                                                            value={mutableUser?.last_name}
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -151,6 +236,9 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            id='middle_name'
+                                                            value={mutableUser?.middle_name}
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -160,6 +248,10 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            disabled
+                                                            id='email'
+                                                            value={mutableUser?.email}
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -169,6 +261,9 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="number"
                                                             required
+                                                            id='phone'
+                                                            value={mutableUser?.phone}
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                 </InputWrap>
@@ -205,6 +300,9 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            value={passwordObject?.password}
+                                                            id='password'
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -214,6 +312,9 @@ const DashboardProfile = () => {
                                                             autoComplete="off"
                                                             type="text"
                                                             required
+                                                            value={passwordObject?.confirmPassword}
+                                                            id='confirmPassword'
+                                                            onChange={handleChange}
                                                         />
                                                     </InputField>
                                                 </InputWrap>
@@ -223,9 +324,25 @@ const DashboardProfile = () => {
                                                     type='submit'
                                                     width='auto'
                                                     top='30px'
-                                                    onClick={() => navigate('/login')}
+                                                    disabled={
+                                                        isInitializingRequest 
+                                                        || !passwordObject?.password 
+                                                        || !passwordObject?.confirmPassword
+                                                    }
+                                                    onClick={() => {
+                                                        if(passwordObject.password === passwordObject.confirmPassword){
+                                                            initPasswordChange({
+                                                                password: passwordObject?.password
+                                                            })
+                                                        }else {
+                                                            enqueueSnackbar({
+                                                                variant: 'error',
+                                                                message: 'Sorry, password must match!'
+                                                            })
+                                                        }
+                                                    }}
                                                 >
-                                                    Create Password
+                                                    {isInitializingRequest ? <Spinner /> : "Request Password Change"}
                                                 </Button>
                                             </ProfileBoxWrap>
                                         </DashboardInner>

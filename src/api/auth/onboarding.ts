@@ -43,6 +43,12 @@ export const REQUEST_RESET = async (data: {
     return tmcApi.post('/onboarding/init-reset-password', data);
 }
 
+export const INIT_PASSWORD_CHANGE = async (data: {
+    password?: string | null,
+}) => {
+    return tmcApi.post('/user/init-change-password', data);
+}
+
 export const CREATE_PASSWORD = async (data: {
     identifier: string | null,
     password: string,

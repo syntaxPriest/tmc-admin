@@ -148,7 +148,9 @@ const CreateEvent = () => {
       Object.entries(eventCreationData).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      formData.append("id", id)
+      if (isStringInRoute){
+        formData.append("id", id)
+      }
       formData.delete("time")
       formData.append("time", `${eventCreationData?.date} ${eventCreationData?.time}`)
       formData.delete("date")

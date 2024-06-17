@@ -29,7 +29,7 @@ export const GeneralStateSlice = createSlice({
         routeIsChanging: action.payload,
       };
     },
-    updateProposed: (state, action: PayloadAction<boolean>) => {
+    updateProposedMessageData: (state, action: PayloadAction<boolean>) => {
       return {
         ...state,
         routeIsChanging: action.payload,
