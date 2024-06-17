@@ -21,6 +21,14 @@ export const EDIT_USER = async (data: User) => {
     return tmcApi.post(`/user/edit-user`, data);
 }
 
+export const INVITE_MEMBER = async (data: {
+    email: string;
+    membership_type: string;
+    membership_id: string;
+}) => {
+    return tmcApi.post(`/auth/invite-member`, data);
+}
+
 export const SUSPEND_UNSUSPEND_ACTION = async (data: User) => {
     return tmcApi.post(`/user/suspend-user`, data);
 }
