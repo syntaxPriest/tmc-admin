@@ -162,7 +162,6 @@ const AddInventoryItem = ({
       });
     }
     if ((inventoryCreationData?.type === 'booking' || inventoryCreationData?.type === 'lessons') && actionType !== 'edit'){
-      formData.append("category", "swimming");
       formData.append("quantity", "1");
     }
     if (actionType === 'edit'){
@@ -195,7 +194,7 @@ const AddInventoryItem = ({
                 >
                   <option value="restaurant_item">Restaurant Item</option>
                   <option value="booking">Bookings & Service</option>
-                  <option value="lessons">Lessons</option>
+                  <option value="store_item">Merchandise & Store Item</option>
                   {/* <option value="lesson">Lessons</option> */}
                 </select>
               </InputField>
@@ -343,7 +342,7 @@ const AddInventoryItem = ({
                   thousandSeparator
                 />
               </InputField>
-              {(inventoryCreationData?.type !== "booking" && inventoryCreationData?.type !== "lessons") && (
+              {(inventoryCreationData?.type !== "booking") && (
                 <>
                   <InputField width="48%">
                     <p>Qty</p>
@@ -402,7 +401,7 @@ const AddInventoryItem = ({
                 onClick={() => handleCreate()}
                 disabled={
                   isPending ||
-                  (inventoryCreationData?.type === "restaurant_item" &&
+                  ((inventoryCreationData?.type === "restaurant_item" || inventoryCreationData?.type === "store_item") &&
                     (!inventoryCreationData?.category ||
                       !inventoryCreationData?.quantity ||
                       !inventoryCreationData?.product_id)) ||

@@ -81,7 +81,8 @@ const DashboardProfile = () => {
             };
             });
         }
-      };
+    };
+
     // EDIT USER INFORMATION
     const { mutateAsync:editUser, isPending:isEditing } = useMutation({
         mutationFn: EDIT_USER,
