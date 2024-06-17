@@ -6,6 +6,7 @@ export const GET_USERS = async (data: {
     offset?: number;
     suspended?: boolean;
     type?: string;
+    role?: string;
 }) => {
     return tmcApi.get(`/user/filter-users`, {
         params: {
