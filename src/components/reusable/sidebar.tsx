@@ -205,7 +205,7 @@ const SideBarWidget = ({closeNav, mobileDisplay} : SideBarProps) => {
                         </div>
                     </NavItem>
                 </div>
-                <NavLink to='/dashboard/profile'>
+                <NavLink to='/dashboard/settings'>
                     <BoxFlex
                         gap='8px'
                         margin='3rem 0 0 0'
