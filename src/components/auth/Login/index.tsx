@@ -33,24 +33,31 @@ const Login = () => {
     const { mutateAsync, isPending } = useMutation({
         mutationFn: LOGIN_USER,
         onSuccess: async (data) => {
-            await cookieUtils[1]("userToken", data ? data.data.body.token : '', {
-                secure:
-                  process.env.NODE_ENV && process.env.NODE_ENV === "production"
-                    ? true
-                    : false,
-                sameSite: "strict",
-            });
-            setToken(data?.data?.body?.token, `${data?.data?.body?.user?.id}`);
-            dispatch(setUser(data?.data.body.user));
-            localStorage.setItem(
-                'expire_time',
-                JSON.stringify(Date.now() + (3 * 60 * 60 * 1000)),
-            );
-            enqueueSnackbar({
-                variant: 'success',
-                message: 'Login Successful!'
-            })
-            window.location.href = ('/dashboard');
+            if (data?.data?.body?.user.role === 'admin'){
+                await cookieUtils[1]("userToken", data ? data.data.body.token : '', {
+                    secure:
+                    process.env.NODE_ENV && process.env.NODE_ENV === "production"
+                        ? true
+                        : false,
+                    sameSite: "strict",
+                });
+                setToken(data?.data?.body?.token, `${data?.data?.body?.user?.id}`);
+                dispatch(setUser(data?.data.body.user));
+                localStorage.setItem(
+                    'expire_time',
+                    JSON.stringify(Date.now() + (3 * 60 * 60 * 1000)),
+                );
+                enqueueSnackbar({
+                    variant: 'success',
+                    message: 'Login Successful!'
+                })
+                window.location.href = ('/dashboard');
+            }else {
+                enqueueSnackbar({
+                    variant: 'error',
+                    message: "Sorry, you don't have access to this system"
+                })
+            }
         }
     })
 
