@@ -58,6 +58,7 @@ const AskYesOrNo = ({
                                 fontSize='24px'
                                 lineHeight='24px'
                                 align="center"
+                                className="!capitalize"
                             />
                         </div>
                     </BoxFlex>

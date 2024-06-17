@@ -20,13 +20,22 @@ import { useMutation } from '@tanstack/react-query';
 import MembersSkeleton from '../skeletons/members';
 import { Paginate } from '../reusable/paginationComp';
 import EmptyState from '../reusable/emptyState';
+import AskYesOrNo from './modals/askYesOrNo';
+import { SUSPEND_UNSUSPEND_ACTION } from '../../api/action';
+import { enqueueSnackbar } from 'notistack';
 
 const Transactions = () => {
     
     const [activePage, setActivePage] = useState('All');
 	const [showInviteAdmin, setShowInvite] = useState(false);
+    const [askSuspend, setAskSuspend] = useState(false);
+    const [page, setPage] = useState<number | undefined>(1);
 
-    const [page, setPage] = useState<number | undefined>(1)
+    const [userOnSuspension, setUserOnSuspension] = useState({
+        id: "",
+        suspended: false,
+        role: ""
+    })
 
 	const [usersState, setUsersState] = useState({
 		page: 1,
@@ -54,6 +63,24 @@ const Transactions = () => {
 
 		})
 	}, [page]);
+
+    const { mutateAsync: suspend_action, isPending: isSuspending } = useMutation({
+        mutationFn: SUSPEND_UNSUSPEND_ACTION,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: `${userOnSuspension?.suspended ? `You have suspended this ${userOnSuspension?.role} successfully!` : `You have reverted suspension on this ${userOnSuspension?.role} successfully!`}`
+          })
+          if (userOnSuspension?.id){
+            mutateAsync({
+                offset: Number(page) - 1,
+                role: 'admin'
+    
+            })
+          }
+          setAskSuspend(false)
+        },
+    });
 
     return(
         <>
@@ -130,10 +157,31 @@ const Transactions = () => {
                                                 bg='#F3F1EF'
                                                 top="0"
                                                 className='!font-[500] !text-[12px]'
+                                                onClick={() => {
+                                                    setAskSuspend(true);
+                                                    setUserOnSuspension({
+                                                        id: item.id,
+                                                        suspended: item.suspended,
+                                                        role: item.role
+                                                    })
+                                                }}
                                             >
                                                 {item.suspended ? "Unsuspend" : "Suspend"}
                                             </Button>
 										</div>
+                                        {/* FOR SUSPENSION */}
+                                        <AskYesOrNo 
+                                            openToggle={askSuspend}
+                                            headerText={`${item.suspended ? `Unsuspend ${item.role}` : `Suspend ${item.role}`}`}
+                                            question={`Are you sure you want to ${item.suspended ? "unsuspend" : "suspend"} this ${item.role}?`}
+                                            declineText="Cancel"
+                                            actionText={`${item.suspended ? "Unsuspend" : "Suspend"}`}
+                                            yesAction={() => suspend_action({
+                                                user_id: item?.id
+                                            })}
+                                            noAction={() => setAskSuspend(false)}
+                                            actionInProgress={isSuspending}
+                                        />
 									</div>
 								))}
                                 {usersState?.usersCount > 20 && (

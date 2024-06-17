@@ -99,7 +99,9 @@ const DashboardProfile = () => {
     const { mutateAsync:initPasswordChange, isPending:isInitializingRequest } = useMutation({
         mutationFn: INIT_PASSWORD_CHANGE,
         onSuccess: (data) => {
-            setOpenOtpScreen(true);
+            if (data?.data?.ok){
+                setOpenOtpScreen(true);
+            }
         },
     });
 
@@ -110,8 +112,10 @@ const DashboardProfile = () => {
                 closeFunc={() => {
                     setOpenOtpScreen(false);
                 }}
-                resendOnProcess={false}
-                resendOtp={() => {}}
+                resendOnProcess={isInitializingRequest}
+                resendOtp={() => initPasswordChange({
+                    email: currentUser?.email
+                })}
             />
             <MainWrap
                 top='0rem'
@@ -338,7 +342,7 @@ const DashboardProfile = () => {
                                                     onClick={() => {
                                                         if(passwordObject.password === passwordObject.confirmPassword){
                                                             initPasswordChange({
-                                                                password: passwordObject?.password
+                                                                email: currentUser?.email
                                                             })
                                                         }else {
                                                             enqueueSnackbar({

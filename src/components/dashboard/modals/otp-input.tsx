@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ModalWrap,
   ModalChild,
@@ -47,6 +47,24 @@ const OTPVerifyScreen = ({ closeFunc, openToggle, resendOtp, resendOnProcess }: 
   const handleCreate = () => {
   }
 
+  // Resend OTP mutate
+  const handleResend = () => {
+    if (timer === 0 || timer < 0 ){
+        resendOtp();
+    }
+  }
+
+  // Timer functions
+  useEffect(() => {
+      if (timer > 0 && timer !== 0){
+          setInterval(() => {
+              if (timer > 0){
+                  setTimer(timer => timer - 1);
+              }
+          }, 1000)
+      }
+  }, []) //eslint-disable-line
+  
   return (
     <>
       {openToggle && (
@@ -91,7 +109,7 @@ const OTPVerifyScreen = ({ closeFunc, openToggle, resendOtp, resendOnProcess }: 
                                 type='button'
                                 width='100%'
                                 top='30px'
-                                onClick={() => resendOtp()}
+                                onClick={() => handleResend()}
                                 disabled={timer > 0 && resendOnProcess}
                             >
                                 {resendOnProcess ? <Spinner className='text-[#147EFA]' /> : 'Resend Code'}
