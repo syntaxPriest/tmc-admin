@@ -25,6 +25,7 @@ import { enqueueSnackbar } from 'notistack';
 import { Spinner } from '../reusable/spinner';
 import OTPVerifyScreen from './modals/otp-input';
 import { INIT_PASSWORD_CHANGE } from '../../api/auth/onboarding';
+import EmptyState from '../reusable/emptyState';
 
 const DashboardProfile = () => {
     
@@ -51,7 +52,6 @@ const DashboardProfile = () => {
         setMutableUser((prev) => {
             return {
               user_id: currentUser?.id,
-              title: currentUser?.title,
               first_name: currentUser?.first_name,
               last_name: currentUser?.last_name,
               email: currentUser?.email,
@@ -91,6 +91,7 @@ const DashboardProfile = () => {
             variant: 'success',
             message: 'Save changes made successfully!'
           })
+          dispatch(setUser(data?.data?.body?.user))
         },
     });
 
@@ -216,6 +217,7 @@ const DashboardProfile = () => {
                                                             id='first_name'
                                                             value={mutableUser?.first_name}
                                                             onChange={handleChange}
+                                                            disabled={actionType !== 'edit'}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -228,6 +230,7 @@ const DashboardProfile = () => {
                                                             id='last_name'
                                                             value={mutableUser?.last_name}
                                                             onChange={handleChange}
+                                                            disabled={actionType !== 'edit'}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -240,6 +243,7 @@ const DashboardProfile = () => {
                                                             id='middle_name'
                                                             value={mutableUser?.middle_name}
                                                             onChange={handleChange}
+                                                            disabled={actionType !== 'edit'}
                                                         />
                                                     </InputField>
                                                     <InputField width='48%'>
@@ -264,6 +268,7 @@ const DashboardProfile = () => {
                                                             required
                                                             id='phone'
                                                             value={mutableUser?.phone}
+                                                            disabled={actionType !== 'edit'}
                                                             onChange={handleChange}
                                                         />
                                                     </InputField>
@@ -370,7 +375,7 @@ const DashboardProfile = () => {
                                                     lineHeight='22px'
                                                     margin='0 0 2rem 0'
                                                 />
-                                                {
+                                                {/* {
                                                     Array(8).fill(0).map((item, index) => (
                                                         <div 
                                                             className="flex items-center gap-[10px] py-4 border-b"
@@ -387,8 +392,10 @@ const DashboardProfile = () => {
                                                             </div>
                                                         </div>
                                                     ))
-                                                }
-                                                
+                                                } */}
+                                                <EmptyState 
+                                                    text='No login activity yet!'
+                                                />
                                             </ProfileBoxWrap>
                                         </DashboardInner>
                                     </>
