@@ -1,5 +1,6 @@
 export function colorEncoder(status: string) {
   const statusInLowerCase = status.toLowerCase();
+  // console.log(statusInLowerCase)
   switch (statusInLowerCase) {
     case "successful":
     case "success":

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Line, MainWrap, PageToggleText,} from '../../styles/reusable/index';
+import { Line, MainWrap, PageToggleText, StatusCard,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
 import QuickActionWidget from '../reusable/quickaction';
@@ -138,9 +138,13 @@ const Orders = () => {
 											{item?.user?.first_name} {item?.user?.last_name}
 										</p>
                                         <div className='flex-[5] cursor-pointer text-[11px]'>
-											<p className={`bg-[${colorEncoder(item.status)?.bg}] border border-[${colorEncoder(item.status)?.border}] py-[6px] px-[10px] rounded-[100px] text-center inline-block capitalize text-[${colorEncoder(item.status)?.color}] font-[500]`}>
+                                            <StatusCard
+                                                bg={colorEncoder(item.status)?.bg}
+                                                color={colorEncoder(item.status)?.color}
+                                                border={colorEncoder(item.status)?.border}
+                                            >
                                                 {item.status?.replaceAll("_", " ")}
-                                            </p>
+                                            </StatusCard>
 										</div>
                                         <p className='flex-[2] cursor-pointer text-[14px]'>
 											{item?.items.length}

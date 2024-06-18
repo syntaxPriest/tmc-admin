@@ -31,7 +31,7 @@ import { colorEncoder } from '../../../utils/colorHandle';
 import AskYesOrNo from '../modals/askYesOrNo';
 import { enqueueSnackbar } from 'notistack';
 import { DELETE_INVENTORY } from '../../../api/action';
-
+import { StatusCard } from '../../../styles/reusable/index';
 
 interface InventoryStateProps {
     data: inventoryDataProps
@@ -233,9 +233,13 @@ const SingleInventory = () => {
                                                 </div>
                                                 <div>
                                                     <p className='text-[13px]'>Status</p>
-                                                    <p className={`bg-[${colorEncoder(`${inventoryState?.data?.status}`)?.bg}] border border-[${colorEncoder(`${inventoryState?.data?.status}`)?.border}] py-[6px] px-[10px] rounded-[100px] text-center text-[12px] mt-1 max-w-[100%] capitalize inline-block text-[${colorEncoder(`${inventoryState?.data?.status}`)?.color}] font-[700]`}>
+                                                    <StatusCard
+                                                        bg={colorEncoder(`${inventoryState?.data?.status}`)?.bg}
+                                                        color={colorEncoder(`${inventoryState?.data?.status}`)?.color}
+                                                        border={colorEncoder(`${inventoryState?.data?.status}`)?.border}
+                                                    >
                                                         {inventoryState?.data?.status?.replaceAll("_", " ")}
-                                                    </p>
+                                                    </StatusCard>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">

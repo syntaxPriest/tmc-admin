@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Line, MainWrap, PageToggleText,} from '../../styles/reusable/index';
+import { Line, MainWrap, PageToggleText, StatusCard,} from '../../styles/reusable/index';
 import SideBarWidget from '../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardMain, RecentSection, SearchInput } from './style';
 import QuickActionWidget from '../reusable/quickaction';
@@ -64,7 +64,7 @@ const Transactions = () => {
       };
     });
   };
-
+console.log(colorEncoder('credit')?.bg)
     return(
         <>
             <MainWrap
@@ -172,9 +172,13 @@ const Transactions = () => {
                                             {item?.amount ? `₦${commaNumber(item.amount)}` : 'N/A'}
 										</p>
                                         <div className='flex-[3] cursor-pointer text-[11px]'>
-											<p className={`bg-[${colorEncoder(item.type)?.bg}] border border-[${colorEncoder(item.type)?.border}] py-[6px] px-[10px] rounded-[100px] text-center inline-block capitalize text-[${colorEncoder(item.type)?.color}] font-[500]`}>
+											<StatusCard
+                                                bg={colorEncoder(item.type)?.bg}
+                                                color={colorEncoder(item.type)?.color}
+                                                border={colorEncoder(item.type)?.border}
+                                            >
                                                 {item.type?.replaceAll("_", " ")}
-                                            </p>
+                                            </StatusCard>
 										</div>
 									</div>
 								))}

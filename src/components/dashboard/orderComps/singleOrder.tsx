@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../../styles/reusable/index';
+import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle, StatusCard,} from '../../../styles/reusable/index';
 import SideBarWidget from '../../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap, ProgressBar } from './../style';
 import QuickActionWidget from '../../reusable/quickaction';
@@ -201,9 +201,13 @@ const OrderInfo = () => {
                                         lineHeight='22px'
                                         margin='0 0 0.4rem 0'
                                     />
-                                    <div className={`border capitalize bg-[${colorEncoder(`${ordersState?.data?.status}`)?.bg}] border border-[${colorEncoder(`${ordersState?.data?.status}`)?.border}] text-[${colorEncoder(`${ordersState?.data?.status}`)?.color}] text-[12px] py-[4px] px-[12px] rounded-[300px] text-center w-auto inline-block`}>
-                                        {`${ordersState?.data?.status}`}
-                                    </div>
+                                    <StatusCard
+                                        bg={colorEncoder(`${ordersState?.data?.status}`)?.bg}
+                                        color={colorEncoder(`${ordersState?.data?.status}`)?.color}
+                                        border={colorEncoder(`${ordersState?.data?.status}`)?.border}
+                                    >
+                                        {`${ordersState?.data?.status}`?.replaceAll("_", " ")}
+                                    </StatusCard>
                                 </div>
                             </BoxFlex>
                             <div className="flex gap-[10px]">

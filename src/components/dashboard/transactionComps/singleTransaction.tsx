@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle,} from '../../../styles/reusable/index';
+import { BoxFlex, Line, MainWrap, PageListItem, PageListItemWrap, PageToggleText, RandomCircle, StatusCard,} from '../../../styles/reusable/index';
 import SideBarWidget from '../../reusable/sidebar';
 import { DashboardFlex, DashboardHeader, DashboardInner, DashboardMain, ProfileBoxWrap, ProgressBar } from './../style';
 import QuickActionWidget from '../../reusable/quickaction';
@@ -144,9 +144,13 @@ const TransactionInfo = () => {
                                 </div>
                             </BoxFlex>
                             <div className="flex gap-[10px]">
-                                <div className={`bg-[${colorEncoder(`${transactionsState?.data?.type}`)?.bg}] border border-[${colorEncoder(`${transactionsState?.data?.type}`)?.border}] py-[6px] px-[10px] rounded-[100px] text-center inline-block capitalize text-[14px] text-[${colorEncoder(`${transactionsState?.data?.type}`)?.color}] font-[500] mt-3`}>
-                                    {transactionsState?.data?.type}
-                                </div>
+                                <StatusCard
+                                    bg={colorEncoder(`${transactionsState?.data?.type}`)?.bg}
+                                    color={colorEncoder(`${transactionsState?.data?.type}`)?.color}
+                                    border={colorEncoder(`${transactionsState?.data?.type}`)?.border}
+                                >
+                                    {`${transactionsState?.data?.type}`?.replaceAll("_", " ")}
+                                </StatusCard>
                             </div>
                         </div>
                             {

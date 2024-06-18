@@ -635,21 +635,23 @@ export const TypographyStyle = styled.p<TypoProps>`
 interface StatusProps {
     bg: string | undefined;
     color: string | undefined;
+    border: string | undefined;
 }
 
 
 export const StatusCard = styled.p<StatusProps>`
     width:auto;
-    height: 30px;
-    margin:0 auto;
     background: ${p => p.bg};
     color: ${p => p.color};
+    border: 1px solid ${p => p.border || ''};
     font-size:12px;
     text-align:center;
-    display:flex;
-    align-items:center;
+    display: inline-block;
     border-radius: 4px;
-    padding: 4px 8px;
+    padding: 6px 10px;
+    border-radius: 100px;
+    text-transform: capitalize;
+    font-weight: 500;
 `
 
 export const GenericInputWrap = styled.div`

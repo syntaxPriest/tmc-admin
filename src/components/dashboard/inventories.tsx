@@ -22,6 +22,7 @@ import InventorySkeleton from '../skeletons/inventory';
 import classNames from 'classnames';
 import { colorEncoder } from '../../utils/colorHandle';
 import { Paginate } from '../reusable/paginationComp';
+import { StatusCard } from '../../styles/reusable/index';
 
 const Inventories = () => {
     
@@ -226,9 +227,13 @@ const Inventories = () => {
                                             {item?.amount ? `₦${commaNumber(item.amount)}` : 'N/A'}
 										</p>
                                         <div className='flex-[3] cursor-pointer text-[11px]'>
-											<p className={`bg-[${colorEncoder(item.status)?.bg}] border border-[${colorEncoder(item.status)?.border}] py-[6px] px-[10px] rounded-[100px] text-center max-w-[100%] capitalize text-[${colorEncoder(item.status)?.color}] font-[700]`}>
+                                            <StatusCard
+                                                bg={colorEncoder(item.status)?.bg}
+                                                color={colorEncoder(item.status)?.color}
+                                                border={colorEncoder(item.status)?.border}
+                                            >
                                                 {item.status?.replaceAll("_", " ")}
-                                            </p>
+                                            </StatusCard>
 										</div>
 									</div>
 								))}
