@@ -27,6 +27,7 @@ import { NumericFormat } from "react-number-format";
 import { Spinner } from "../../reusable/spinner";
 import { CREATE_INVENTORY, EDIT_INVENTORY } from "../../../api/action";
 import CustomRadio from "../../reusable/customRadio";
+import { getCdnLink } from "../../../utils/imageParser";
 
 interface PropArgs {
   openToggle: boolean;
@@ -270,18 +271,18 @@ const AddInventoryItem = ({
                     ))}
                 </div>
               )}
-              {inventoryData?.media &&
-                    inventoryData?.media.length > 0 &&
-                    inventoryData?.media.map((file, index) => (
-                      <div key={index} className="relative w-[40%]">
-                        <p className="text-[14px]">Current Image</p>
+              {inventoryData?.cover &&
+                    // inventoryData?.cover.map((file, index) => (
+                      <div className="relative w-[40%]">
+                        <p className="text-[14px] mb-2">Current Image</p>
                         <img
-                          src={file?.url}
+                          src={`${getCdnLink(`${inventoryData?.cover}`, 'inventory')}`}
                           alt=""
                           className="w-[80px] h-[80px] rounded-[8px] object-cover"
                         />
                       </div>
-                    ))}
+                    // ))
+                    }
               </div>
               {/* {inventoryCreationData?.type !== "booking" && ( */}
                 <InputField width="100%">

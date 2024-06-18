@@ -27,6 +27,7 @@ import moment from 'moment';
 import commaNumber from 'comma-number';
 import classNames from 'classnames';
 import DeclineOrderModal from '../modals/declineOrder';
+import { getCdnLink } from '../../../utils/imageParser';
 
   
   interface Transaction {
@@ -71,6 +72,7 @@ interface AdditionalData {
 }
 
 interface Item {
+  cover: any;
   additional_data: AdditionalData;
   amount: string;
   category: string;
@@ -224,8 +226,7 @@ const OrderInfo = () => {
                                 {
                                     (ordersState?.data?.items && ordersState?.data?.items.length) && ordersState?.data?.items.map((item, index) => {
                                         const additional_data: AdditionalData = JSON.parse(`${item?.additional_data}`);
-                                        const cover_image = "/images/dummy.jpeg" 
-                                        // item?.media && item?.media.length > 0 ? item?.media[0]?.url : "/images/dummy.jpeg";
+                                        const cover_image = item?.cover ? `${getCdnLink(`${item?.cover}`, 'inventory')}` : "/images/dummy.jpeg";
 
                                         return(
                                         <div 

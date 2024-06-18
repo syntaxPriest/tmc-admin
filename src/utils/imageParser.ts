@@ -1,4 +1,4 @@
-export function getCdnLink (url: string | undefined, type: "event", isAvatar?: boolean, ){
+export function getCdnLink (url: string | undefined, type: "event" | "inventory", isAvatar?: boolean, ){
     if (!url) {
       return null
     }
@@ -7,6 +7,9 @@ export function getCdnLink (url: string | undefined, type: "event", isAvatar?: b
     switch (type) {
         case "event":
             baseUrl =  process.env.REACT_APP_EVENT_IMAGE_CDN_URL || ""
+            break;
+        case "inventory":
+            baseUrl = "https://d1adgjnww1agdn.cloudfront.net";
             break;
         default:
             break;

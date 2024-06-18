@@ -32,6 +32,7 @@ import AskYesOrNo from '../modals/askYesOrNo';
 import { enqueueSnackbar } from 'notistack';
 import { DELETE_INVENTORY } from '../../../api/action';
 import { StatusCard } from '../../../styles/reusable/index';
+import { getCdnLink } from '../../../utils/imageParser';
 
 interface InventoryStateProps {
     data: inventoryDataProps
@@ -153,7 +154,7 @@ const SingleInventory = () => {
                                 vAlign='flex-start'
                             >
                                 <img 
-                                    src='/images/food1.png'
+                                    src={inventoryState?.data?.cover ? `${getCdnLink(`${inventoryState?.data?.cover}`, 'inventory')}` : '/images/dummy.jpeg'}
                                     alt='User'
                                     className='w-[80px]'
                                 />

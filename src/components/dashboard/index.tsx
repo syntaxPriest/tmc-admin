@@ -17,6 +17,7 @@ import { GET_EVENTS } from '../../api/getApis';
 import EmptyState from '../reusable/emptyState';
 import EventsSkeleton from '../skeletons/events';
 import classNames from 'classnames';
+import { getCdnLink } from '../../utils/imageParser';
 
 const DashboardIndex = () => {
 
@@ -134,7 +135,7 @@ const DashboardIndex = () => {
                                             >
                                                 <div className="flex flex-[7] items-center cursor-pointer gap-[10px]">
                                                     <img
-                                                    src={item.cover ? item?.cover : "/images/dummy.jpeg"}
+                                                    src={item.cover ? `${getCdnLink(item.cover, 'event')}` : "/images/dummy.jpeg"}
                                                     className="w-[35px] h-[35px] rounded-[6px]"
                                                     alt="user"
                                                     />

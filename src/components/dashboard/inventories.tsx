@@ -23,6 +23,7 @@ import classNames from 'classnames';
 import { colorEncoder } from '../../utils/colorHandle';
 import { Paginate } from '../reusable/paginationComp';
 import { StatusCard } from '../../styles/reusable/index';
+import { getCdnLink } from '../../utils/imageParser';
 
 const Inventories = () => {
     
@@ -196,7 +197,7 @@ const Inventories = () => {
                                         </div>
 										<div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
                                             <img
-												src='/images/food1.png'
+												src={item?.cover ? `${getCdnLink(item.cover, 'inventory')}` : "/images/dummy.jpeg" }
                                                 className="w-[35px] h-[35px]"
 												alt='user'
 											/>
