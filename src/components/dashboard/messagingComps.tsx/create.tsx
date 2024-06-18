@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BoxFlex,
   Line,
@@ -18,37 +18,48 @@ import {
 } from "./../style";
 import QuickActionWidget from "../../reusable/quickaction";
 import Typography from "../../reusable/typography";
-import {
-  PageToggleHeader,
-  IconFlex,
-  ButtonFlex,
-} from "../../../styles/reusable/index";
 import * as Icon from "react-feather";
 import { Button } from "../../../styles/reusable";
 import { useNavigate } from "react-router-dom";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
-import EditProfile from "./../edit-profile";
 import BottomNavComp from "../../reusable/bottomNav";
-import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
-import { setUser } from "../../../store/user/reducer";
-import { clearState } from "../../../store/properties/reducer";
 import { useCurrentUser } from "../../../store/user/useCurrentUser";
-import { removeAfterLogout } from "../../../api/instance";
-import CustomRadio from "../../reusable/customRadio";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { membershipTypeList } from "../modals/inviteMembers";
+import { useGeneralState } from "../../../store/general/useGeneral";
+import { updateProposedMessageData } from "../../../store/general/reducer";
 
 const CreateMessage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cookieUtils = useCookies();
-  const currentUser = useCurrentUser().user;
+  const { proposedMessageData } = useGeneralState();
 
-  const [eventType, setEventType] = useState<string | boolean>('');
-  const [activePage, setActivePage] = useState("Profile");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
+  useEffect(() => {
+    if (proposedMessageData){
+      setHeadline(proposedMessageData?.headline)
+      setMessage(proposedMessageData?.message)
+    }
+  }, [proposedMessageData])
 
+
+  const [recipientArray, setRecipientArray] = useState<Array<string | number>>([])
+  const [headline, setHeadline] = useState("")
+  const [message, setMessage] = useState<any>("")
+
+  const handleContinueToPreview = () => {
+    dispatch(updateProposedMessageData({
+      ...proposedMessageData,
+      headline,
+      message,
+      receivers: recipientArray
+    }))
+    navigate("/dashboard/messaging/preview")
+  }
+
+  console.log(recipientArray)
   return (
     <>
       <MainWrap top="0rem" width="100%" maxWidth="1200px">
@@ -70,7 +81,10 @@ const CreateMessage = () => {
               <Button
                 bg='#23211D'
                 color='#fff'
-                onClick={() => navigate("/dashboard/messaging/preview")}
+                disabled={recipientArray.length < 1 || !headline || !message}
+                onClick={() => {
+                  handleContinueToPreview()
+                }}
               >
                 Preview
               </Button>
@@ -79,8 +93,26 @@ const CreateMessage = () => {
               <InputWrap
                 className="!max-w-[600px]"
               >
-                <InputField width="100%">
+                <InputField width="48%">
                   <p>Recipient</p>
+                  <select 
+                      required
+                      id='membership_type'
+                      onChange={(e) => {
+                        setRecipientArray((prev:any) => [e.target.value, ...prev])
+                      }}
+                    >
+                        <option value="">Select Membership Type</option>
+                        <option value="all">All Members</option>
+                        {
+                          membershipTypeList.map((item, index) => (
+                            <option value={`${item.name}`}>{`${item.name}s`}</option>
+                          ))
+                        }
+                    </select>
+                </InputField>
+                <InputField width="48%">
+                  <p>Search Recipient</p>
                   <input
                     placeholder="Enter Recipient"
                     autoComplete="off"
@@ -95,16 +127,20 @@ const CreateMessage = () => {
                     autoComplete="off"
                     type="text"
                     required
+                    value={headline}
+                    onChange={(e) => setHeadline(e.target.value)}
                   />
                 </InputField>
+                
                 <InputField width="100%">
                   <p>Message</p>
-                  <textarea
+                  <ReactQuill 
+                    theme="snow" 
+                    value={message} 
+                    onChange={setMessage} 
+                    className="!h-[13rem] !rounded-[10px]"
                     placeholder="Enter Message"
-                    autoComplete="off"
-                    required
-                    className="!h-[13rem]"
-                  ></textarea>
+                  />
                 </InputField>
               </InputWrap>
             </div>

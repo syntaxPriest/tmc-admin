@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BoxFlex,
   Line,
@@ -37,17 +37,36 @@ import { clearState } from "../../../store/properties/reducer";
 import { useCurrentUser } from "../../../store/user/useCurrentUser";
 import { removeAfterLogout } from "../../../api/instance";
 import CustomRadio from "../../reusable/customRadio";
+import { useGeneralState } from "../../../store/general/useGeneral";
+import { POST_MESSAGE } from "../../../api/action";
+import { enqueueSnackbar } from "notistack";
+import { useMutation } from "@tanstack/react-query";
+import { Spinner } from "../../reusable/spinner";
+import { updateProposedMessageData } from "../../../store/general/reducer";
 
 const PreviewMessage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cookieUtils = useCookies();
-  const currentUser = useCurrentUser().user;
+  
+  const { proposedMessageData } = useGeneralState();
 
-  const [eventType, setEventType] = useState<string | boolean>('');
-  const [activePage, setActivePage] = useState("Profile");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: POST_MESSAGE,
+    onSuccess: (data) => {
+      enqueueSnackbar({
+        variant: 'success',
+        message: 'Message published successfully!'
+      })
+      navigate("/dashboard/messaging")
+      dispatch(updateProposedMessageData(null))
+    },
+  });
+
+  const handlePost = () => {
+    mutateAsync({
+      ...proposedMessageData
+    })
+  }
 
   return (
     <>
@@ -57,7 +76,10 @@ const PreviewMessage = () => {
           <DashboardMain>
             <DashboardHeader>
               <div className="flex gap-[8px] items-center">
-                <Icon.ArrowLeft />
+                <Icon.ArrowLeft 
+                  onClick={() => navigate(-1)}
+                  className="cursor-pointer"
+                />
                 <Typography
                   text="Preview Message"
                   color="#091525"
@@ -71,14 +93,17 @@ const PreviewMessage = () => {
                 <Button
                     bg='#F3F1EF'
                     color='#23211D'
+                    onClick={() => navigate(-1)}
                 >
                     Back
                 </Button>
                 <Button
                     bg='#23211D'
                     color='#fff'
+                    onClick={() => handlePost()}
+                    disabled={isPending}
                 >
-                    Post
+                  {isPending ? <Spinner /> : "Post"}
                 </Button>
               </div>
             </DashboardHeader>
@@ -89,40 +114,16 @@ const PreviewMessage = () => {
                     }}
                     className="text-[#323232] font-[600] text-[22px] leading-[120%] mb-[5px]"
                 >
-                    {`Welcome to The 
-                    Metropolitan Club!`}
+                    {proposedMessageData?.headline}
                 </h3>
-                <p
+                <div
                     style={{
                         whiteSpace: 'pre-line'
                     }}
-                    className="text-[14px] text-[#6B6B6B] font-[400]" 
+                    className="text-[14px] text-[#6B6B6B] font-[400] mt-[2rem]" 
+                    dangerouslySetInnerHTML={{__html: `${proposedMessageData?.message}`}}
                 >
-                    {`Dear Esteemed Member,
-
-                    On behalf of The Metropolitan Club, Lagos, I extend a warm and heartfelt welcome to you.
-
-                    It is with great pleasure that I welcome you to our distinguished community, where elegance, sophistication, and camaraderie converge. As the President of this esteemed institution, I take immense pride in the legacy and traditions that define The Metropolitan Club.
-
-                    Founded with a vision to create a sanctuary for those who appreciate the finer things in life, our club has stood as a beacon of excellence in Lagos, providing a haven for individuals to connect, engage, and thrive in an environment of refinement and exclusivity.
-
-                    Whether you are joining us for business networking, social gatherings, or simply seeking a respite from the hustle and bustle of everyday life, The Metropolitan Club promises to exceed your expectations at every turn. Our world-class facilities, impeccable service, and diverse array of events and activities are tailored to cater to your every need and desire.
-
-                    As a member of The Metropolitan Club, you are not just a part of an institution; you are an integral member of a dynamic community of like-minded individuals who share a passion for culture, intellectual discourse, and the pursuit of excellence. Here, friendships are forged, ideas are exchanged, and memories are created that will last a lifetime.
-
-                    I encourage you to take full advantage of all that our club has to offer and to immerse yourself in the rich tapestry of experiences that await you. Whether it's enjoying a gourmet meal in our exquisite dining room, unwinding with a game of tennis on our pristine courts, or attending one of our exclusive cultural events, I am confident that you will find something to delight and inspire you at every turn.
-
-                    As you embark on this journey with us, know that you have the full support and dedication of myself, the Board of Directors, and our entire staff. We are committed to ensuring that your experience at The Metropolitan Club is nothing short of exceptional, and we look forward to welcoming you into our family with open arms.
-
-                    Once again, welcome to The Metropolitan Club, Lagos. May your time with us be filled with joy, fulfillment, and meaningful connections that enrich your life in countless ways.
-
-                    With warmest regards,
-
-                    [President's Signature]
-
-                    [President's Name]
-                    President, The Metropolitan Club, Lagos`}
-                </p>
+                </div>
             </div>
           </DashboardMain>
         </DashboardFlex>

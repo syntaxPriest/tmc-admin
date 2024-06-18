@@ -165,7 +165,7 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
 
 export default InviteMembers;
 
-const membershipTypeList = [
+export const membershipTypeList = [
   {
     name: "Ordinary Member",
     value: 'ordinary_member'

@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import userReducer from "./user/reducer";
 import propertiesReducer from "./properties/reducer";
+import generalReducer from "./general/reducer";
 import storage from "redux-persist/lib/storage";
 import {
   persistStore,
@@ -16,6 +17,7 @@ import {
 const rootReducer = combineReducers({
   userState: userReducer,
   propertiesState: propertiesReducer,
+  generalState: generalReducer,
 });
 const persistConfig = {
   key: "QShelter_APP_STATE",

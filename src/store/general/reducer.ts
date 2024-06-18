@@ -1,17 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
+export interface messageCreationDataProps {
+  channels?: string[],
+  receivers?: Array<string | number>,
+  headline?: string,
+  message?: string;
+}
 type GeneralState = {
   /**
    * detect if a route is changing
    */
   routeIsChanging: boolean;
-  proposedMessageData: {
-    channels?: string[],
-    receivers?: Array<string | number>,
-    headline?: string,
-    message?: string;
-  }
+  proposedMessageData: messageCreationDataProps | null
 };
 
 const initialState: GeneralState = {
@@ -29,16 +30,16 @@ export const GeneralStateSlice = createSlice({
         routeIsChanging: action.payload,
       };
     },
-    updateProposedMessageData: (state, action: PayloadAction<boolean>) => {
+    updateProposedMessageData: (state, action: PayloadAction<messageCreationDataProps | null>) => {
       return {
         ...state,
-        routeIsChanging: action.payload,
+        proposedMessageData: action.payload,
       };
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleRouteIsChanging } = GeneralStateSlice.actions;
+export const { toggleRouteIsChanging, updateProposedMessageData } = GeneralStateSlice.actions;
 
 export default GeneralStateSlice.reducer;

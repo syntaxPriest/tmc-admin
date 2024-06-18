@@ -1,3 +1,4 @@
+import { messageCreationDataProps } from "../../store/general/reducer";
 import { User } from "../../utils/types";
 import { tmcApi } from "./../instance";
 
@@ -47,4 +48,8 @@ export const DECLINE_ORDER = async (data:{
     status: string;
 }) => {
     return tmcApi.post(`/order/update-status`, data);
+}
+
+export const POST_MESSAGE = async (data: messageCreationDataProps) => {
+    return tmcApi.post(`/message/send-message`, data);
 }

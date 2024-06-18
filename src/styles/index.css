@@ -140,6 +140,16 @@ input[type=radio]{
   background: #FCF9F2;
   border-radius: 10px;
 }
+.truncate {
+  width: 100%; /* Adjust the width as needed */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5em; /* Adjust line height based on your design */
+  max-height: 3em; /* line-height * number of lines */
+}
 
 /* .active-nav > div {
   border-right: 2px solid var(--primary-color);

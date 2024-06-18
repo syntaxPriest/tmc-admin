@@ -20,6 +20,7 @@ import { GET_MESSAGES } from '../../api/getApis';
 import EmptyState from '../reusable/emptyState';
 import { Paginate } from '../reusable/paginationComp';
 import MessagesSkeleton from '../skeletons/messages';
+import moment from 'moment';
 
 const Messaging = () => {
     
@@ -101,22 +102,25 @@ const Messaging = () => {
 										<div className='w-[90%] flex flex-col cursor-pointer gap-[10px]'>
 											<div className='w-[100%] flex gap-[10px]'>
 												<p className='cursor-pointer font-black text-[16px] max-w-[80%]'>
-                                                    {item.name}
+                                                    {item.headline}
 												</p>
                                                 <div className="flex gap-[8px]">
-                                                    <p className="border border-[#d0d5dd] shadow-[0px_1px_2px_0px_#1018280D] py-[4px] px-[10px] rounded-[6px] text-center w-auto text-[10px]">
-                                                        SMS
-                                                    </p>
-                                                    <p className="border border-[#d0d5dd] shadow-[0px_1px_2px_0px_#1018280D] py-[4px] px-[10px] rounded-[6px] text-center w-auto text-[10px]">
-                                                        Email
-                                                    </p>
-                                                    <p className="border border-[#d0d5dd] shadow-[0px_1px_2px_0px_#1018280D] py-[4px] px-[10px] rounded-[6px] text-center w-auto text-[10px]">
-                                                        In-App Notification
-                                                    </p>
+                                                    {
+                                                        (item.channels && JSON.parse(item.channels).length > 0) ?
+                                                            JSON.parse(item.channels).map((item:string, index:number) => (
+                                                                <p className="border border-[#d0d5dd] shadow-[0px_1px_2px_0px_#1018280D] py-[4px] px-[10px] rounded-[6px] text-center w-auto text-[10px] capitalize">
+                                                                    {item.replace("_", " ")}
+                                                                </p>
+                                                            ))
+                                                            : null
+                                                    }
                                                 </div>
 											</div>
-                                            <p className='text-[14px] ellipse font-[300]'>Dear Esteemed Member, On behalf of The Metropolitan Club, Lagos, I extend a warm and heartfelt welcome to you. It is with great pleasure that I welcome you to our distinguished community, where elegance, </p>
-                                            <p className='text-[12px] text-[#898579] font-[400]'>121 Recipients • Just Now</p>
+                                            <p 
+                                                className='text-[14px] font-[300] truncate'
+                                                dangerouslySetInnerHTML={{__html: `${item.message}`}}
+                                            ></p>    
+                                            <p className='text-[12px] text-[#898579] font-[400]'>121 Recipients • {moment(`${item?.created_at}`).startOf('hour').fromNow()}</p>
 										</div>
                                         <BoxFlex
                                             width='auto'
