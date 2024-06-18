@@ -159,7 +159,7 @@ const SingleInventory = () => {
                                     className='w-[80px]'
                                 />
                                 <div 
-                                    className='w-[80%]'
+                                    className='w-[80%] mt-2'
                                 >
                                     <Typography 
                                         text={`${inventoryState?.data?.title}`}
