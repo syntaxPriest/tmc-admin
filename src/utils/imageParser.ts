@@ -14,6 +14,7 @@ export function getCdnLink (url: string | undefined, type: "event" | "inventory"
         default:
             break;
     }
+    
     const avatarBaseUrl = process.env.NEXT_PUBLIC_AVATAR_IMAGE_CDN_URL
 
     const fileName = url.split('/').at(-1)

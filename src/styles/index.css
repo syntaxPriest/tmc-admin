@@ -258,14 +258,14 @@ input[type=radio]{
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #ababab;
+  background: #ececec;
   border-radius: 5px;
   cursor:pointer;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #b7b6b6;
+  background: #dbdbdb;
   width: 20px;
   cursor:pointer;
 }

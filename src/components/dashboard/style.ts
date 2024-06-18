@@ -9,7 +9,7 @@ export const DashboardFlex = styled.div`
 
 export const DashboardMain = styled.div`
     width: 78%;
-    height: 100vh;
+    height: 95vh;
     overflow-y: auto;
     max-width:1040px;
     position:relative;
