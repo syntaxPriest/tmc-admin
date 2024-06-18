@@ -25,7 +25,7 @@ import {
 } from "../../../styles/reusable/index";
 import * as Icon from "react-feather";
 import { Button } from "../../../styles/reusable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
 import EditProfile from "./../edit-profile";
 import BottomNavComp from "../../reusable/bottomNav";
@@ -47,7 +47,8 @@ import { updateProposedMessageData } from "../../../store/general/reducer";
 const PreviewMessage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const [querySearchFn] = useSearchParams();
+  const type = querySearchFn.get('type');
   const { proposedMessageData } = useGeneralState();
 
   const { mutateAsync, isPending } = useMutation({
@@ -89,23 +90,27 @@ const PreviewMessage = () => {
                   margin="4px 0 0 0"
                 />
               </div>
-              <div className="flex gap-[8px] items-center">
-                <Button
-                    bg='#F3F1EF'
-                    color='#23211D'
-                    onClick={() => navigate(-1)}
-                >
-                    Back
-                </Button>
-                <Button
-                    bg='#23211D'
-                    color='#fff'
-                    onClick={() => handlePost()}
-                    disabled={isPending}
-                >
-                  {isPending ? <Spinner /> : "Post"}
-                </Button>
-              </div>
+              {
+                type !== 'view' &&
+                <div className="flex gap-[8px] items-center">
+                  <Button
+                      bg='#F3F1EF'
+                      color='#23211D'
+                      onClick={() => navigate(-1)}
+                  >
+                      Back
+                  </Button>
+                  <Button
+                      bg='#23211D'
+                      color='#fff'
+                      onClick={() => handlePost()}
+                      disabled={isPending}
+                  >
+                    {isPending ? <Spinner /> : "Post"}
+                  </Button>
+                </div>
+              }
+              
             </DashboardHeader>
             <div className="my-[2rem]">
                 <h3 

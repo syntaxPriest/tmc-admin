@@ -6,7 +6,7 @@ import QuickActionWidget from '../reusable/quickaction';
 import Typography from '../reusable/typography';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import { PageToggleHeader } from '../../styles/reusable/index';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BottomNavComp from '../reusable/bottomNav';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import PaginationComp from '../reusable/pagination';
@@ -21,9 +21,13 @@ import EmptyState from '../reusable/emptyState';
 import { Paginate } from '../reusable/paginationComp';
 import MessagesSkeleton from '../skeletons/messages';
 import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import { updateProposedMessageData } from '../../store/general/reducer';
 
 const Messaging = () => {
     
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [showSelectModal, setShowSelectModal] = useState(false);
 
     const [page, setPage] = useState<number | undefined>(1)
@@ -98,6 +102,13 @@ const Messaging = () => {
 								messagesState?.messages.map((item: any, index: number) => (
 									<div
 										className='w-full flex justify-between gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+                                        onClick={() => {
+                                            dispatch(updateProposedMessageData({
+                                                message: item.message,
+                                                headline: item.headline
+                                            }))
+                                            navigate(`/dashboard/messaging/preview?type=view`)
+                                        }}
 									>
 										<div className='w-[90%] flex flex-col cursor-pointer gap-[10px]'>
 											<div className='w-[100%] flex gap-[10px]'>
