@@ -88,9 +88,7 @@ const CreateEvent = () => {
   const [coverFormDataArray, setCoverFormDataArray] = useState<FormData[]>([]);
 
   // Event creation datas
-  const [eventCreationData, setEventCreationData] = useState<eventDataProps>({
-    amount: 0
-  })
+  const [eventCreationData, setEventCreationData] = useState<eventDataProps>()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
 
@@ -300,7 +298,6 @@ const CreateEvent = () => {
                     autoComplete="off"
                     type="tel"
                     value={eventCreationData?.amount}
-                    required
                     id='amount'
                     onChange={(e) => setEventCreationData((prev) => { return {
                       ...prev,
@@ -558,7 +555,6 @@ const CreateEvent = () => {
                   !eventCreationData?.title ||
                   !eventCreationData?.about || 
                   !eventCreationData?.location ||
-                  !eventCreationData?.amount ||
                   !eventCreationData?.date ||
                   !eventCreationData?.time ||
                   !eventCreationData?.expected_number_of_attendees ||
