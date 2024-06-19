@@ -104,9 +104,9 @@ const SingleEvent = () => {
                                 vAlign='center'
                             >
                                 <img 
-                                    src={`${getCdnLink(eventState?.data?.cover?.url, 'event')}`}
+                                    src={`${getCdnLink(`${eventState?.data?.cover}`, 'event')}`}
                                     alt='User'
-                                    className='w-[80px]'
+                                    className='w-[80px] rounded-[8px]'
                                 />
                                 <div 
                                     className='w-[80%]'
@@ -237,9 +237,9 @@ const SingleEvent = () => {
                                             <div>
                                                 <p className='text-[16px] mt-[2rem] mb-[0.6rem] font-[500] text-[#898579]'>Cover Image</p>
                                                 <img 
-                                                    src={`${getCdnLink(eventState?.data?.cover?.url, 'event')}`}
+                                                    src={`${getCdnLink(`${eventState?.data?.cover}`, 'event')}`}
                                                     alt="Event Cover" 
-                                                    className="w-[120px] h-[120px]"
+                                                    className="w-[120px] h-[120px] rounded-[8px]"
                                                 />
                                             </div>
                                             {
@@ -253,7 +253,7 @@ const SingleEvent = () => {
                                                                         key={index}
                                                                         src={`${getCdnLink(item?.url, 'event')}`}
                                                                         alt="Event Cover" 
-                                                                        className="w-[120px] h-[120px]"
+                                                                        className="w-[120px] h-[120px] rounded-[8px]"
                                                                     />
                                                                 ))
                                                             }
