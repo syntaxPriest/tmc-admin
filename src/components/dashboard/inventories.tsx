@@ -198,7 +198,7 @@ const Inventories = () => {
 										<div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
                                             <img
 												src={item?.cover ? `${getCdnLink(item.cover, 'inventory')}` : "/images/dummy.jpeg" }
-                                                className="w-[35px] h-[35px]"
+                                                className="w-[35px] h-[35px] rounded-[4px]"
 												alt='user'
 											/>
 											<div className='w-[90%]'>

@@ -143,6 +143,10 @@ const AddInventoryItem = ({
         variant: "success",
         message: `Inventory ${actionType === 'edit' ? 'edited' : 'created'} successfully!`,
       });
+      setInventoryCreationData({
+        amount: 0,
+        type: 'restaurant_item'
+      })
       triggerReload();
       closeFunc();
     },
@@ -345,7 +349,7 @@ const AddInventoryItem = ({
               </InputField>
               {(inventoryCreationData?.type !== "booking") && (
                 <>
-                  <InputField width="48%">
+                  <InputField width="100%">
                     <p>Qty</p>
                     <input
                       placeholder="Enter Qty"
@@ -357,20 +361,21 @@ const AddInventoryItem = ({
                       onChange={handleChange}
                     />
                   </InputField>
-                  <InputField width="48%">
-                    <p>Category</p>
-                    <input
-                      placeholder="Enter Category"
-                      autoComplete="off"
-                      type="text"
-                      required
-                      value={inventoryCreationData?.category}
-                      id="category"
-                      onChange={handleChange}
-                    />
-                  </InputField>
+                  
                 </>
               )}
+              <InputField width="100%">
+                <p>Category</p>
+                <input
+                  placeholder="Enter Category"
+                  autoComplete="off"
+                  type="text"
+                  required
+                  value={inventoryCreationData?.category}
+                  id="category"
+                  onChange={handleChange}
+                />
+              </InputField>
               {
                 actionType === 'edit' &&
                 <InputField width="100%">
