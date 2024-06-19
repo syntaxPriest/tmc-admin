@@ -72,7 +72,7 @@ const SingleInventory = () => {
         onSuccess: (data) => {
           enqueueSnackbar({
             variant: 'success',
-            message: 'Inventor deleted successfully!'
+            message: 'Inventory deleted successfully!'
           })
           navigate("/dashboard/inventories")
         },
