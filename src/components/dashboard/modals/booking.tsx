@@ -5,15 +5,19 @@ import * as Icon from "iconsax-react";
 import { Button } from "../../../styles/reusable";
 import { ArrowDownOnSquareIcon } from '@heroicons/react/24/outline';
 import Typography from "../../reusable/typography";
+import { getCdnLink } from "../../../utils/imageParser";
+import commaNumber from "comma-number";
 
 interface PropArgs {
     openToggle: boolean;
     closeFunc: any;
+    selectedBooking: any;
 }
 
 const BookingsInfo = ({
     closeFunc,
-    openToggle 
+    openToggle,
+    selectedBooking
 } : PropArgs) => {
     return(
         <>
@@ -30,8 +34,8 @@ const BookingsInfo = ({
                         gap="24px"
                     >
                         <img 
-                            src='/images/hall.png'
-                            alt='House'
+                            src={selectedBooking.product?.cover ? `${getCdnLink(`${selectedBooking.product?.cover}`, 'event')}` : '/images/dummy.jpeg'}
+                            alt='Inventory'
                             style={{
                                 width: '70px',
                                 height: '70px',
@@ -41,7 +45,7 @@ const BookingsInfo = ({
                         />
                         <div>
                             <Typography 
-                                text='Main Hall'
+                                text={selectedBooking.product?.title ? selectedBooking.product?.title : 'N/A'}
                                 color='#091525'
                                 fontWeight={600}
                                 fontSize='24px'
@@ -50,7 +54,7 @@ const BookingsInfo = ({
                             <div className="flex items-center gap-[4px]">
                                 <Icon.Calendar color ='#23211D' size={15} />
                                 <Typography 
-                                    text='Tuesday, May 9  • 4:30 PM'
+                                    text={`${new Date(`${selectedBooking?.start_date}`).toDateString()} • ${selectedBooking.time}`}
                                     color='#23211D'
                                     fontWeight={400}
                                     fontSize='12px'
@@ -68,29 +72,29 @@ const BookingsInfo = ({
                     >
                         <PageListItem width='50%'>
                             <p className="font-[300] text-[12px]">Scheduled By</p>
-                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">Prof. Oluwole Soyinka</p>
+                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">{selectedBooking.user?.first_name} {selectedBooking.user?.last_name}</p>
                         </PageListItem>
                         <PageListItem width='50%'>
                             <p className="font-[300] text-[12px]">Status</p>
                              <div className="bg-[#FCF9F2] border border-[#EBD7AD] text-[11px] py-[4px] px-[12px] rounded-[300px] text-center w-auto inline-block mt-3">
-                                Upcoming
+                                {new Date(selectedBooking?.start_date) > new Date() ?  "Upcoming" : "Completed"}
                             </div>
                         </PageListItem>
                         <PageListItem width='50%' className="!mt-7">
                             <p className="font-[300] text-[12px]">Venue Price</p>
-                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">₦400,000</p>
+                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">₦{commaNumber(selectedBooking?.amount)}</p>
                         </PageListItem>
                         <PageListItem width='50%' className="!mt-7">
                             <p className="font-[300] text-[12px]">Amount Paid</p>
-                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">₦480,000</p>
+                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">₦{commaNumber(selectedBooking?.amount)}</p>
                         </PageListItem>
                         <PageListItem width='50%' className="!mt-7">
                             <p className="font-[300] text-[12px]">Refundable Booking Fee</p>
-                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">₦80,000</p>
+                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">---</p>
                         </PageListItem>
                         <PageListItem width='50%' className="!mt-7">
                             <p className="font-[300] text-[12px]">Reminder</p>
-                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">2 days to booking</p>
+                            <p className="!font-[600] !text-[#23211D] text-[14px] pt-2">---</p>
                         </PageListItem>
                     </PageListItemWrap>
                 </ModalChild>

@@ -19,12 +19,14 @@ import { useMutation } from '@tanstack/react-query';
 import BookingsSkeleton from '../skeletons/bookings';
 import EmptyState from '../reusable/emptyState';
 import { Paginate } from '../reusable/paginationComp';
+import { getCdnLink } from '../../utils/imageParser';
 
 const Bookings = () => {
     const [page, setPage] = useState<number | undefined>(1)
     const [activePage, setActivePage] = useState('Upcoming');
     const [openBookingInfo, setOpenBookingInfo] = useState(false)
     const [debouncedValue, setDebouncedValue] = useState<string>("");
+    const [selectedBooking, setSelectedBooking] = useState()
 
     const [bookingsState, setBookingsState] = useState({
       page: 1,
@@ -63,11 +65,13 @@ const Bookings = () => {
         };
       });
     };
+
     return(
         <>
             <BookingsInfo 
                 openToggle={openBookingInfo}
                 closeFunc={() => setOpenBookingInfo(false)}
+                selectedBooking={selectedBooking}
             />
             <MainWrap
                 top='0rem'
@@ -149,28 +153,31 @@ const Bookings = () => {
 								bookingsState?.bookings.map((item: any, index: number) => (
 									<div
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
-                                        onClick={() => setOpenBookingInfo(true)}
+                                        onClick={() => {
+                                            setOpenBookingInfo(true);
+                                            setSelectedBooking(item)
+                                        }}
 									>
 										<div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
 											<img
-												src={item.image}
-                                                className="w-[35px] h-[35px]"
+												src={item.product?.cover ? `${getCdnLink(`${item.product?.cover}`, 'event')}` : '/images/dummy.jpeg'}
+                                                className="w-[35px] h-[35px] rounded-[8px]"
 												alt='user'
 											/>
 											<div className='w-[90%]'>
 												<h3 className='font-medium text-[14px] cursor-pointer'>
-													{item.name}
+													{item.product?.title ? item.product?.title : 'N/A'}
 												</h3>
 											</div>
 										</div>
 										<p className='flex-[3] cursor-pointer text-[14px]'>
-											{`${new Date().toDateString()}`}
+											{`${new Date(item?.start_date).toDateString()}`}
 										</p>
 										<p className='flex-[3] cursor-pointer text-[14px]'>
-											{`${new Date().toLocaleTimeString()}`}
+											{item.time}
 										</p>
 										<p className='flex-[5] cursor-pointer text-[14px]'>
-											{item?.scheduledBy ? item.scheduledBy : 'N/A'}
+                                            {item.user?.first_name} {item.user?.last_name}
 										</p>
 										<p className='flex-[2] text-[12px] font-semibold text-[#8B6C23] cursor-pointer flex text-center'>
 											View
