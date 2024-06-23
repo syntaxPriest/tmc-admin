@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import {
   ModalWrap,
   ModalChild,
@@ -14,6 +14,10 @@ import { Button } from "../../../styles/reusable";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import Typography from "../../reusable/typography";
+import { useMutation } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import { INVITE_ADMIN } from "../../../api/action";
+import { Spinner } from "../../reusable/spinner";
 
 interface PropArgs {
   openToggle: boolean;
@@ -21,6 +25,41 @@ interface PropArgs {
 }
 
 const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
+
+  const [inviteeData, setInviteeData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: ""
+  })
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { id, value } = e.target;
+      setInviteeData((prev) => {
+        return {
+            ...prev,
+            [id]: value,
+        };
+      });
+    }
+
+  const {mutateAsync, isPending} = useMutation({
+    mutationFn: INVITE_ADMIN,
+    onSuccess: (data) => {
+      enqueueSnackbar({
+        variant: 'success',
+        message: 'Admin added successfully!'
+      })
+      closeFunc();
+    }
+  })
+
+  const handleInvite = () => {
+    mutateAsync(inviteeData);
+  }
+  
   return (
     <>
       {openToggle && (
@@ -40,6 +79,9 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                         autoComplete="off"
                         type="text"
                         required
+                        id='first_name'
+                        value={inviteeData?.first_name}
+                        onChange={handleChange}
                     />
                 </InputField>
                 <InputField width='48%'>
@@ -49,6 +91,9 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                         autoComplete="off"
                         type="text"
                         required
+                        id='last_name'
+                        value={inviteeData?.last_name}
+                        onChange={handleChange}
                     />
                 </InputField>
                 <InputField width='48%'>
@@ -57,7 +102,8 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                         placeholder='Enter Middle Name'
                         autoComplete="off"
                         type="text"
-                        required
+                        id='middle_name'
+                        onChange={handleChange}
                     />
                 </InputField>
                 <InputField width='48%'>
@@ -65,8 +111,11 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                     <input 
                         placeholder='Enter Email Address'
                         autoComplete="off"
-                        type="text"
+                        type="email"
                         required
+                        id='email'
+                        value={inviteeData?.email}
+                        onChange={handleChange}
                     />
                 </InputField>
                 <InputField width='48%'>
@@ -76,16 +125,19 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                         autoComplete="off"
                         type="number"
                         required
+                        id='phone'
+                        value={inviteeData?.phone}
+                        onChange={handleChange}
                     />
                 </InputField>
-                <InputField width='48%'>
+                {/* <InputField width='48%'>
                     <p>Admin Type</p>
                     <select 
                         required
                     >
                         <option value="">Select Membership Type</option>
                     </select>
-                </InputField>
+                </InputField> */}
             </InputWrap>
             <Button
                 bg='#23211D'
@@ -93,8 +145,16 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                 type='button'
                 width='auto'
                 top='0'
+                onClick={() => handleInvite()}  
+                disabled={
+                  isPending ||
+                  !inviteeData?.first_name || 
+                  !inviteeData?.email || 
+                  !inviteeData?.last_name || 
+                  !inviteeData?.phone
+                }
             >
-                Create Admin
+                {isPending ? <Spinner /> : 'Create Admin'}
             </Button>
           </ModalChild>
         </ModalWrap>

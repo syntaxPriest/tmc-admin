@@ -30,6 +30,16 @@ export const INVITE_MEMBER = async (data: {
     return tmcApi.post(`/auth/invite-member`, data);
 }
 
+export const INVITE_ADMIN = async (data: {
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
+    email: string;
+    phone: string;
+}) => {
+    return tmcApi.post(`/user/add-admin`, data);
+}
+
 export const SUSPEND_UNSUSPEND_ACTION = async (data: User) => {
     return tmcApi.post(`/user/suspend-user`, data);
 }
