@@ -30,6 +30,10 @@ const Transactions = () => {
 
   const [transactionsState, setTransactionsState] = useState({
     page: 1,
+    overview: {
+        total_transactions: "",
+        total_balances: ""
+    },
     searchQuery: "",
     transactions: [],
     transactionsCount: 0,
@@ -41,6 +45,7 @@ const Transactions = () => {
       setTransactionsState((prev) => {
         return {
           ...prev,
+          overview: data?.data?.body?.overview,
           transactions: data?.data?.body?.transactions,
           transactionsCount: data?.data?.body?.total_count,
         };
@@ -107,11 +112,11 @@ console.log(colorEncoder('credit')?.bg)
                         </DashboardHeader>
                         <div className="grid grid-cols-2 gap-[24px] my-[2rem]">
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">&#8358;0.00</h3>
+                                <h3 className="text-[20px] font-black">{transactionsState?.overview?.total_transactions ? `₦${commaNumber(transactionsState?.overview?.total_transactions)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Transaction Value</p>
                             </div>
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">&#8358;0.00</h3>
+                                <h3 className="text-[20px] font-black">{transactionsState?.overview?.total_balances ? `₦${commaNumber(transactionsState?.overview?.total_balances)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Bar Account Balance</p>
                             </div>
                         </div>

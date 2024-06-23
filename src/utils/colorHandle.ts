@@ -6,6 +6,7 @@ export function colorEncoder(status: string) {
     case "success":
     case "active":
     case "complete":
+    case "delivered":
     case "completed":
     case "open":
     case "in_stock":
@@ -37,6 +38,12 @@ export function colorEncoder(status: string) {
         color: "#8B6C23",
         border: "#EBD7AD",
       };
+    case "verified":
+      return {
+        bg: "#EFF8FF",
+        color: "#175CD3",
+        border: "#B2DDFF"
+      }
     default:
       break;
   }

@@ -53,3 +53,10 @@ export const DECLINE_ORDER = async (data:{
 export const POST_MESSAGE = async (data: messageCreationDataProps) => {
     return tmcApi.post(`/message/send-message`, data);
 }
+
+export const UPDATE_ORDER_STATUS = async (data:{
+    id: string | undefined;
+    status: string | undefined;
+}) => {
+    return tmcApi.post(`/order/update-status`, data);
+}

@@ -77,9 +77,10 @@ const AskYesOrNo = ({
                         <Button
                             bg={'#F3F1EF'}
                             type='button'
-                            width='48%'
+                            width='49%'
                             top='0'
                             onClick={() => noAction()} 
+                            className="!capitalize !text-[12px]"
                         >
                             {declineText}
                         </Button>
@@ -87,9 +88,10 @@ const AskYesOrNo = ({
                             bg={actionText.includes("Delete") ? '#D23B3B' : '#23211D'}
                             color='#fff'
                             type='button'
-                            width='48%'
+                            width='49%'
                             top='0'
                             onClick={() => yesAction()}
+                            className="!capitalize !text-[12px]"
                         >
                             {actionInProgress ? <Spinner /> :  actionText}
                         </Button>

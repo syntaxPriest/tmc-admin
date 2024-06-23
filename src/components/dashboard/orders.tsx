@@ -108,8 +108,8 @@ const Orders = () => {
                         <div className="mt-5">
                             {/* Table Header */}
 							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
-								<p className='flex-[4] text-[14px]'>Order No.</p>
-								<p className='flex-[3] text-[14px]'>Date</p>
+								<p className='flex-[3] text-[14px]'>Order No.</p>
+								<p className='flex-[4] text-[14px]'>Date</p>
 								<p className='flex-[7] text-[14px]'>Customer</p>
                                 <p className='flex-[5] text-[14px]'>Status</p>
                                 <p className='flex-[2] text-[14px]'>Items</p>
@@ -123,7 +123,7 @@ const Orders = () => {
 										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
                                         onClick={() => navigate(`/dashboard/order/${item.id}`)}
 									>
-										<div className='flex flex-[4] items-center cursor-pointer gap-[10px]'>
+										<div className='flex flex-[3] items-center cursor-pointer gap-[10px]'>
 								
 											<div className='w-[90%]'>
 												<h3 className='font-regular text-[14px] cursor-pointer'>
@@ -131,7 +131,7 @@ const Orders = () => {
 												</h3>
 											</div>
 										</div>
-										<p className='flex-[3] cursor-pointer text-[14px]'>
+										<p className='flex-[4] cursor-pointer text-[14px]'>
 											{`${new Date(item.created_at).toDateString()}`}
 										</p>
 										<p className='flex-[7] cursor-pointer text-[14px]'>

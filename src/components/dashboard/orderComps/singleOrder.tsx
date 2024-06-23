@@ -28,6 +28,9 @@ import commaNumber from 'comma-number';
 import classNames from 'classnames';
 import DeclineOrderModal from '../modals/declineOrder';
 import { getCdnLink } from '../../../utils/imageParser';
+import AskYesOrNo from '../modals/askYesOrNo';
+import { UPDATE_ORDER_STATUS } from '../../../api/action';
+import { enqueueSnackbar } from 'notistack';
 
   
   interface Transaction {
@@ -108,6 +111,7 @@ const OrderInfo = () => {
 
     const {id} = useParams();
 
+    const [askUpdate, setAskUpdate] = useState(false);
     const [activePage, setActivePage] = useState('Details');;
     const [openDeclineModal, setOpenDeclineModal] = useState(false)
     const [ordersState, setOrdersState] = useState<OrderStateProps>();
@@ -140,12 +144,70 @@ const OrderInfo = () => {
         }
       }, [id]);
 
+    //   Order processing
+    const getNext = () => {
+        const currentStatus = ordersState?.data?.status;
+
+        switch (currentStatus) {
+            case "processing":
+                return {
+                    title: 'verify order',
+                    nextStatus: "verified"
+                }
+            case "verified":
+                return {
+                    title: 'mark as delivered',
+                    nextStatus: "delivered"
+                }
+            case "delivered":
+                return {
+                    title: 'mark as completed',
+                    nextStatus: "completed"
+                }
+            default:
+                break;
+        }
+    }
+
+    const { mutateAsync: updateStatus, isPending:isUpdatingStatus } = useMutation({
+        mutationFn: UPDATE_ORDER_STATUS,
+        onSuccess: (data) => {
+            if (id){
+                mutateAsync({
+                    id,
+                });
+            }
+            enqueueSnackbar({
+                variant: 'success',
+                message: 'Status updated successfully!'
+            })
+            setAskUpdate(false)
+        },
+    });
+
+    const handleUpdate = () => {
+        updateStatus({
+            id,
+            status: getNext()?.nextStatus
+        })
+    }
+
     return(
         <>
             <DeclineOrderModal 
                 openToggle={openDeclineModal}
                 closeFunc={() => setOpenDeclineModal(false)}
                 id={id ? id : ""}
+            />
+            <AskYesOrNo 
+                openToggle={askUpdate}
+                headerText={`${getNext()?.title}`}
+                question={`Are you sure you want to ${getNext()?.title}?`}
+                declineText="Cancel"
+                actionText={`${getNext()?.title}`}
+                yesAction={() => handleUpdate()}
+                noAction={() => setAskUpdate(false)}
+                actionInProgress={isUpdatingStatus}
             />
             <MainWrap
                 top='0rem'
@@ -243,7 +305,7 @@ const OrderInfo = () => {
                                                         <div className="bg-[#FCF9F2] text-[12px] py-[4px] px-[8px] rounded-[300px] text-center w-auto inline-block mb-2">
                                                             {additional_data?.eat_in ? "Eat-In" : additional_data?.take_out ? "Take-Out" : "" }
                                                         </div>
-                                                        <p className="text-[14px] text-[#898579]">{item?.qty} {item?.qty > 1 ? "plates" : "plate"}</p>
+                                                        <p className="text-[14px] text-[#898579]">Qty: {item?.qty}</p>
                                                     </div>
                                                     <p className="text-[12px]">{item?.title}</p>
                                                     <p className="text-[13px] font-bold">₦{commaNumber(`${Number(item?.total_amount) / Number(item?.qty)}`)}</p>
@@ -268,7 +330,7 @@ const OrderInfo = () => {
                                             width='auto'
                                             top='0'
                                             onClick={() => setOpenDeclineModal(true)}
-                                            disabled={ordersState?.data?.status !== 'processing'}
+                                            disabled={ordersState?.data?.status === 'declined' || ordersState?.data?.status === 'completed'}
                                         >
                                             Decline Order
                                         </Button>
@@ -278,9 +340,11 @@ const OrderInfo = () => {
                                             type='button'
                                             width='auto'
                                             top='0'
-                                            disabled={ordersState?.data?.status !== 'processing'}
+                                            onClick={() => setAskUpdate(true)}
+                                            disabled={ordersState?.data?.status === 'declined' || ordersState?.data?.status === 'completed'} 
+                                            className='!capitalize'
                                         >
-                                            Verify Order
+                                            {getNext()?.title}
                                         </Button>
                                     </div>
                                     
