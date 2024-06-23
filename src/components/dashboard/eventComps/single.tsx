@@ -120,9 +120,9 @@ const SingleEvent = () => {
                                         margin='0 0 0.4rem 0'
                                     />
                                     <Typography 
-                                        text={`₦${commaNumber(Number(eventState?.data?.amount))}`}
+                                        text={Number(eventState?.data?.amount) ? `₦${commaNumber(Number(eventState?.data?.amount))}` : "Free"}
                                         color='#091525'
-                                        fontWeight={500}
+                                        fontWeight={400}
                                         fontSize='16px'
                                         lineHeight='22px'
                                         margin='0 0 0.4rem 0'

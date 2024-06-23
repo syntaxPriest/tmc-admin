@@ -61,9 +61,7 @@ export interface eventDataProps {
   cover?: {
     url: string;
   },
-  initialCover?: {
-    url: string;
-  },
+  initialCover?: string;
   media?: Array<{
     url: string;
   }>
@@ -413,7 +411,7 @@ const CreateEvent = () => {
                           className="relative"
                         >
                           <img 
-                            src={`${getCdnLink(eventCreationData?.initialCover?.url, 'event')}`} 
+                            src={`${getCdnLink(eventCreationData?.initialCover, 'event')}`} 
                             alt=""
                             className="w-[100px] h-[100px] rounded-[8px] object-cover" 
                           />
