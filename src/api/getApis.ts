@@ -1,5 +1,15 @@
 import { tmcApi } from "./instance";
 
+export const GET_DASHBOARD_OVERVIEW = async (data: {
+    user_id?: string | number
+}) => {
+    return tmcApi.post(`/user/dashboard-overview`, {
+        params: {
+            ...data,
+        }
+    });
+}
+
 export const GET_USERS = async (data: {
     search?: string;
     with_trashed?: boolean;

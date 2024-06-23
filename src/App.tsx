@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './styles/App.css';
 import './styles/index.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { setToken } from './api/instance';
 import { useCookies } from 'react-cookie';
 import LoginPage from './pages/auth/login';
@@ -64,6 +64,7 @@ function App() {
     <IdleTimerContainer />
     <Router>
       <Routes>
+        <Route path="*" element={<Navigate to="/dashboard" />} />
         {/* Authentication */}
         <Route path='/login' element={<PreventAuthRoute isAuthenticated={isAuthenticated} />}>
           <Route path='/login' element={<LoginPage />} />

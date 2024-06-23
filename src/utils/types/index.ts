@@ -20,4 +20,13 @@ export interface User {
     suspended?: boolean;
     title?: string;
     updated_at?: string;
-  }
+}
+
+export interface Statistics {
+  members_count: number;
+  products_count: number;
+  total_balances: number;
+  total_transactions: number;
+  upcoming_bookings: number;
+  upcoming_events_count: number;
+}

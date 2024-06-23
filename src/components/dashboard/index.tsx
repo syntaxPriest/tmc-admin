@@ -11,19 +11,21 @@ import CopiedNotifier from '../reusable/clipboard';
 import { copyText } from '../../utils/copyText';
 import PropertyMilestone from '../reusable/propertyMilestone';
 import BottomNavComp from '../reusable/bottomNav';
-import { events } from './events';
 import { useMutation } from '@tanstack/react-query';
-import { GET_EVENTS } from '../../api/getApis';
+import { GET_DASHBOARD_OVERVIEW, GET_EVENTS } from '../../api/getApis';
 import EmptyState from '../reusable/emptyState';
 import EventsSkeleton from '../skeletons/events';
 import classNames from 'classnames';
 import { getCdnLink } from '../../utils/imageParser';
+import { Statistics } from '../../utils/types';
+import commaNumber from 'comma-number';
 
 const DashboardIndex = () => {
 
     const navigate = useNavigate();
     const {user} = useCurrentUser();
 
+    const [dashboardOverview, setDashboardOverview] = useState<Statistics>()
     const [eventsState, setEventsState] = useState({
         page: 1,
         activeIndex: -1,
@@ -44,12 +46,22 @@ const DashboardIndex = () => {
             });
         },
     });
+
+    // GET DASHBOARD OVERVIEW
+
+    const { mutateAsync: getDashboardOverview, isPending:gettingOverview } = useMutation({
+        mutationFn: GET_DASHBOARD_OVERVIEW,
+        onSuccess: (data) => {
+            setDashboardOverview(data?.data?.body)
+        },
+    });
     
     useEffect(() => {
         mutateAsync({
             offset: 0,
             status: 'upcoming',
         });
+        getDashboardOverview({});
     }, []);
 
     return(
@@ -79,36 +91,41 @@ const DashboardIndex = () => {
                         </DashboardHeader>
                         <div className="grid grid-cols-4 gap-[24px] my-[2rem]">
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">250</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.members_count ? commaNumber(dashboardOverview?.members_count) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Members</p>
                             </div>
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">5</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_events_count ? commaNumber(dashboardOverview?.upcoming_events_count) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Upcoming Events</p>
                             </div>
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">17</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_bookings ? commaNumber(dashboardOverview?.upcoming_bookings) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Scheduled Bookings</p>
                             </div>
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">217</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.products_count ? commaNumber(dashboardOverview?.products_count) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Available Products</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-[24px] my-[2rem]">
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">&#8358;3,421,563</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.total_transactions ? `₦${commaNumber(dashboardOverview?.total_transactions)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Transaction Value</p>
                             </div>
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">&#8358;1,332,054</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.total_balances ? `₦${commaNumber(dashboardOverview?.total_balances)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Bar Account Balance</p>
                             </div>
                         </div>
                         <div className="border rounded-[8px]">
                             <div className="py-5 px-4 flex items-center justify-between font-[500] text-[14px] border-b">
                                 <p>Upcoming Events</p>
-                                <p className='text-[var(--primary-color)]'>View All</p>
+                                <p 
+                                    className='text-[var(--primary-color)] cursor-pointer'
+                                    onClick={() => navigate("/dashboard/events")}
+                                >
+                                    View All
+                                </p>
                             </div>
                             <div className="">
                             {gettingEvents ? (
@@ -174,10 +191,16 @@ const DashboardIndex = () => {
                                                     eventsState?.activeIndex === index && (
                                                     <div className="w-[120px] absolute top-[3.5rem] right-0 rounded-[10px] text-[14px] text-[#898579] border shadow-[0px_4px_8px_0px_#0000001A] bg-[#fff] text-center z-[1]">
                                                         <p className="py-[8px] px-[10px] border-b">
-                                                        View
+                                                            View
                                                         </p>
-                                                        <p className="py-[8px] px-[10px] border-b">
-                                                        Edit
+                                                        <p 
+                                                            className="py-[8px] px-[10px] border-b"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                navigate(`/dashboard/event/edit/${item.id}`)
+                                                            }}
+                                                        >
+                                                            Edit
                                                         </p>
                                                     </div>
                                                     )

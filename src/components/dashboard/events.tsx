@@ -206,7 +206,13 @@ const Events = () => {
                             <p className="py-[8px] px-[10px] border-b">
                               View
                             </p>
-                            <p className="py-[8px] px-[10px] border-b">
+                            <p 
+                              className="py-[8px] px-[10px] border-b"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/dashboard/event/edit/${item.id}`)
+                              }}
+                            >
                               Edit
                             </p>
                           </div>
@@ -238,42 +244,3 @@ const Events = () => {
 export default Events;
 
 const pageItems = ["Upcoming", "Ongoing", "Completed"];
-
-export const events = [
-  {
-    name: "Karaoke & Games with Alali VI",
-    image: "/images/karaoke.png",
-    date: "",
-    location: "Club Main Hall",
-    attendees: "107",
-  },
-  {
-    name: "Tuesday Lunch",
-    image: "/icons/cutlery.png",
-    date: "",
-    location: "Club Main Hall",
-    attendees: "58",
-  },
-  {
-    name: "Annual General Meeting",
-    image: "/icons/date.png",
-    date: "",
-    location: "Club Main Hall",
-    attendees: "60",
-  },
-
-  {
-    name: "Meeting with the President",
-    image: "/icons/cutlery.png",
-    date: "",
-    location: "Club Main Hall",
-    attendees: "37",
-  },
-  {
-    name: "Tuesday Lunch",
-    image: "/icons/date.png",
-    date: "",
-    location: "Club Main Hall",
-    attendees: "107",
-  },
-];
