@@ -65,6 +65,7 @@ export const GET_TRANSACTIONS = async (data: {
     status?: string;
     offset?: number;
     type?: string;
+    user_id?: string;
 }) => {
     return tmcApi.get(`/wallet/list-all-transactions`, {
         params: {

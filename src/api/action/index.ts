@@ -64,6 +64,14 @@ export const POST_MESSAGE = async (data: messageCreationDataProps) => {
     return tmcApi.post(`/message/send-message`, data);
 }
 
+export const EDIT_MESSAGE = async (data: messageCreationDataProps) => {
+    return tmcApi.post(`/message/edit-message`, data);
+}
+
+export const DELETE_MESSAGE = async (data: {id: string}) => {
+    return tmcApi.post(`/message/delete-message`, data);
+}
+
 export const UPDATE_ORDER_STATUS = async (data:{
     id: string | undefined;
     status: string | undefined;

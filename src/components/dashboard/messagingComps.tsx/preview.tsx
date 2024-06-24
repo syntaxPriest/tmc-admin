@@ -38,7 +38,7 @@ import { useCurrentUser } from "../../../store/user/useCurrentUser";
 import { removeAfterLogout } from "../../../api/instance";
 import CustomRadio from "../../reusable/customRadio";
 import { useGeneralState } from "../../../store/general/useGeneral";
-import { POST_MESSAGE } from "../../../api/action";
+import { EDIT_MESSAGE, POST_MESSAGE } from "../../../api/action";
 import { enqueueSnackbar } from "notistack";
 import { useMutation } from "@tanstack/react-query";
 import { Spinner } from "../../reusable/spinner";
@@ -52,11 +52,11 @@ const PreviewMessage = () => {
   const { proposedMessageData } = useGeneralState();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: POST_MESSAGE,
+    mutationFn: type === 'edit' ? EDIT_MESSAGE : POST_MESSAGE,
     onSuccess: (data) => {
       enqueueSnackbar({
         variant: 'success',
-        message: 'Message published successfully!'
+        message: type === 'edit' ? "Saved changes successfuly" : 'Message published successfully!'
       })
       navigate("/dashboard/messaging")
       dispatch(updateProposedMessageData(null))
@@ -106,7 +106,7 @@ const PreviewMessage = () => {
                       onClick={() => handlePost()}
                       disabled={isPending}
                   >
-                    {isPending ? <Spinner /> : "Post"}
+                    {isPending ? <Spinner /> : type === 'edit' ? "Save Changes" : "Post"}
                   </Button>
                 </div>
               }

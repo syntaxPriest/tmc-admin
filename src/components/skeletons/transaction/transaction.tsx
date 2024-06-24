@@ -1,7 +1,7 @@
 export default function TransactionSkeleton() {
   return (
     <div className="py-4 w-full mx-auto">
-        {Array(2)
+        {Array(4)
           .fill(0)
           .map((item, index) => (
             <TransactionSkeletonCards key={index} />
@@ -21,7 +21,7 @@ function TransactionSkeletonCards() {
             </div>
             <div className="flex justify-between mb-[10px]">
                 <div className="h-[2rem] bg-[#EDF3FC] rounded-3xl w-[20%]"></div>
-                <div className="h-[2rem] bg-[#EDF3FC] rounded-3xl w-[20%]"></div>
+                {/* <div className="h-[2rem] bg-[#EDF3FC] rounded-3xl w-[20%]"></div> */}
             </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ import QuickActionWidget from "../../reusable/quickaction";
 import Typography from "../../reusable/typography";
 import * as Icon from "react-feather";
 import { Button } from "../../../styles/reusable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
 import BottomNavComp from "../../reusable/bottomNav";
 import { useDispatch } from "react-redux";
@@ -35,12 +35,15 @@ import { updateProposedMessageData } from "../../../store/general/reducer";
 const CreateMessage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchQuery] = useSearchParams();
+  const type = searchQuery.get('type');
   const { proposedMessageData } = useGeneralState();
 
   useEffect(() => {
     if (proposedMessageData){
       setHeadline(proposedMessageData?.headline)
       setMessage(proposedMessageData?.message)
+      setRecipientArray(proposedMessageData?.receivers)
     }
   }, [proposedMessageData])
 
@@ -56,10 +59,9 @@ const CreateMessage = () => {
       message,
       receivers: recipientArray
     }))
-    navigate("/dashboard/messaging/preview")
+    navigate(`/dashboard/messaging/preview${type === 'edit' ? "?type=edit" : ""}`)
   }
 
-  console.log(recipientArray)
   return (
     <>
       <MainWrap top="0rem" width="100%" maxWidth="1200px">
@@ -98,6 +100,7 @@ const CreateMessage = () => {
                   <select 
                       required
                       id='membership_type'
+                      value={recipientArray[0]}
                       onChange={(e) => {
                         setRecipientArray((prev:any) => [e.target.value, ...prev])
                       }}

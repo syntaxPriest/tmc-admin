@@ -21,16 +21,21 @@ import { useCurrentUser } from '../../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { useMutation } from '@tanstack/react-query';
-import { GET_SINGLE_USERS } from '../../../api/getApis';
+import { GET_SINGLE_USERS, GET_TRANSACTIONS } from '../../../api/getApis';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import { User } from '../../../utils/types';
 import { DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
 import { enqueueSnackbar } from 'notistack';
 import { Spinner } from '../../reusable/spinner';
 import AskYesOrNo from '../modals/askYesOrNo';
+import EmptyState from '../../reusable/emptyState';
+import { Paginate } from '../../reusable/paginationComp';
+import TransactionSkeleton from '../../skeletons/transaction/transaction';
 
 interface userStateProps {
-    data: User
+    data: User,
+    transactions: any,
+    transactionsCount: number;
 }
 
 const MemberProfile = () => {
@@ -42,6 +47,8 @@ const MemberProfile = () => {
     const cookieUtils = useCookies();
     const currentUser = useCurrentUser().user;
 
+    const [transactionType, setTransactionType] = useState("")
+    const [transactionPage, setTransactionPage] = useState<number | undefined>(1)
     const [askSuspend, setAskSuspend] = useState(false)
     const [askDelete, setAskDelete] = useState(false)
     const [activePage, setActivePage] = useState('Overview');
@@ -58,6 +65,8 @@ const MemberProfile = () => {
 
     const [userState, setUserState] = useState<userStateProps>({
         data: {},
+        transactions: {},
+        transactionsCount: 0
     });
 
     const [mutableUser, setMutableUser] = useState<User>();
@@ -98,6 +107,20 @@ const MemberProfile = () => {
             };
           });
           setIsSuspended(data?.data?.body?.user?.suspended)
+        },
+    });
+
+    // GET TRANSACTIONS UNDER A USER
+    const { mutateAsync: getUserTransactions, isPending: isGettingUserTransactions } = useMutation({
+        mutationFn: GET_TRANSACTIONS
+        ,
+        onSuccess: (data) => {
+          setUserState((prev) => {
+            return {
+              ...prev,
+              transactions: data?.data?.body?.transactions,
+            };
+          });
         },
     });
 
@@ -146,6 +169,16 @@ const MemberProfile = () => {
             });
         }
       }, [id]);
+
+      useEffect(() => {
+        if (id){
+            getUserTransactions({
+                user_id: id,
+                offset: Number(transactionPage) - 1,
+                type: transactionType !== '' ? transactionType.toLowerCase() : undefined
+            })
+        }
+      }, [id, transactionPage, transactionType]);
 
     return(
         <>
@@ -490,16 +523,48 @@ const MemberProfile = () => {
                                                                 style={{
                                                                     border: "1px solid #E5DFD9"
                                                                 }}
+                                                                value={transactionType}
+                                                                onChange={(e) => {
+                                                                    setTransactionType(e.target.value)
+                                                                }}
                                                             >
-                                                                <option value="">Top-up</option>
+                                                                <option value="">All</option>
+                                                                <option value="credit">Credit</option>
+                                                                <option value="debit">Debit</option>
                                                             </select>
                                                         </div>
                                                         <div className="mt-[1rem]">
-                                                            <TransactionCard />
-                                                            <TransactionCard />
-                                                            <TransactionCard />
-                                                            <TransactionCard />
-                                                            <TransactionCard />
+                                                            {
+                                                                isGettingUserTransactions ? 
+                                                                    <TransactionSkeleton />
+                                                                    :
+                                                                (userState && userState?.transactions && userState?.transactions.length > 0) ? 
+                                                                    <div>
+                                                                        {
+                                                                            userState?.transactions.map((item:any, index:number) => (
+                                                                                <TransactionCard 
+                                                                                    key={index}
+                                                                                    amount={item?.amount}
+                                                                                    date={item.created_at}
+                                                                                    description={item.desc}
+                                                                                    type={item.type}
+                                                                                />
+                                                                            ))
+                                                                        }
+                                                                        {userState?.transactionsCount > 20 && (
+                                                                            <Paginate
+                                                                                itemsPerPage={20}
+                                                                                pageCount={Math.ceil(Number(userState?.transactionsCount) / 20)}
+                                                                                page={transactionPage}
+                                                                                setPage={setTransactionPage}
+                                                                                totalItems={userState?.transactionsCount}
+                                                                            />
+                                                                        )}
+                                                                    </div> : 
+                                                                    <EmptyState 
+                                                                        text='No transactions yet'
+                                                                    />
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>

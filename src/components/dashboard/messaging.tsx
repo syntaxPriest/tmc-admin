@@ -23,13 +23,17 @@ import MessagesSkeleton from '../skeletons/messages';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { updateProposedMessageData } from '../../store/general/reducer';
+import AskYesOrNo from './modals/askYesOrNo';
+import { enqueueSnackbar } from 'notistack';
+import { DELETE_MESSAGE } from '../../api/action';
 
 const Messaging = () => {
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [selectedMessage, setSelectedMessage] = useState<any>()
     const [showSelectModal, setShowSelectModal] = useState(false);
-
+    const [askDelete, setAskDelete] = useState(false);
     const [page, setPage] = useState<number | undefined>(1)
     const [messagesState, setMessagesState] = useState({
         page: 1,
@@ -52,14 +56,41 @@ const Messaging = () => {
         },
       });
     
-      useEffect(() => {
-        mutateAsync({
-          offset: Number(page) - 1,
+
+    const { mutateAsync: deleting_action, isPending: isDeleting } = useMutation({
+        mutationFn: DELETE_MESSAGE,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: "You have deleted this member's account successfully!"
+          })
+          setAskDelete(false);
+          mutateAsync({
+            offset: Number(page) - 1,
         });
-      }, [page]);
+        },
+    });
+
+    useEffect(() => {
+        mutateAsync({
+            offset: Number(page) - 1,
+        });
+    }, [page]);
 
     return(
         <>
+            <AskYesOrNo 
+                openToggle={askDelete}
+                headerText={`Delete Message`}
+                question={`Are you sure you want to delete this message?`}
+                declineText="Cancel"
+                actionText={`Delete`}
+                yesAction={() => deleting_action({
+                    id: selectedMessage?.id
+                })}
+                noAction={() => setAskDelete(false)}
+                actionInProgress={isDeleting}
+            />
             <SelectMessageChannel 
                 closeFunc={() => setShowSelectModal(false)}
                 openToggle={showSelectModal}
@@ -100,6 +131,7 @@ const Messaging = () => {
                             {messagesState?.messages &&
 								messagesState?.messages.length > 0 &&
 								messagesState?.messages.map((item: any, index: number) => (
+                                    <>
 									<div
 										className='w-full flex justify-between gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
                                         onClick={() => {
@@ -139,17 +171,33 @@ const Messaging = () => {
                                             <RandomCircle
                                                 bg='#FDF0F0'
                                                 size='32px'
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setAskDelete(true);
+                                                    setSelectedMessage(item)
+                                                }}
                                             >
                                                 <Icon.Trash size={16} color='#D23B3B' />
                                             </RandomCircle>
                                             <RandomCircle
                                                 bg='#F9F4F0'
                                                 size='32px'
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    dispatch(updateProposedMessageData({
+                                                        id: item.id,
+                                                        message: item.message,
+                                                        headline: item.headline,
+                                                        receivers: JSON.parse(item.receivers)
+                                                    }))
+                                                    navigate(`/dashboard/messaging/create?type=edit`)
+                                                }}
                                             >
                                                 <Icon.Edit size={16} color='#8B6C23' />
                                             </RandomCircle>
                                         </BoxFlex>
 									</div>
+                                    </>
 								))}
                                 {messagesState?.messagesCount > 20 && (
                                     <Paginate
