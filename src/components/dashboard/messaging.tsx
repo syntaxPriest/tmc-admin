@@ -75,6 +75,7 @@ const Messaging = () => {
         mutateAsync({
             offset: Number(page) - 1,
         });
+        dispatch(updateProposedMessageData(null))
     }, [page]);
 
     return(
