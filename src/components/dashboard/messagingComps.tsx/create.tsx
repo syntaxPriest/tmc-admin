@@ -70,9 +70,12 @@ const CreateMessage = () => {
           <DashboardMain>
             <DashboardHeader>
               <div className="flex gap-[8px] items-center">
-                <Icon.ArrowLeft />
+                <Icon.ArrowLeft 
+                  className="cursor-pointer"
+                  onClick={() => navigate(-1)}
+                />
                 <Typography
-                  text="Create New Message"
+                  text={type === 'edit' ? "Edit Message" : "Create New Message"}
                   color="#091525"
                   fontWeight={500}
                   fontSize="24px"
