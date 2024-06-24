@@ -157,3 +157,13 @@ export const GET_MESSAGES = async (data: {
         }
     });
 }
+
+export const GET_MESSAGE = async (data: {
+    id?: number
+}) => {
+    return tmcApi.get(`/message/get-message`, {
+        params: {
+            ...data,
+        }
+    });
+}

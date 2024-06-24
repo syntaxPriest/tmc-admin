@@ -43,38 +43,66 @@ import { enqueueSnackbar } from "notistack";
 import { useMutation } from "@tanstack/react-query";
 import { Spinner } from "../../reusable/spinner";
 import { updateProposedMessageData } from "../../../store/general/reducer";
+import { GET_MESSAGE } from "../../../api/getApis";
+import PageSpinner from "../../reusable/Spinner/Spinner";
 
 const PreviewMessage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [querySearchFn] = useSearchParams();
-  const type = querySearchFn.get('type');
+  const type = querySearchFn.get("type");
+  const id = querySearchFn.get("id");
   const { proposedMessageData } = useGeneralState();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: type === 'edit' ? EDIT_MESSAGE : POST_MESSAGE,
+    mutationFn: type === "edit" ? EDIT_MESSAGE : POST_MESSAGE,
     onSuccess: (data) => {
       enqueueSnackbar({
-        variant: 'success',
-        message: type === 'edit' ? "Saved changes successfuly" : 'Message published successfully!'
-      })
-      navigate("/dashboard/messaging")
-      dispatch(updateProposedMessageData(null))
+        variant: "success",
+        message:
+          type === "edit"
+            ? "Saved changes successfuly"
+            : "Message published successfully!",
+      });
+      navigate("/dashboard/messaging");
+      dispatch(updateProposedMessageData(null));
+    },
+  });
+
+  const { mutateAsync: getMessage, isPending: isGettingMessage } = useMutation({
+    mutationFn: GET_MESSAGE,
+    onSuccess: (data) => {
+      dispatch(
+        updateProposedMessageData({
+          headline: data?.data?.body?.message.headline,
+          message: data?.data?.body?.message?.message,
+          id: data?.data?.body?.message?.id,
+          receivers: data?.data?.body?.message?.receivers,
+        })
+      );
     },
   });
 
   const handlePost = () => {
-    if (type === 'edit'){
+    if (type === "edit") {
       mutateAsync({
         ...proposedMessageData,
-        receivers: undefined
-      })
-    }else {
+        receivers: undefined,
+      });
+    } else {
       mutateAsync({
-        ...proposedMessageData
-      })
+        ...proposedMessageData,
+      });
     }
-  }
+  };
+
+  useEffect(() => {
+    if (id) {
+      getMessage({
+        id: id ? Number(id) : 0,
+      });
+    }
+  }, [id]);
 
   return (
     <>
@@ -82,61 +110,77 @@ const PreviewMessage = () => {
         <DashboardFlex>
           <SideBarWidget />
           <DashboardMain>
-            <DashboardHeader>
-              <div className="flex gap-[8px] items-center">
-                <Icon.ArrowLeft 
-                  onClick={() => navigate(-1)}
-                  className="cursor-pointer"
-                />
-                <Typography
-                  text="Preview Message"
-                  color="#091525"
-                  fontWeight={500}
-                  fontSize="24px"
-                  lineHeight="17.6px"
-                  margin="4px 0 0 0"
+            {isGettingMessage ? (
+              <div className="h-[80vh] flex items-center justify-center">
+                <PageSpinner
+                  // className="border-[#000]"
+                  size={"lg"}
                 />
               </div>
-              {
-                type !== 'view' &&
-                <div className="flex gap-[8px] items-center">
-                  <Button
-                      bg='#F3F1EF'
-                      color='#23211D'
+            ) : (
+              <>
+                <DashboardHeader>
+                  <div className="flex gap-[8px] items-center">
+                    <Icon.ArrowLeft
                       onClick={() => navigate(-1)}
-                  >
-                      Back
-                  </Button>
-                  <Button
-                      bg='#23211D'
-                      color='#fff'
-                      onClick={() => handlePost()}
-                      disabled={isPending}
-                  >
-                    {isPending ? <Spinner /> : type === 'edit' ? "Save Changes" : "Post"}
-                  </Button>
-                </div>
-              }
-              
-            </DashboardHeader>
-            <div className="my-[2rem]">
-                <h3 
+                      className="cursor-pointer"
+                    />
+                    <Typography
+                      text="Preview Message"
+                      color="#091525"
+                      fontWeight={500}
+                      fontSize="24px"
+                      lineHeight="17.6px"
+                      margin="4px 0 0 0"
+                    />
+                  </div>
+                  {type !== "view" && (
+                    <div className="flex gap-[8px] items-center">
+                      <Button
+                        bg="#F3F1EF"
+                        color="#23211D"
+                        onClick={() => navigate(-1)}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        bg="#23211D"
+                        color="#fff"
+                        onClick={() => handlePost()}
+                        disabled={isPending}
+                      >
+                        {isPending ? (
+                          <Spinner />
+                        ) : type === "edit" ? (
+                          "Save Changes"
+                        ) : (
+                          "Post"
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </DashboardHeader>
+                <div className="my-[2rem]">
+                  <h3
                     style={{
-                        whiteSpace: 'pre-line'
+                      whiteSpace: "pre-line",
                     }}
                     className="text-[#323232] font-[600] text-[22px] leading-[120%] mb-[5px]"
-                >
+                  >
                     {proposedMessageData?.headline}
-                </h3>
-                <div
+                  </h3>
+                  <div
                     style={{
-                        whiteSpace: 'pre-line'
+                      whiteSpace: "pre-line",
                     }}
-                    className="text-[14px] text-[#6B6B6B] font-[400] mt-[2rem]" 
-                    dangerouslySetInnerHTML={{__html: `${proposedMessageData?.message}`}}
-                >
+                    className="text-[14px] text-[#6B6B6B] font-[400] mt-[2rem]"
+                    dangerouslySetInnerHTML={{
+                      __html: `${proposedMessageData?.message}`,
+                    }}
+                  ></div>
                 </div>
-            </div>
+              </>
+            )}
           </DashboardMain>
         </DashboardFlex>
         <BottomNavComp />

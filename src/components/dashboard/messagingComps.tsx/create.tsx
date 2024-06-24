@@ -37,13 +37,16 @@ const CreateMessage = () => {
   const dispatch = useDispatch();
   const [searchQuery] = useSearchParams();
   const type = searchQuery.get('type');
+  const id = searchQuery.get('id');
   const { proposedMessageData } = useGeneralState();
 
   useEffect(() => {
     if (proposedMessageData){
       setHeadline(proposedMessageData?.headline)
       setMessage(proposedMessageData?.message)
-      setRecipientArray(proposedMessageData?.receivers)
+      if (proposedMessageData?.receivers && proposedMessageData?.receivers.length > 0){
+        setRecipientArray(proposedMessageData?.receivers)
+      }
     }
   }, [proposedMessageData])
 
@@ -59,7 +62,7 @@ const CreateMessage = () => {
       message,
       receivers: recipientArray
     }))
-    navigate(`/dashboard/messaging/preview${type === 'edit' ? "?type=edit" : ""}`)
+    navigate(`/dashboard/messaging/preview${type === 'edit' ? `?type=edit&id=${id}` : ""}`)
   }
 
   return (
@@ -86,7 +89,7 @@ const CreateMessage = () => {
               <Button
                 bg='#23211D'
                 color='#fff'
-                disabled={recipientArray.length < 1 || !headline || !message}
+                disabled={!recipientArray || !headline || !message}
                 onClick={() => {
                   handleContinueToPreview()
                 }}
@@ -103,7 +106,7 @@ const CreateMessage = () => {
                   <select 
                       required
                       id='membership_type'
-                      value={recipientArray[0]}
+                      value={(recipientArray && recipientArray.length > 0) ? `${recipientArray[0]}` : ""}
                       onChange={(e) => {
                         setRecipientArray((prev:any) => [e.target.value, ...prev])
                       }}

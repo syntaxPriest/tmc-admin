@@ -140,7 +140,7 @@ const Messaging = () => {
                                                 message: item.message,
                                                 headline: item.headline
                                             }))
-                                            navigate(`/dashboard/messaging/preview?type=view`)
+                                            navigate(`/dashboard/messaging/preview?type=view&id=${item.id}`)
                                         }}
 									>
 										<div className='w-[90%] flex flex-col cursor-pointer gap-[10px]'>
@@ -191,7 +191,7 @@ const Messaging = () => {
                                                         headline: item.headline,
                                                         receivers: JSON.parse(item.receivers)
                                                     }))
-                                                    navigate(`/dashboard/messaging/create?type=edit`)
+                                                    navigate(`/dashboard/messaging/create?type=edit&id=${item.id}`)
                                                 }}
                                             >
                                                 <Icon.Edit size={16} color='#8B6C23' />
