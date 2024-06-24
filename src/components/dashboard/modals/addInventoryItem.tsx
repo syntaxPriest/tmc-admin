@@ -200,6 +200,7 @@ const AddInventoryItem = ({
                   <option value="restaurant_item">Restaurant Item</option>
                   <option value="booking">Bookings & Service</option>
                   <option value="store_item">Merchandise & Store Item</option>
+                  <option value="lesson">Lessons</option>
                   {/* <option value="lesson">Lessons</option> */}
                 </select>
               </InputField>
