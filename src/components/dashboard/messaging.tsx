@@ -62,7 +62,7 @@ const Messaging = () => {
         onSuccess: (data) => {
           enqueueSnackbar({
             variant: 'success',
-            message: "You have deleted this member's account successfully!"
+            message: "You have deleted this message successfully!"
           })
           setAskDelete(false);
           mutateAsync({
