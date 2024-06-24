@@ -34,7 +34,7 @@ const BookingsInfo = ({
                         gap="24px"
                     >
                         <img 
-                            src={selectedBooking.product?.cover ? `${getCdnLink(`${selectedBooking.product?.cover}`, 'event')}` : '/images/dummy.jpeg'}
+                            src={selectedBooking.product?.cover ? `${getCdnLink(`${selectedBooking.product?.cover}`, 'inventory')}` : '/images/dummy.jpeg'}
                             alt='Inventory'
                             style={{
                                 width: '70px',

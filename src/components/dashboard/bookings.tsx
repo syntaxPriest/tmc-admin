@@ -160,7 +160,7 @@ const Bookings = () => {
 									>
 										<div className='flex flex-[7] items-center cursor-pointer gap-[10px]'>
 											<img
-												src={item.product?.cover ? `${getCdnLink(`${item.product?.cover}`, 'event')}` : '/images/dummy.jpeg'}
+												src={item.product?.cover ? `${getCdnLink(`${item.product?.cover}`, 'inventory')}` : '/images/dummy.jpeg'}
                                                 className="w-[35px] h-[35px] rounded-[8px]"
 												alt='user'
 											/>
