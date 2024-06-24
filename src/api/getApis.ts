@@ -41,6 +41,7 @@ export const GET_EVENTS = async (data: {
     status?: string;
     offset?: number;
     type?: string;
+    user_id?: string;
 }) => {
     return tmcApi.get(`/event/filter-event`, {
         params: {

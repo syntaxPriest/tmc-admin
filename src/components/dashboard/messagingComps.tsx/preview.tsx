@@ -64,9 +64,16 @@ const PreviewMessage = () => {
   });
 
   const handlePost = () => {
-    mutateAsync({
-      ...proposedMessageData
-    })
+    if (type === 'edit'){
+      mutateAsync({
+        ...proposedMessageData,
+        receivers: undefined
+      })
+    }else {
+      mutateAsync({
+        ...proposedMessageData
+      })
+    }
   }
 
   return (

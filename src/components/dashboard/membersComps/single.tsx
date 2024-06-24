@@ -21,7 +21,7 @@ import { useCurrentUser } from '../../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { useMutation } from '@tanstack/react-query';
-import { GET_SINGLE_USERS, GET_TRANSACTIONS } from '../../../api/getApis';
+import { GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS } from '../../../api/getApis';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import { User } from '../../../utils/types';
 import { DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
@@ -36,6 +36,8 @@ interface userStateProps {
     data: User,
     transactions: any,
     transactionsCount: number;
+    events: any,
+    eventsCount: number;
 }
 
 const MemberProfile = () => {
@@ -48,6 +50,7 @@ const MemberProfile = () => {
     const currentUser = useCurrentUser().user;
 
     const [transactionType, setTransactionType] = useState("")
+    const [eventPage, setEventPage] = useState<number | undefined>(1)
     const [transactionPage, setTransactionPage] = useState<number | undefined>(1)
     const [askSuspend, setAskSuspend] = useState(false)
     const [askDelete, setAskDelete] = useState(false)
@@ -66,7 +69,9 @@ const MemberProfile = () => {
     const [userState, setUserState] = useState<userStateProps>({
         data: {},
         transactions: {},
-        transactionsCount: 0
+        transactionsCount: 0,
+        events: {},
+        eventsCount: 0
     });
 
     const [mutableUser, setMutableUser] = useState<User>();
@@ -119,6 +124,20 @@ const MemberProfile = () => {
             return {
               ...prev,
               transactions: data?.data?.body?.transactions,
+              transactionsCount: data?.data?.body?.total_count,
+            };
+          });
+        },
+    });
+
+    // GET EVENTS UNDER A USER
+    const { mutateAsync: getUserEvents, isPending: isGettingUserEvents } = useMutation({
+        mutationFn: GET_EVENTS,
+        onSuccess: (data) => {
+          setUserState((prev) => {
+            return {
+              ...prev,
+              events: data?.data?.body?.events,
             };
           });
         },
@@ -179,6 +198,15 @@ const MemberProfile = () => {
             })
         }
       }, [id, transactionPage, transactionType]);
+
+      useEffect(() => {
+        if (id){
+            getUserEvents({
+                user_id: id,
+                offset: Number(eventPage) - 1,
+            })
+        }
+      }, [id, eventPage]);
 
     return(
         <>
@@ -574,7 +602,7 @@ const MemberProfile = () => {
                                     : null
                             }
                             {
-                                activePage === 'Appointments' &&
+                                activePage === 'Events' &&
                                     <>
                                         <DashboardInner
                                             style={{
@@ -582,35 +610,55 @@ const MemberProfile = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <div className="grid grid-cols-2 gap-[20px]">
-                                                {
-                                                    Array(4).fill(0).map((item, index) => (
-                                                        <div 
-                                                            key={index}
-                                                            className="border rounded-[10px] p-[16px]"
-                                                        >
-                                                            <h3 className='font-black'>Swimming Lessons</h3>
-                                                            <div className="flex justify-between items-center mt-4">
-                                                                <div className="w-[70%]">
-                                                                    <div className="flex items-center gap-[8px] pb-3">
-                                                                        <IconSax.Calendar color='#0FA3A3' />
-                                                                        <p className="text-[12px]">May 21</p>
+                                            {
+                                                isGettingUserEvents ? 
+                                                    <TransactionSkeleton />
+                                                    :
+                                                (userState && userState?.events && userState?.events.length > 0) ? 
+                                                    <div>
+                                                        <div className="grid grid-cols-2 gap-[20px]">
+                                                            {
+                                                                userState?.events.map((item:any, index:number) => (
+                                                                    <div 
+                                                                        key={index}
+                                                                        className="border rounded-[10px] p-[16px]"
+                                                                    >
+                                                                        <h3 className='font-black'>Swimming Lessons</h3>
+                                                                        <div className="flex justify-between items-center mt-4">
+                                                                            <div className="w-[70%]">
+                                                                                <div className="flex items-center gap-[8px] pb-3">
+                                                                                    <IconSax.Calendar color='#0FA3A3' />
+                                                                                    <p className="text-[12px]">May 21</p>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-[8px] pb-3">
+                                                                                    <IconSax.Clock color='#D525AE' />
+                                                                                    <p className="text-[12px]">4:30 PM</p>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-[8px] pb-3">
+                                                                                    <IconSax.Location color='#67B109' />
+                                                                                    <p className="text-[12px]">Club Main Hall</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <img src="/images/swimming-pool.png" alt="swim" className="w-[80px] h-[80px]" />
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="flex items-center gap-[8px] pb-3">
-                                                                        <IconSax.Clock color='#D525AE' />
-                                                                        <p className="text-[12px]">4:30 PM</p>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-[8px] pb-3">
-                                                                        <IconSax.Location color='#67B109' />
-                                                                        <p className="text-[12px]">Club Main Hall</p>
-                                                                    </div>
-                                                                </div>
-                                                                <img src="/images/swimming-pool.png" alt="swim" className="w-[80px] h-[80px]" />
-                                                            </div>
+                                                                ))
+                                                            }
                                                         </div>
-                                                    ))
-                                                }
-                                            </div>
+                                                        {userState?.eventsCount > 20 && (
+                                                            <Paginate
+                                                                itemsPerPage={20}
+                                                                pageCount={Math.ceil(Number(userState?.eventsCount) / 20)}
+                                                                page={eventPage}
+                                                                setPage={setEventPage}
+                                                                totalItems={userState?.eventsCount}
+                                                            />
+                                                        )}
+                                                    </div> : 
+                                                    <EmptyState 
+                                                        text='No upcoming event booked yet'
+                                                    />
+                                            }
                                         </DashboardInner>
                                     </>
                             }
@@ -745,4 +793,4 @@ const MemberProfile = () => {
 
 export default MemberProfile;
 
-const pageItems = ['Overview', 'Transactions', 'Appointments', 'Subscription']
+const pageItems = ['Overview', 'Transactions', 'Events', 'Bookings', 'Subscription']

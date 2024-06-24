@@ -68,6 +68,15 @@ const SelectMessageChannel = ({
                         </div>
                     </BoxFlex>
                     <div className="mb-[2rem] relative w-[60%] mx-auto">
+                    <div className="py-2 flex items-center gap-[10px]">
+                            <input 
+                                type="checkbox" 
+                                value="bulletin"
+                                onChange={handleCheckboxChange}
+                                className="w-[20px] h-[20px]"
+                            />
+                            <p className="text-[14px]">Bulletin</p>
+                        </div>
                         <div className="py-2 flex items-center gap-[10px]">
                             <input 
                                 type="checkbox" 
