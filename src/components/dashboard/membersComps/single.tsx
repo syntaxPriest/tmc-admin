@@ -108,7 +108,7 @@ const MemberProfile = () => {
               last_name: data?.data?.body?.user?.last_name,
               email: data?.data?.body?.user?.email,
               phone: data?.data?.body?.user?.phone,
-              middle_name: data?.data?.body?.user?.middle_name,
+              middle_name: data?.data?.body?.user?.middle_name ? data?.data?.body?.user?.middle_name : undefined,
             };
           });
           setIsSuspended(data?.data?.body?.user?.suspended)
@@ -316,7 +316,8 @@ const MemberProfile = () => {
                                             setActiontype('edit')
                                         }else {
                                             editUser({
-                                                ...mutableUser
+                                                ...mutableUser,
+                                                middle_name: mutableUser?.middle_name ? mutableUser?.middle_name : undefined
                                             })
                                         }
                                     }}
