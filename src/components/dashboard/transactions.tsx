@@ -92,8 +92,10 @@ console.log(colorEncoder('credit')?.bg)
                                 fontSize='24px'
                                 lineHeight='17.6px'
                             />
-                            <div className="flex gap-[10px] items-center justify-end">
-                                <SearchInput>
+                            <div className="flex gap-[10px] items-center justify-end sm:w-full sm:justify-start">
+                                <SearchInput
+                                    className='sm:!w-[55%]'
+                                >
                                     <i>
                                         <Icon.SearchNormal1 size={18} />
                                     </i>
@@ -110,7 +112,7 @@ console.log(colorEncoder('credit')?.bg)
                                 </SearchInput>
                             </div>
                         </DashboardHeader>
-                        <div className="grid grid-cols-2 gap-[24px] my-[2rem]">
+                        <div className="grid grid-cols-2 gap-[24px] my-[2rem] sm:grid-cols-1">
                             <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{transactionsState?.overview?.total_transactions ? `₦${commaNumber(transactionsState?.overview?.total_transactions)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Transaction Value</p>
@@ -138,9 +140,9 @@ console.log(colorEncoder('credit')?.bg)
                         {isPending ? (
                             <TransactionsSkeleton />
                             ) : transactionsState?.transactions.length > 0 ? (
-                        <div className="mt-5">
+                        <div className="mt-5 overflow-x-auto">
                             {/* Table Header */}
-							<div className='flex items-center mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
+							<div className='flex items-center mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
                                 <p className='flex-[4] text-[14px]'>Date</p>
                                 <p className='flex-[3] text-[14px]'>Reference</p>
 								<p className='flex-[6] text-[14px]'>Member</p>
@@ -152,7 +154,7 @@ console.log(colorEncoder('credit')?.bg)
 								transactionsState.transactions.length > 0 &&
 								transactionsState.transactions.map((item: any, index: number) => (
 									<div
-										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] sm:w-[50rem]'
                                         onClick={() => navigate(`/dashboard/transaction/${item.id}`)}
                                     >
 										<div className='flex flex-[4] items-center cursor-pointer gap-[10px]'>
@@ -202,7 +204,6 @@ console.log(colorEncoder('credit')?.bg)
                           )}
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

@@ -147,16 +147,16 @@ const SingleInventory = () => {
                             />
                             <p>Back</p>
                         </AuthBacknav>
-                        <div className="flex items-start justify-between py-8 border-b border-[#E1E1E1]">
+                        <div className="flex items-start justify-between py-8 border-b border-[#E1E1E1] sm:flex-col sm:items-start sm:gap-[30px]">
                             <BoxFlex
-                                width='60%'
+                                width={window.innerWidth > 728 ? '60%' : '100%'}
                                 gap="16px"
                                 vAlign='flex-start'
                             >
                                 <img 
                                     src={inventoryState?.data?.cover ? `${getCdnLink(`${inventoryState?.data?.cover}`, 'inventory')}` : '/images/dummy.jpeg'}
                                     alt='User'
-                                    className='w-[80px]'
+                                    className='w-[80px] rounded-[8px]'
                                 />
                                 <div 
                                     className='w-[80%] mt-2'
@@ -181,7 +181,7 @@ const SingleInventory = () => {
                             </BoxFlex>
                             <div className="flex gap-[10px]">
                                 {
-                                    (inventoryState?.data?.type === 'restaurant_item') &&
+                                    (inventoryState?.data?.type === 'restaurant_item' || inventoryState?.data?.type === 'store_item') &&
                                         <Button
                                             bg='#F3F1EF'
                                             color='#23211D'
@@ -279,7 +279,6 @@ const SingleInventory = () => {
                         }
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

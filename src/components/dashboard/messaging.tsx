@@ -104,7 +104,9 @@ const Messaging = () => {
                 <DashboardFlex>
                     <SideBarWidget />
                     <DashboardMain>
-                        <DashboardHeader>
+                        <DashboardHeader
+                            className="sm:!flex-row sm:!items-center"
+                        >
                             <Typography 
                                 text={`Messages ${
                                     messagesState?.messagesCount
@@ -143,12 +145,12 @@ const Messaging = () => {
                                             navigate(`/dashboard/messaging/preview?type=view&id=${item.id}`)
                                         }}
 									>
-										<div className='w-[90%] flex flex-col cursor-pointer gap-[10px]'>
+										<div className='w-[90%] sm:w-[70%] flex flex-col cursor-pointer gap-[10px]'>
 											<div className='w-[100%] flex gap-[10px]'>
 												<p className='cursor-pointer font-black text-[16px] max-w-[80%]'>
                                                     {item.headline}
 												</p>
-                                                <div className="flex gap-[8px]">
+                                                <div className="flex gap-[8px] sm:hidden">
                                                     {
                                                         (item.channels && JSON.parse(item.channels).length > 0) ?
                                                             JSON.parse(item.channels).map((item:string, index:number) => (
@@ -161,7 +163,7 @@ const Messaging = () => {
                                                 </div>
 											</div>
                                             <p 
-                                                className='text-[14px] font-[300] truncate'
+                                                className='text-[14px] font-[300] ellipse'
                                                 dangerouslySetInnerHTML={{__html: `${item.message}`}}
                                             ></p>    
                                             <p className='text-[12px] text-[#898579] font-[400]'>121 Recipients • {moment(`${item?.created_at}`).startOf('hour').fromNow()}</p>
@@ -215,7 +217,6 @@ const Messaging = () => {
                         )}
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

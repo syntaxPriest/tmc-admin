@@ -236,16 +236,17 @@ const OrderInfo = () => {
                             />
                             <p>Back</p>
                         </AuthBacknav>
-                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1]">
+                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1] sm:mb-[2rem]">
                             <BoxFlex
                                 width='60%'
                                 gap="16px"
                                 vAlign='center'
+                                className='sm:!flex'
                             >
                                 <img 
                                     src='/images/bag.png'
                                     alt='User'
-                                    className='w-[80px]'
+                                    className='w-[80px] sm:w-[50px]'
                                 />
                                 <div 
                                     className='w-[80%]'
@@ -275,7 +276,7 @@ const OrderInfo = () => {
                                 </div>
                             </BoxFlex>
                             <div className="flex gap-[10px]">
-                                <p className='font-bold text-[14px]'>{moment(`${ordersState?.data?.created_at}`).startOf('hour').fromNow()}</p>
+                                <p className='font-[500] text-[14px]'>{moment(`${ordersState?.data?.created_at}`).startOf('hour').fromNow()}</p>
                             </div>
                         </div>
                         <DashboardInner
@@ -284,7 +285,7 @@ const OrderInfo = () => {
                             }}
                             className='!justify-start'
                         >
-                            <div className="grid grid-cols-2 gap-[20px]">
+                            <div className="grid grid-cols-2 gap-[20px] sm:grid-cols-1">
                                 {
                                     (ordersState?.data?.items && ordersState?.data?.items.length) && ordersState?.data?.items.map((item, index) => {
                                         const additional_data: AdditionalData = JSON.parse(`${item?.additional_data}`);
@@ -316,13 +317,13 @@ const OrderInfo = () => {
                                     )})
                                 }
                             </div>
-                            <div className="border-t py-[2rem] mt-[8rem]">
-                                <div className="flex items-center justify-between">
-                                    <div className='w-[40%]'>
+                            <div className="border-t py-[2rem] mt-[8rem] sm:mt-[2rem]">
+                                <div className="flex items-center justify-between sm:flex-col sm:items-start sm:gap-[20px]">
+                                    <div className='w-[40%] sm:w-[100%]'>
                                         <h3 className="font-[400] text-[#898579] text-[16px]">VAT: ₦{commaNumber(`${ordersState?.vatData?.total_amount}`)}</h3>
                                         <h3 className="font-[600] text-[18px]">Total: ₦{commaNumber(`${ordersState?.data?.amount}`)}</h3>
                                     </div>
-                                    <div className="flex items-center gap-[16px]">
+                                    <div className="flex items-center gap-[16px] sm:w-[100%]">
                                         <Button
                                             bg='#FFF5F5'
                                             color='#D23B3B'
@@ -355,7 +356,6 @@ const OrderInfo = () => {
                         }
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

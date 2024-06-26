@@ -5,6 +5,10 @@ export const DashboardFlex = styled.div`
     align-items:flex-start;
     justify-content:Center;
     margin: 0 auto;
+
+    @media (max-width: 728px){
+        flex-direction:column;
+    }
 `
 
 export const DashboardMain = styled.div`
@@ -94,7 +98,15 @@ export const DashboardHeader = styled.div<DashboardHeaderProps>`
     justify-content: space-between;
 
     @media (max-width: 728px){
-        padding: 25px 0;
+        padding: 10px 0 25px 0;
+        position: relative;
+        flex-direction:column;
+        align-items:flex-start;
+        gap: 20px;
+
+        > p {
+            font-size: 18px;
+        }
     }
 `
 
@@ -327,5 +339,18 @@ export const SearchInput = styled.div`
         margin-top:-2px;
         top:50%;
         transform: translate(0, -50%);
+    }
+
+    @media(max-width: 728px){
+        > input {
+            padding:6px 10% 6px 20%;
+        }
+    
+        > i:first-child {
+            left: 0.8rem;
+        }
+        :focus-within{
+            outline:none;
+        }
     }
 `

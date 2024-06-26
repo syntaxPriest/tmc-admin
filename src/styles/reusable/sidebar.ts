@@ -17,12 +17,16 @@ export const MainWidget = styled.div<MainProps>`
     border-right: 1px solid #F3F1EF;
 
     @media (max-width:728px){
-        display: ${p => p.mobileDisplay || 'none'};
-        position:fixed;
+        // display: ${p => p.mobileDisplay || 'none'};
+        position:relative;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #F3F1EF;
         width:100%;
-        height:100%;
-        z-index:10000;
-        padding: 1rem 10% 3rem 10%;
+        max-width: 100%;
+        // height:100%;
+        // z-index:10000;
+        padding: 0rem 0 0rem 0;
     }
 `;
 
@@ -71,6 +75,13 @@ export const NavItem = styled.div`
 
     :hover {
         opacity:0.6;
+    }
+
+
+    @media (max-width: 728px){
+        p {
+            font-size: 12px;
+        }
     }
 `
 

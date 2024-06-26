@@ -321,7 +321,7 @@ const MemberProfile = () => {
                             />
                             <p>Back</p>
                         </AuthBacknav>
-                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1]">
+                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1] sm:items-end">
                             <BoxFlex
                                 width='60%'
                                 gap="16px"
@@ -352,7 +352,7 @@ const MemberProfile = () => {
                                     </div>
                                 </div>
                             </BoxFlex>
-                            <div className="flex gap-[10px]">
+                            <div className="flex gap-[10px] sm:flex-col">
                                 <Button
                                     bg='#F3F1EF'
                                     color='#23211D'
@@ -414,7 +414,9 @@ const MemberProfile = () => {
                                                 className='!m-0 !w-full !max-w-full !p-0'
                                             >
                                                 <InputWrap>
-                                                    <InputField width='32%'>
+                                                    <InputField 
+                                                        width={window.innerWidth > 728 ? '32%' : '48%'}
+                                                    >
                                                         <p>Title</p>
                                                         <input 
                                                             id="title"
@@ -427,7 +429,7 @@ const MemberProfile = () => {
                                                             value={mutableUser?.title}
                                                         />
                                                     </InputField>
-                                                    <InputField width='32%'>
+                                                    <InputField width={window.innerWidth > 728 ? '32%' : '48%'}>
                                                         <p>First Name</p>
                                                         <input 
                                                             id="first_name"
@@ -440,7 +442,7 @@ const MemberProfile = () => {
                                                             value={mutableUser?.first_name}
                                                         />
                                                     </InputField>
-                                                    <InputField width='32%'>
+                                                    <InputField width={window.innerWidth > 728 ? '32%' : '48%'}>
                                                         <p>Middle Name</p>
                                                         <input 
                                                             id="middle_name"
@@ -453,7 +455,7 @@ const MemberProfile = () => {
                                                             value={mutableUser?.middle_name}
                                                         />
                                                     </InputField>
-                                                    <InputField width='32%'>
+                                                    <InputField width={window.innerWidth > 728 ? '32%' : '48%'}>
                                                         <p>Last Name</p>
                                                         <input 
                                                             id="last_name"
@@ -466,7 +468,7 @@ const MemberProfile = () => {
                                                             value={mutableUser?.last_name}
                                                         />
                                                     </InputField>
-                                                    <InputField width='32%'>
+                                                    <InputField width={window.innerWidth > 728 ? '32%' : '48%'}>
                                                         <p>Email Address</p>
                                                         <input 
                                                             placeholder='Enter Email Address'
@@ -477,7 +479,7 @@ const MemberProfile = () => {
                                                             value={mutableUser?.email}
                                                         />
                                                     </InputField>
-                                                    <InputField width='32%'>
+                                                    <InputField width={window.innerWidth > 728 ? '32%' : '48%'}>
                                                         <p>Phone Number</p>
                                                         <input 
                                                             id="phone"
@@ -541,7 +543,7 @@ const MemberProfile = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <div className="flex items-start justify-between">
+                                            <div className="flex items-start justify-between sm:flex-col sm:gap-[30px]">
                                             {isGettingUserWallet ? (
                                                 <div className="h-[80vh] flex items-center justify-center">
                                                     <PageSpinner
@@ -550,7 +552,7 @@ const MemberProfile = () => {
                                                     />
                                                 </div>
                                                 ) :
-                                                <div className="w-[40%] border rounded-[10px] p-[20px]">
+                                                <div className="w-[40%] border rounded-[10px] p-[20px] sm:w-[100%]">
                                                     <div>
                                                         <Typography 
                                                             text='Bar Account Balance'
@@ -609,8 +611,8 @@ const MemberProfile = () => {
                                                     </div>
                                                 </div>
                                                 }
-                                                <div className="border-r h-[25rem]"></div>
-                                                <div className="w-[45%]">
+                                                <div className="border-r h-[25rem] sm:hidden"></div>
+                                                <div className="w-[45%] sm:w-[100%]">
                                                     <div>
                                                         <div className="flex justify-between items-center gap-[8px]">
                                                             <p className="text-[14px] text-[#091525] font-medium">Filter by:</p>
@@ -684,7 +686,7 @@ const MemberProfile = () => {
                                                     :
                                                 (userState && userState?.events && userState?.events.length > 0) ? 
                                                     <div>
-                                                        <div className="grid grid-cols-2 gap-[20px]">
+                                                        <div className="grid grid-cols-2 gap-[20px] sm:grid-cols-1">
                                                             {
                                                                 userState?.events.map((item:any, index:number) => (
                                                                     <div 
@@ -749,7 +751,7 @@ const MemberProfile = () => {
                                                     :
                                                 (userState && userState?.bookings && userState?.bookings.length > 0) ? 
                                                     <div>
-                                                        <div className="grid grid-cols-2 gap-[20px]">
+                                                        <div className="grid grid-cols-2 gap-[20px] sm:grid-cols-1">
                                                             {
                                                                 userState?.bookings.map((item:any, index:number) => (
                                                                     <div 
@@ -808,8 +810,8 @@ const MemberProfile = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <div className="flex items-start justify-between">
-                                                <div className="w-[40%] rounded-[10px] p-[20px] text-center">
+                                            <div className="flex items-start justify-between sm:flex-col sm:gap-[30px]">
+                                                <div className="w-[40%] rounded-[10px] p-[20px] text-center sm:w-[100%]">
                                                     <div>
                                                         <img src="/icons/Medal.png" className='w-[60px] h-[60px] block mx-auto' alt="Medal" />
                                                         <Typography 
@@ -853,8 +855,8 @@ const MemberProfile = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="border-r h-[25rem]"></div>
-                                                <div className="w-[45%]">
+                                                <div className="border-r h-[25rem] sm:hidden"></div>
+                                                <div className="w-[45%] sm:w-[100%]">
                                                     <div>
                                                         <h3 className="font-[900]">History</h3>
                                                         <div className="mt-[1rem]">
@@ -922,7 +924,6 @@ const MemberProfile = () => {
                         />
                         : null
                 }
-                <BottomNavComp />
             </MainWrap>
         </>
     )

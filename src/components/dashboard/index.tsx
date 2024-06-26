@@ -87,37 +87,38 @@ const DashboardIndex = () => {
                                 fontWeight={500}
                                 fontSize='24px'
                                 lineHeight='17.6px'
+                                className='sm:!text-[16px] !my-0'
                             />
                         </DashboardHeader>
-                        <div className="grid grid-cols-4 gap-[24px] my-[2rem]">
-                            <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
+                        <div className="grid grid-cols-4 sm:grid-cols-2 gap-[24px] sm:gap-[12px] my-[2rem] sm:mt-0 sm:mb-[1rem]">
+                            <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{dashboardOverview?.members_count ? commaNumber(dashboardOverview?.members_count) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Members</p>
                             </div>
-                            <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
+                            <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_events_count ? commaNumber(dashboardOverview?.upcoming_events_count) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Upcoming Events</p>
                             </div>
-                            <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
+                            <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_bookings ? commaNumber(dashboardOverview?.upcoming_bookings) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Scheduled Bookings</p>
                             </div>
-                            <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
+                            <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{dashboardOverview?.products_count ? commaNumber(dashboardOverview?.products_count) : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Available Products</p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-[24px] my-[2rem]">
-                            <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
+                        <div className="grid grid-cols-2 sm:grid-cols-1 gap-[24px] sm:gap-[12px] my-[2rem] sm:my-[1rem]">
+                            <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{dashboardOverview?.total_transactions ? `₦${commaNumber(dashboardOverview?.total_transactions)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Transaction Value</p>
                             </div>
-                            <div className="border py-[32px] px-[24px] text-center rounded-[8px]">
+                            <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
                                 <h3 className="text-[20px] font-black">{dashboardOverview?.total_balances ? `₦${commaNumber(dashboardOverview?.total_balances)}` : "---"}</h3>
                                 <p className='text-[12px] text-[#898579]'>Total Bar Account Balance</p>
                             </div>
                         </div>
-                        <div className="border rounded-[8px]">
+                        <div className="border rounded-[8px] sm:my-[2rem]">
                             <div className="py-5 px-4 flex items-center justify-between font-[500] text-[14px] border-b">
                                 <p>Upcoming Events</p>
                                 <p 
@@ -133,9 +134,9 @@ const DashboardIndex = () => {
                                     <EventsSkeleton />
                                 </div>
                                 ) : eventsState?.events.length > 0 ? (
-                                <div className="">
+                                <div className="overflow-y-auto">
                                     {/* Table Header */}
-                                    <div className='flex items-end mt-[1rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] px-4'>
+                                    <div className='flex items-end mt-[1rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] px-4 sm:w-[50rem]'>
                                         <p className='flex-[7] text-[14px]'>Event</p>
                                         <p className='flex-[3] text-[14px]'>Date</p>
                                         <p className='flex-[3] text-[14px]'>Time</p>
@@ -147,7 +148,7 @@ const DashboardIndex = () => {
                                         eventsState.events.length > 0 &&
                                         eventsState.events.map((item: any, index: number) => (
                                             <div
-                                                className={classNames("flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative px-4", index === eventsState.events.length - 1 ? "border-none" : "" )}
+                                                className={classNames("sm:w-[50rem] flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative px-4", index === eventsState.events.length - 1 ? "border-none" : "" )}
                                                 onClick={() => navigate(`/dashboard/event/${item.id}`)}
                                             >
                                                 <div className="flex flex-[7] items-center cursor-pointer gap-[10px]">
@@ -215,7 +216,6 @@ const DashboardIndex = () => {
                         </div>
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

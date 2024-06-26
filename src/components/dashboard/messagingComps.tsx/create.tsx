@@ -71,7 +71,9 @@ const CreateMessage = () => {
         <DashboardFlex>
           <SideBarWidget />
           <DashboardMain>
-            <DashboardHeader>
+            <DashboardHeader
+              className="sm:!flex-row sm:!items-center"
+            >
               <div className="flex gap-[8px] items-center">
                 <Icon.ArrowLeft 
                   className="cursor-pointer"
@@ -81,7 +83,7 @@ const CreateMessage = () => {
                   text={type === 'edit' ? "Edit Message" : "Create New Message"}
                   color="#091525"
                   fontWeight={500}
-                  fontSize="24px"
+                  fontSize={window.innerWidth > 728 ? "24px" : "18px"}
                   lineHeight="17.6px"
                   margin="4px 0 0 0"
                 />
@@ -155,7 +157,6 @@ const CreateMessage = () => {
             </div>
           </DashboardMain>
         </DashboardFlex>
-        <BottomNavComp />
       </MainWrap>
     </>
   );

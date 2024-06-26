@@ -226,7 +226,6 @@ const DashboardWallet = () => {
                             </DashboardInner>
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
             {
                 showdetails ?
