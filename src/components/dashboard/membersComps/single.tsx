@@ -21,7 +21,7 @@ import { useCurrentUser } from '../../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { useMutation } from '@tanstack/react-query';
-import { GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS } from '../../../api/getApis';
+import { GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS, GET_USER_WALLET } from '../../../api/getApis';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import { User } from '../../../utils/types';
 import { DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
@@ -31,13 +31,15 @@ import AskYesOrNo from '../modals/askYesOrNo';
 import EmptyState from '../../reusable/emptyState';
 import { Paginate } from '../../reusable/paginationComp';
 import TransactionSkeleton from '../../skeletons/transaction/transaction';
+import commaNumber from 'comma-number';
 
 interface userStateProps {
     data: User,
+    wallet: any,
     transactions: any,
-    transactionsCount: number;
+    transactionsCount: number,
     events: any,
-    eventsCount: number;
+    eventsCount: number,
 }
 
 const MemberProfile = () => {
@@ -68,6 +70,7 @@ const MemberProfile = () => {
 
     const [userState, setUserState] = useState<userStateProps>({
         data: {},
+        wallet: {},
         transactions: {},
         transactionsCount: 0,
         events: {},
@@ -112,6 +115,20 @@ const MemberProfile = () => {
             };
           });
           setIsSuspended(data?.data?.body?.user?.suspended)
+        },
+    });
+
+    // GET USER WALLET
+    const { mutateAsync: getUserWallet, isPending: isGettingUserWallet } = useMutation({
+        mutationFn: GET_USER_WALLET
+        ,
+        onSuccess: (data) => {
+          setUserState((prev) => {
+            return {
+              ...prev,
+              wallet: data?.data?.body?.wallet,
+            };
+          });
         },
     });
 
@@ -185,6 +202,14 @@ const MemberProfile = () => {
         if (id){
             mutateAsync({
                 user_id: id,
+            });
+        }
+      }, [id]);
+
+      useEffect(() => {
+        if (id){
+            getUserWallet({
+                user_id: Number(id),
             });
         }
       }, [id]);
@@ -484,6 +509,14 @@ const MemberProfile = () => {
                                             className='!justify-start'
                                         >
                                             <div className="flex items-start justify-between">
+                                            {isGettingUserWallet ? (
+                                                <div className="h-[80vh] flex items-center justify-center">
+                                                    <PageSpinner
+                                                    // className="border-[#000]"
+                                                    size={"lg"}
+                                                    />
+                                                </div>
+                                                ) :
                                                 <div className="w-[40%] border rounded-[10px] p-[20px]">
                                                     <div>
                                                         <Typography 
@@ -494,7 +527,7 @@ const MemberProfile = () => {
                                                             lineHeight='14px'
                                                         />
                                                         <Typography 
-                                                            text='₦10,000.00'
+                                                            text={`₦${commaNumber(userState?.wallet?.balance)}`}
                                                             color='#1B2229'
                                                             fontWeight={700}
                                                             fontSize='22px'
@@ -503,7 +536,7 @@ const MemberProfile = () => {
                                                         />
                                                     </div>
                                                     <ProgressBar>
-                                                        <progress value={21} max={100}></progress>
+                                                        <progress value={Number(userState?.wallet?.total_spent_this_year)} max={100000}></progress>
                                                     </ProgressBar>
                                                     <BoxFlex
                                                         margin='0.3rem 0 0 0'
@@ -526,22 +559,23 @@ const MemberProfile = () => {
                                                     <div className="border-t py-[1rem] mt-[1rem]">
                                                         <div className=''>
                                                             <p className="font-[400] text-[12px] text-[#898579]">Minimum spend reset date</p>
-                                                            <h3 className="font-[500] pt-1">April 10, 2024</h3>
+                                                            <h3 className="font-[500] pt-1">Jan 1, {new Date().getFullYear() + 1}</h3>
                                                         </div>
                                                     </div>
                                                     <div className="border-t py-[1rem]">
                                                         <div className=''>
                                                             <p className="font-[400] text-[12px] text-[#898579]">Minimum Balanced Reached </p>
-                                                            <h3 className="font-[500] pt-1">Yes</h3>
+                                                            <h3 className="font-[500] pt-1">{Number(userState?.wallet?.total_spent_this_year) > 100000 ? "Yes" : "No"}</h3>
                                                         </div>
                                                     </div>
                                                     <div className="border-t py-[1rem]">
                                                         <div className=''>
                                                             <p className="font-[400] text-[12px] text-[#898579]">Total transaction value</p>
-                                                            <h3 className="font-[500] pt-1">₦1,820,000</h3>
+                                                            <h3 className="font-[500] pt-1">₦{commaNumber(Number(userState?.wallet?.total_spent))}</h3>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                }
                                                 <div className="border-r h-[25rem]"></div>
                                                 <div className="w-[45%]">
                                                     <div>

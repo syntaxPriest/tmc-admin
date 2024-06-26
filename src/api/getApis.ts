@@ -167,3 +167,13 @@ export const GET_MESSAGE = async (data: {
         }
     });
 }
+
+export const GET_USER_WALLET = async (data: {
+    user_id?: number
+}) => {
+    return tmcApi.get(`/wallet/get`, {
+        params: {
+            ...data,
+        }
+    });
+}
