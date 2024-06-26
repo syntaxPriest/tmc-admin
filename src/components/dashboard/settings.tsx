@@ -154,7 +154,7 @@ const DashboardProfile = () => {
                                     <>
                                         <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1]">
                                             <BoxFlex
-                                                width='80%'
+                                                width='70%'
                                                 gap="16px"
                                                 vAlign='center'
                                             >
@@ -208,10 +208,10 @@ const DashboardProfile = () => {
                                             className='!justify-start'
                                         >
                                             <ProfileBoxWrap
-                                                className='!m-0'
+                                                className='!m-0 sm:!mt-[2rem]'
                                             >
                                                 <InputWrap>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>First Name</p>
                                                         <input 
                                                             placeholder='Enter First Name'
@@ -224,7 +224,7 @@ const DashboardProfile = () => {
                                                             disabled={actionType !== 'edit'}
                                                         />
                                                     </InputField>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>Last Name</p>
                                                         <input 
                                                             placeholder='Enter Last Name'
@@ -237,7 +237,7 @@ const DashboardProfile = () => {
                                                             disabled={actionType !== 'edit'}
                                                         />
                                                     </InputField>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>Middle Name</p>
                                                         <input 
                                                             placeholder='Enter Middle Name'
@@ -250,7 +250,7 @@ const DashboardProfile = () => {
                                                             disabled={actionType !== 'edit'}
                                                         />
                                                     </InputField>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>Email Address</p>
                                                         <input 
                                                             placeholder='Enter Email Address'
@@ -263,7 +263,7 @@ const DashboardProfile = () => {
                                                             onChange={handleChange}
                                                         />
                                                     </InputField>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>Phone Number</p>
                                                         <input 
                                                             placeholder='Enter Phone Number'
@@ -303,7 +303,7 @@ const DashboardProfile = () => {
                                                     margin='0 0 2rem 0'
                                                 />
                                                 <InputWrap>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>Password</p>
                                                         <input 
                                                             placeholder='Enter Password'
@@ -315,7 +315,7 @@ const DashboardProfile = () => {
                                                             onChange={handleChange}
                                                         />
                                                     </InputField>
-                                                    <InputField width='48%'>
+                                                    <InputField width={window.innerWidth > 728 ? '48%' : '100%'}>
                                                         <p>Confirm Password</p>
                                                         <input 
                                                             placeholder='Confirm password'
@@ -413,7 +413,6 @@ const DashboardProfile = () => {
                         />
                         : null
                 }
-                <BottomNavComp />
             </MainWrap>
         </>
     )

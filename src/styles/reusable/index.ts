@@ -888,6 +888,7 @@ export const PageToggleHeader = styled.div<FlexProps>`
 
     @media (max-width:728px){
         padding: 0 0px;
+        flex-wrap: wrap;
         margin: 15px 0 15px 0;
     }
 `
@@ -909,8 +910,8 @@ export const PageToggleText = styled.p<PageToggleTextProps>`
     }
 
     @media (max-width:728px){
-        font-size: 13px;
-        padding:8px 3px 8px 3px;
+        font-size: 11px;
+        padding:4px 10px 4px 10px;
     }
 `
 

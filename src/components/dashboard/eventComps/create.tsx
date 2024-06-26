@@ -232,7 +232,7 @@ const CreateEvent = () => {
                     activeValue={eventType}
                     setActiveValue={setEventType}
                     id='other'
-                    width="48%"
+                    width={window.innerWidth ? "100%" : "48%"}
                 />
                 <CustomRadio 
                     labelText="Tuesday's Lunch"
@@ -240,9 +240,9 @@ const CreateEvent = () => {
                     activeValue={eventType}
                     setActiveValue={setEventType}
                     id='tuesday'
-                    width="48%"
+                    width={window.innerWidth < 728 ? "100%" : "48%"}
                 />
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Event Title</p>
                   <input
                     placeholder="Enter Event Title"
@@ -254,7 +254,7 @@ const CreateEvent = () => {
                     onChange={handleChange}
                   />
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Location</p>
                   <input
                     placeholder="Enter Location"
@@ -266,7 +266,7 @@ const CreateEvent = () => {
                     onChange={handleChange}
                   />
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Date</p>
                   <input 
                     autoComplete="off" 
@@ -278,7 +278,7 @@ const CreateEvent = () => {
                     value={eventCreationData?.date}
                   />
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Time</p>
                   <input 
                     autoComplete="off" 
@@ -289,7 +289,7 @@ const CreateEvent = () => {
                     onChange={handleChange}
                   />
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Amount(&#8358;)</p>
                   <NumericFormat
                     placeholder="Enter Amount"
@@ -304,7 +304,7 @@ const CreateEvent = () => {
                     thousandSeparator
                   />
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Set Reminder</p>
                   <select 
                     name="" 
@@ -320,7 +320,7 @@ const CreateEvent = () => {
                     }
                   </select>
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Expected Number of Attendees</p>
                   <input
                     autoComplete="off"
@@ -332,7 +332,7 @@ const CreateEvent = () => {
                     value={eventCreationData?.expected_number_of_attendees}
                   />
                 </InputField>
-                <InputField width="48%">
+                <InputField width={window.innerWidth < 728 ? "100%" : "48%"}>
                   <p>Special Guest(s) - Optional</p>
                   <input
                     placeholder="Enter Special Guest"
@@ -566,7 +566,6 @@ const CreateEvent = () => {
             </div>
           </DashboardMain>
         </DashboardFlex>
-        <BottomNavComp />
       </MainWrap>
     </>
   );

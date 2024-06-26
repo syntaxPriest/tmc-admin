@@ -94,8 +94,10 @@ const Members = () => {
                                 fontSize='24px'
                                 lineHeight='17.6px'
                             />
-                            <div className="flex gap-[10px] items-center justify-end">
-                                <SearchInput>
+                            <div className="flex gap-[10px] items-center justify-end sm:justify-between w-full">
+                                <SearchInput
+									className="sm:!w-[55%]"
+								>
                                     <i>
                                         <Icon.SearchNormal1 size={18} />
                                     </i>
@@ -118,7 +120,7 @@ const Members = () => {
                                 >Invite Member</Button>
                             </div>
                         </DashboardHeader>
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center sm:flex-col sm:items-start sm:border-b sm:pb-5">
                             <PageToggleHeader>
                                 {
                                     pageItems.map((item, index) => (
@@ -148,9 +150,9 @@ const Members = () => {
 						<MembersSkeleton />
 						:
 						usersState?.users.length > 0 ?
-                        <div className="mt-5">
+                        <div className="mt-5 overflow-y-auto">
                             {/* Table Header */}
-							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
+							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
 								<p className='flex-[6] text-[14px]'>Member</p>
 								<p className='flex-[2] text-[14px]'>ID No.</p>
 								<p className='flex-[3] text-[14px]'>Phone Number</p>
@@ -163,7 +165,7 @@ const Members = () => {
 								usersState?.users.length > 0 &&
 								usersState?.users.map((item: any, index: number) => (
 									<div
-										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative'
+										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative sm:w-[50rem]'
 										onClick={() => navigate(`/dashboard/member/${item.id}`)}
 									>
 										<div className='flex flex-[6] items-center cursor-pointer gap-[10px]'>
@@ -243,7 +245,6 @@ const Members = () => {
 						}
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

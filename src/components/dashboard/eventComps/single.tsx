@@ -120,7 +120,7 @@ const SingleEvent = () => {
                             />
                             <p>Back</p>
                         </AuthBacknav>
-                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1]">
+                        <div className="flex items-center justify-between py-8 border-b border-[#E1E1E1] sm:items-end">
                             <BoxFlex
                                 width='60%'
                                 gap="16px"
@@ -155,7 +155,7 @@ const SingleEvent = () => {
                                     </div>
                                 </div>
                             </BoxFlex>
-                            <div className="flex gap-[10px]">
+                            <div className="flex gap-[10px] sm:flex-col">
                                 <Button
                                     bg='#F3F1EF'
                                     color='#23211D'
@@ -204,7 +204,7 @@ const SingleEvent = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <div className="grid grid-cols-3 gap-[30px]">
+                                            <div className="grid grid-cols-3 gap-[30px] sm:grid-cols-2">
                                                 <div>
                                                     <p className='text-[13px]'>Location</p>
                                                     <h3 className='text-[15px] font-[600]'>{`${eventState?.data?.location}`}</h3>
@@ -302,9 +302,9 @@ const SingleEvent = () => {
                                                     <MembersSkeleton />
                                                     :
                                                     eventState?.attendees.length > 0 ?
-                                            <div className="">
+                                            <div className="overflow-x-auto">
                                                 {/* Table Header */}
-                                                <div className='flex items-end mt-[0rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
+                                                <div className='flex items-end mt-[0rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
                                                     <p className='flex-[6] text-[14px]'>Member</p>
                                                     <p className='flex-[2] text-[14px]'>ID No.</p>
                                                     <p className='flex-[3] text-[14px]'>Phone Number</p>
@@ -315,7 +315,7 @@ const SingleEvent = () => {
                                                     eventState?.attendees.length > 0 &&
                                                     eventState?.attendees.map((item: any, index: number) => (
                                                         <div
-                                                            className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+                                                            className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] sm:w-[50rem]'
                                                             onClick={() => navigate(`/dashboard/member/${index + 1}`)}
                                                         >
                                                             <div className='flex flex-[6] items-center cursor-pointer gap-[10px]'>
@@ -372,7 +372,6 @@ const SingleEvent = () => {
                         }
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

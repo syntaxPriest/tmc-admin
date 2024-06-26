@@ -163,7 +163,7 @@ const TransactionInfo = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
+                                            <div className="grid grid-cols-2 sm:grid-cols-1 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Date</p>
                                                     <h3 className='text-[15px] font-[600]'>{`${new Date(`${transactionsState?.data?.created_at}`).toUTCString()}`}</h3>
@@ -173,7 +173,7 @@ const TransactionInfo = () => {
                                                     <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.ref ? transactionsState?.data?.ref : "---"}`}</h3>
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
+                                            <div className="grid grid-cols-2 sm:grid-cols-1 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Transaction Narration</p>
                                                     <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.desc ? transactionsState?.data?.desc : "---"}`}</h3>
@@ -183,7 +183,7 @@ const TransactionInfo = () => {
                                                     <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.wallet_id ? transactionsState?.data?.wallet_id : "---"}`}</h3>
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-[30px] pt-[2rem] pb-[1rem] border-b">
+                                            <div className="grid grid-cols-2 sm:grid-cols-1 gap-[30px] pt-[2rem] pb-[1rem] border-b">
                                                 <div>
                                                     <p className='text-[13px]'>Member</p>
                                                     <h3 className='text-[15px] font-[600]'>{`${transactionsState?.data?.user?.first_name} ${transactionsState?.data?.user?.last_name}`}</h3>
@@ -197,7 +197,6 @@ const TransactionInfo = () => {
                         }
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

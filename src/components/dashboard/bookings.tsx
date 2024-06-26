@@ -93,8 +93,10 @@ const Bookings = () => {
                                 fontSize='24px'
                                 lineHeight='17.6px'
                             />
-                            <div className="flex gap-[10px] items-center justify-end">
-                                <SearchInput>
+                            <div className="flex gap-[10px] items-center justify-end w-full sm:justify-start">
+                                <SearchInput
+                                    className='sm:!w-[55%]'
+                                >
                                     <i>
                                         <Icon.SearchNormal1 size={18} />
                                     </i>
@@ -111,7 +113,7 @@ const Bookings = () => {
                                 </SearchInput>
                             </div>
                         </DashboardHeader>
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center sm:flex-col sm:items-start">
                             <PageToggleHeader>
                                 {
                                     pageItems.map((item, index) => (
@@ -139,9 +141,9 @@ const Bookings = () => {
                         {isPending ? (
                         <BookingsSkeleton />
                         ) : bookingsState?.bookings.length > 0 ? (
-                        <div className="mt-5">
+                        <div className="mt-5 overflow-x-auto">
                             {/* Table Header */}
-							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
+							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
 								<p className='flex-[7] text-[14px]'>Booking</p>
 								<p className='flex-[3] text-[14px]'>Date</p>
 								<p className='flex-[3] text-[14px]'>Time</p>
@@ -152,7 +154,7 @@ const Bookings = () => {
 								bookingsState?.bookings.length > 0 &&
 								bookingsState?.bookings.map((item: any, index: number) => (
 									<div
-										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] sm:w-[50rem]'
                                         onClick={() => {
                                             setOpenBookingInfo(true);
                                             setSelectedBooking(item)
@@ -199,7 +201,6 @@ const Bookings = () => {
                             )}
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

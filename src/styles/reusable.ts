@@ -26,6 +26,11 @@ export const Button = styled.button<PropsArgs>`
     justify-content:center;
     gap:5px;
     position:relative;
+
+    @media (max-width: 728px){
+        font-size: 13px;
+        padding: 10px 15px;
+    }
 `;
 
 export const ErrorWrap = styled.div<PropsArgs>`

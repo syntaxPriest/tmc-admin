@@ -183,7 +183,6 @@ const PreviewMessage = () => {
             )}
           </DashboardMain>
         </DashboardFlex>
-        <BottomNavComp />
       </MainWrap>
     </>
   );

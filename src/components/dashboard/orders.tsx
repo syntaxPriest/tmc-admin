@@ -77,7 +77,7 @@ const Orders = () => {
                                 lineHeight='17.6px'
                             />
                         </DashboardHeader>
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center sm:flex-col sm:items-start">
                             <PageToggleHeader>
                                 {
                                     pageItems.map((item, index) => (
@@ -105,9 +105,9 @@ const Orders = () => {
                         {isPending ? (
                             <OrdersSkeleton />
                             ) : ordersState?.orders.length > 0 ? (
-                        <div className="mt-5">
+                        <div className="mt-5 overflow-x-auto">
                             {/* Table Header */}
-							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
+							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
 								<p className='flex-[3] text-[14px]'>Order No.</p>
 								<p className='flex-[4] text-[14px]'>Date</p>
 								<p className='flex-[7] text-[14px]'>Customer</p>
@@ -120,7 +120,7 @@ const Orders = () => {
 								ordersState?.orders.length > 0 &&
 								ordersState?.orders.map((item: any, index: number) => (
 									<div
-										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] sm:w-[50rem]'
                                         onClick={() => navigate(`/dashboard/order/${item.id}`)}
 									>
 										<div className='flex flex-[3] items-center cursor-pointer gap-[10px]'>
@@ -172,7 +172,6 @@ const Orders = () => {
                         )}
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )

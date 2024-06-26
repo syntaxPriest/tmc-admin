@@ -95,8 +95,10 @@ const Events = () => {
                 fontSize="24px"
                 lineHeight="17.6px"
               />
-              <div className="flex gap-[10px] items-center justify-end">
-                <SearchInput>
+              <div className="flex gap-[10px] items-center justify-end sm:justify-between w-full">
+                <SearchInput
+                  className="sm:!w-[55%]"
+                >
                   <i>
                     <Icon.SearchNormal1 size={18} />
                   </i>
@@ -118,7 +120,7 @@ const Events = () => {
                 </Link>
               </div>
             </DashboardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center sm:flex-col sm:items-start">
               <PageToggleHeader>
                 {pageItems.map((item, index) => (
                   <PageToggleText
@@ -146,9 +148,9 @@ const Events = () => {
             {isPending ? (
               <EventsSkeleton />
             ) : eventsState?.events.length > 0 ? (
-              <div className="mt-5">
+              <div className="mt-5 overflow-x-auto">
                 {/* Table Header */}
-                <div className="flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]">
+                <div className="flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]">
                   <p className="flex-[7] text-[14px]">Event</p>
                   <p className="flex-[3] text-[14px]">Date</p>
                   <p className="flex-[3] text-[14px]">Time</p>
@@ -160,7 +162,7 @@ const Events = () => {
                   eventsState.events.length > 0 &&
                   eventsState.events.map((item: any, index: number) => (
                     <div
-                      className="flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative"
+                      className="flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] relative sm:w-[50rem]"
                       onClick={() => navigate(`/dashboard/event/${item.id}`)}
                     >
                       <div className="flex flex-[7] items-center cursor-pointer gap-[10px]">
@@ -235,7 +237,6 @@ const Events = () => {
             )}
           </DashboardMain>
         </DashboardFlex>
-        <BottomNavComp />
       </MainWrap>
     </>
   );

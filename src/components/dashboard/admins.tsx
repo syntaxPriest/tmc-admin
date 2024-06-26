@@ -96,7 +96,9 @@ const Transactions = () => {
                 <DashboardFlex>
                     <SideBarWidget />
                     <DashboardMain>
-                        <DashboardHeader>
+                        <DashboardHeader
+                            className='sm:!flex-row sm:!items-center'
+                        >
                             <Typography 
                                 text={`Admins ${usersState?.usersCount ? `(${usersState?.usersCount})` : ''}`}
                                 color='#091525'
@@ -118,9 +120,9 @@ const Transactions = () => {
 						<MembersSkeleton />
 						:
 						usersState?.users.length > 0 ?
-                        <div className="mt-5">
+                        <div className="mt-5 overflow-x-auto">
                             {/* Table Header */}
-							<div className='flex items-center mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
+							<div className='flex items-center mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
                                 <p className='flex-[6] text-[14px]'>Full Name</p>
                                 <p className='flex-[4] text-[14px]'>Phone Number</p>
 								<p className='flex-[6] text-[14px]'>Email Address</p>
@@ -131,7 +133,7 @@ const Transactions = () => {
 								usersState?.users.length > 0 &&
 								usersState?.users.map((item: any, index: number) => (
 									<div
-										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
+										className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C] sm:w-[50rem]'
 									>
 										<div className='flex flex-[6] items-center cursor-pointer gap-[10px]'>
 											<div className='w-[90%]'>
@@ -201,7 +203,6 @@ const Transactions = () => {
 						}
                     </DashboardMain>
                 </DashboardFlex>
-                <BottomNavComp />
             </MainWrap>
         </>
     )
