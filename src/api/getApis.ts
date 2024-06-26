@@ -61,6 +61,18 @@ export const GET_SINGLE_EVENT = async (data: {
     });
 }
 
+export const GET_ATTENDEES = async (data: {
+    id: string | number,
+    offset: number,
+}) => {
+    return tmcApi.get(`/event/attendees`, {
+        params: {
+            ...data,
+            limit: 20
+        }
+    });
+}
+
 export const GET_TRANSACTIONS = async (data: {
     search?: string;
     status?: string;

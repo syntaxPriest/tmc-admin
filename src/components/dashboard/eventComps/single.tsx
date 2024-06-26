@@ -22,16 +22,20 @@ import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { members } from '../members';
 import PaginationComp from '../../reusable/pagination';
-import { GET_SINGLE_EVENT } from '../../../api/getApis';
+import { GET_ATTENDEES, GET_SINGLE_EVENT } from '../../../api/getApis';
 import { useMutation } from '@tanstack/react-query';
 import { eventDataProps } from './create';
 import commaNumber from 'comma-number';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import { getCdnLink } from '../../../utils/imageParser';
 import EmptyState from '../../reusable/emptyState';
+import MembersSkeleton from '../../skeletons/members';
+import { Paginate } from '../../reusable/paginationComp';
 
 export interface EventStateProps {
-    data: eventDataProps
+    data: eventDataProps,
+    attendees: any,
+    attendeesCount: number,
 }
 
 const SingleEvent = () => {
@@ -43,9 +47,11 @@ const SingleEvent = () => {
     const currentUser = useCurrentUser().user;
 
     const [activePage, setActivePage] = useState('Details');
-
+    const [page, setPage] = useState<number | undefined>(1)
     const [eventState, setEventState] = useState<EventStateProps>({
         data: {},
+        attendees: [],
+        attendeesCount: 0
     });
     
       const { mutateAsync, isPending } = useMutation({
@@ -59,12 +65,29 @@ const SingleEvent = () => {
           });
         },
       });
+
+      const { mutateAsync: getAttendees, isPending: isGettingAttendees } = useMutation({
+        mutationFn: GET_ATTENDEES,
+        onSuccess: (data) => {
+          setEventState((prev) => {
+            return {
+              ...prev,
+              attendees: data?.data?.body?.attendees,
+              attendeesCount: data?.data?.body?.attendeesCount,
+            };
+          });
+        },
+      });
     
       useEffect(() => {
         if (id){
             mutateAsync({
                 id,
             });
+            getAttendees({
+                id,
+                offset: Number(page) - 1
+            })
         }
       }, [id]);
 
@@ -274,21 +297,23 @@ const SingleEvent = () => {
                                             }}
                                             className='!justify-start'
                                         >
-                                            <EmptyState 
-                                                text="No registered attendee yet"
-                                            />
-                                            <div className="hidden">
+                                            {
+                                                isGettingAttendees ?
+                                                    <MembersSkeleton />
+                                                    :
+                                                    eventState?.attendees.length > 0 ?
+                                            <div className="">
                                                 {/* Table Header */}
                                                 <div className='flex items-end mt-[0rem] py-2 border-b gap-[10px] font-[500] text-[#23211D]'>
                                                     <p className='flex-[6] text-[14px]'>Member</p>
                                                     <p className='flex-[2] text-[14px]'>ID No.</p>
                                                     <p className='flex-[3] text-[14px]'>Phone Number</p>
                                                     <p className='flex-[3] text-[14px]'>Registered On</p>
-                                                    <p className='flex-[1] text-[14px]'></p>
+                                                    {/* <p className='flex-[1] text-[14px]'></p> */}
                                                 </div>
-                                                {members &&
-                                                    members.length > 0 &&
-                                                    members.map((item: any, index: number) => (
+                                                {eventState?.attendees &&
+                                                    eventState?.attendees.length > 0 &&
+                                                    eventState?.attendees.map((item: any, index: number) => (
                                                         <div
                                                             className='flex items-center gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
                                                             onClick={() => navigate(`/dashboard/member/${index + 1}`)}
@@ -301,32 +326,45 @@ const SingleEvent = () => {
                                                                 />
                                                                 <div className='w-[90%]'>
                                                                     <h3 className='font-medium text-[14px] cursor-pointer'>
-                                                                        {item.firstName} {item.lastName}
+                                                                        {item?.user?.first_name} {item?.user?.last_name}
                                                                     </h3>
                                                                     <p className='font-light cursor-pointer text-[12px] text-[#70897B]'>
-                                                                        {item.email ? item.email : "N/A"}
+                                                                        {item?.user?.email ? item?.user?.email : "N/A"}
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                             <p className='flex-[2] cursor-pointer text-[14px] ellipse w-[3rem]'>
-                                                                {item.id ? item.id : "N/A"}
+                                                                {item?.user?.id ? item?.user?.id : "N/A"}
                                                             </p>
                                                             <p className='flex-[3] cursor-pointer text-[14px]'>
-                                                                {item.phoneNo ? item.phoneNo : "N/A"}
+                                                                {item.phone ? item.phone : "N/A"}
                                                             </p>
                                                             <p className='flex-[3] cursor-pointer text-[14px]'>
-                                                                {`${new Date().toDateString()}`}
+                                                                {`${new Date(item.created_at).toDateString()}`}
                                                             </p>
-                                                            <p className='flex-[1] text-[14px] flex justify-end text-right'>
+                                                            {/* <p className='flex-[1] text-[14px] flex justify-end text-right'>
                                                                 <EllipsisVerticalIcon
                                                                     className='w-6 h-6 mr-[10px]'
                                                                     color='#70897B'
                                                                 />
-                                                            </p>
+                                                            </p> */}
                                                         </div>
-                                                    ))}
-                                                    <PaginationComp />
-                                            </div>
+                                                   ))}
+                                                   {eventState?.attendeesCount > 20 && (
+                                                       <Paginate
+                                                           itemsPerPage={20}
+                                                           pageCount={Math.ceil(Number(eventState?.attendeesCount) / 20)}
+                                                           page={page}
+                                                           setPage={setPage}
+                                                           totalItems={eventState?.attendeesCount}
+                                                       />
+                                                   )}
+                                           </div>
+                                           : 
+                                               <EmptyState 
+                                                   text='No registered attendee yet'
+                                               />
+                                           }
                                         </DashboardInner>
                                     </>
                                 }
