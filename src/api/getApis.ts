@@ -91,6 +91,7 @@ export const GET_BOOKINGS = async (data: {
     status?: string;
     offset?: number;
     type?: string;
+    user_id?: string;
 }) => {
     return tmcApi.get(`/booking/filter-booking`, {
         params: {

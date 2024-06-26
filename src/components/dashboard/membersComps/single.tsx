@@ -21,7 +21,7 @@ import { useCurrentUser } from '../../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { useMutation } from '@tanstack/react-query';
-import { GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS, GET_USER_WALLET } from '../../../api/getApis';
+import { GET_BOOKINGS, GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS, GET_USER_WALLET } from '../../../api/getApis';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import { User } from '../../../utils/types';
 import { DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
@@ -32,6 +32,8 @@ import EmptyState from '../../reusable/emptyState';
 import { Paginate } from '../../reusable/paginationComp';
 import TransactionSkeleton from '../../skeletons/transaction/transaction';
 import commaNumber from 'comma-number';
+import moment from 'moment';
+import { getCdnLink } from '../../../utils/imageParser';
 
 interface userStateProps {
     data: User,
@@ -40,6 +42,8 @@ interface userStateProps {
     transactionsCount: number,
     events: any,
     eventsCount: number,
+    bookings: any,
+    bookingsCount: number,
 }
 
 const MemberProfile = () => {
@@ -54,6 +58,7 @@ const MemberProfile = () => {
     const [transactionType, setTransactionType] = useState("")
     const [eventPage, setEventPage] = useState<number | undefined>(1)
     const [transactionPage, setTransactionPage] = useState<number | undefined>(1)
+    const [bookingPage, setBookingPage] = useState<number | undefined>(1)
     const [askSuspend, setAskSuspend] = useState(false)
     const [askDelete, setAskDelete] = useState(false)
     const [activePage, setActivePage] = useState('Overview');
@@ -74,7 +79,9 @@ const MemberProfile = () => {
         transactions: {},
         transactionsCount: 0,
         events: {},
-        eventsCount: 0
+        eventsCount: 0,
+        bookings: {},
+        bookingsCount: 0
     });
 
     const [mutableUser, setMutableUser] = useState<User>();
@@ -155,6 +162,21 @@ const MemberProfile = () => {
             return {
               ...prev,
               events: data?.data?.body?.events,
+              eventsCount: data?.data?.body?.total_count,
+            };
+          });
+        },
+    });
+
+    // GET BOOKINGS UNDER A USER
+    const { mutateAsync: getUserBookings, isPending: isGettingUserBookings } = useMutation({
+        mutationFn: GET_BOOKINGS,
+        onSuccess: (data) => {
+          setUserState((prev) => {
+            return {
+              ...prev,
+              bookings: data?.data?.body?.bookings,
+              bookingsCount: data?.data?.body?.total_count,
             };
           });
         },
@@ -229,6 +251,17 @@ const MemberProfile = () => {
             getUserEvents({
                 user_id: id,
                 offset: Number(eventPage) - 1,
+                status: 'upcoming'
+            })
+        }
+      }, [id, eventPage]);
+
+      useEffect(() => {
+        if (id){
+            getUserBookings({
+                user_id: id,
+                offset: Number(bookingPage) - 1,
+                status: 'upcoming'
             })
         }
       }, [id, eventPage]);
@@ -658,23 +691,27 @@ const MemberProfile = () => {
                                                                         key={index}
                                                                         className="border rounded-[10px] p-[16px]"
                                                                     >
-                                                                        <h3 className='font-black'>Swimming Lessons</h3>
+                                                                        <h3 className='font-black'>{item?.title ? item.title : 'N/A'}</h3>
                                                                         <div className="flex justify-between items-center mt-4">
                                                                             <div className="w-[70%]">
                                                                                 <div className="flex items-center gap-[8px] pb-3">
                                                                                     <IconSax.Calendar color='#0FA3A3' />
-                                                                                    <p className="text-[12px]">May 21</p>
+                                                                                    <p className="text-[12px]">{moment(item.time).format('LL')}</p>
                                                                                 </div>
                                                                                 <div className="flex items-center gap-[8px] pb-3">
                                                                                     <IconSax.Clock color='#D525AE' />
-                                                                                    <p className="text-[12px]">4:30 PM</p>
+                                                                                    <p className="text-[12px]">{moment(item.time).format('LT')}</p>
                                                                                 </div>
                                                                                 <div className="flex items-center gap-[8px] pb-3">
                                                                                     <IconSax.Location color='#67B109' />
-                                                                                    <p className="text-[12px]">Club Main Hall</p>
+                                                                                    <p className="text-[12px]">{item.location ? item.location : 'N/A'}</p>
                                                                                 </div>
                                                                             </div>
-                                                                            <img src="/images/swimming-pool.png" alt="swim" className="w-[80px] h-[80px]" />
+                                                                            <img 
+                                                                                src={item.cover ? `${getCdnLink(`${item?.cover}`, 'event')}` : "/images/dummy.jpeg"} 
+                                                                                alt="Cover" 
+                                                                                className="w-[80px] h-[80px] object-cover rounded-[8px]" 
+                                                                            />
                                                                         </div>
                                                                     </div>
                                                                 ))
@@ -691,7 +728,72 @@ const MemberProfile = () => {
                                                         )}
                                                     </div> : 
                                                     <EmptyState 
-                                                        text='No upcoming event booked yet'
+                                                        text='No upcoming event registered yet'
+                                                    />
+                                            }
+                                        </DashboardInner>
+                                    </>
+                            }
+                            {
+                                activePage === 'Bookings' &&
+                                    <>
+                                        <DashboardInner
+                                            style={{
+                                                margin: 0,
+                                            }}
+                                            className='!justify-start'
+                                        >
+                                            {
+                                                isGettingUserBookings ? 
+                                                    <TransactionSkeleton />
+                                                    :
+                                                (userState && userState?.bookings && userState?.bookings.length > 0) ? 
+                                                    <div>
+                                                        <div className="grid grid-cols-2 gap-[20px]">
+                                                            {
+                                                                userState?.bookings.map((item:any, index:number) => (
+                                                                    <div 
+                                                                        key={index}
+                                                                        className="border rounded-[10px] p-[16px]"
+                                                                    >
+                                                                        <h3 className='font-black'>{item?.product?.title ? item?.product?.title : 'N/A'}</h3>
+                                                                        <div className="flex justify-between items-center mt-4">
+                                                                            <div className="w-[70%]">
+                                                                                <div className="flex items-center gap-[8px] pb-3">
+                                                                                    <IconSax.Calendar color='#0FA3A3' />
+                                                                                    <p className="text-[12px]">{moment(item.start_date).format('LL')}</p>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-[8px] pb-3">
+                                                                                    <IconSax.Clock color='#D525AE' />
+                                                                                    <p className="text-[12px]">{item.time}</p>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-[8px] pb-3">
+                                                                                    <IconSax.Category color='#67B109' />
+                                                                                    <p className="text-[12px] capitalize">{item?.product?.category}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <img 
+                                                                                src={item?.product?.cover ? `${getCdnLink(`${item?.product?.cover}`, 'inventory')}` : "/images/dummy.jpeg"} 
+                                                                                alt="Cover" 
+                                                                                className="w-[80px] h-[80px] object-cover rounded-[8px]" 
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+                                                        {userState?.bookingsCount > 20 && (
+                                                            <Paginate
+                                                                itemsPerPage={20}
+                                                                pageCount={Math.ceil(Number(userState?.bookingsCount) / 20)}
+                                                                page={bookingPage}
+                                                                setPage={setBookingPage}
+                                                                totalItems={userState?.bookingsCount}
+                                                            />
+                                                        )}
+                                                    </div> : 
+                                                    <EmptyState 
+                                                        text='No bookings yet'
                                                     />
                                             }
                                         </DashboardInner>
