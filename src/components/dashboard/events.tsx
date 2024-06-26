@@ -95,7 +95,7 @@ const Events = () => {
                 fontSize="24px"
                 lineHeight="17.6px"
               />
-              <div className="flex gap-[10px] items-center justify-end sm:justify-between w-full">
+              <div className="flex gap-[10px] items-center justify-end sm:justify-between sm:w-full">
                 <SearchInput
                   className="sm:!w-[55%]"
                 >

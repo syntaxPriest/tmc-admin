@@ -93,7 +93,7 @@ const Bookings = () => {
                                 fontSize='24px'
                                 lineHeight='17.6px'
                             />
-                            <div className="flex gap-[10px] items-center justify-end w-full sm:justify-start">
+                            <div className="flex gap-[10px] items-center justify-end sm:w-full sm:justify-start">
                                 <SearchInput
                                     className='sm:!w-[55%]'
                                 >
