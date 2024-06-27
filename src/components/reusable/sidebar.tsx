@@ -48,26 +48,21 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
 
   // Routes current and active defining.
 
+  const activeIdentifier = (key: string, altKey?: string) => {
+    return location.pathname.includes(key) || location.pathname.includes(altKey ? altKey : "...")
+  }
+
   const overviewLinks = ["/dashboard"];
   const overviewActive = overviewLinks.includes(current);
-  const membersLinks = ["/dashboard/members"];
-  const membersActive = membersLinks.includes(current);
-  const eventsLinks = ["/dashboard/events"];
-  const eventsActive = eventsLinks.includes(current);
-  const bookingsLinks = ["/dashboard/bookings"];
-  const bookingsActive = bookingsLinks.includes(current);
-  const ordersLinks = ["/dashboard/orders"];
-  const ordersActive = ordersLinks.includes(current);
-  const inventoryLinks = ["/dashboard/inventories"];
-  const inventoryActive = inventoryLinks.includes(current);
-  const transactionsLinks = ["/dashboard/transactions"];
-  const transactionsActive = transactionsLinks.includes(current);
-  const messagingLinks = ["/dashboard/messaging"];
-  const messagingActive = messagingLinks.includes(current);
-  const adminsLinks = ["/dashboard/admins"];
-  const adminsActive = adminsLinks.includes(current);
-  const settingsLinks = ["/dashboard/settings"];
-  const settingsActive = settingsLinks.includes(current);
+  const membersActive = activeIdentifier("member")
+  const eventsActive = activeIdentifier("event")
+  const bookingsActive = activeIdentifier("booking")
+  const ordersActive = activeIdentifier("order")
+  const inventoryActive = activeIdentifier("inventory",  "inventories")
+  const transactionsActive = activeIdentifier("transaction")
+  const messagingActive = activeIdentifier("messaging")
+  const adminsActive = activeIdentifier("admin")
+  const settingsActive = activeIdentifier("settings");
 
   // Log User Out of app
 

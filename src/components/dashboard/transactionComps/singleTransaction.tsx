@@ -126,7 +126,7 @@ const TransactionInfo = () => {
                                     className='w-[80%]'
                                 >
                                     <Typography 
-                                        text={commaNumber(`₦${transactionsState?.data?.amount}`)}
+                                        text={`₦${commaNumber(Number(transactionsState?.data?.amount))}`}
                                         color='#091525'
                                         fontWeight={700}
                                         fontSize='20px'
