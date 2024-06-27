@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
   ModalWrap,
   ModalChild,
@@ -18,19 +18,30 @@ import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import { INVITE_ADMIN } from "../../../api/action";
 import { Spinner } from "../../reusable/spinner";
+import { generatePassword } from "../../../utils/generatePassword";
 
 interface PropArgs {
   openToggle: boolean;
   closeFunc: any;
 }
 
+interface User {
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
 const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
 
-  const [inviteeData, setInviteeData] = useState({
+  const [inviteeData, setInviteeData] = useState<User>({
     first_name: "",
     last_name: "",
     email: "",
-    phone: ""
+    phone: "",
+    password: ""
   })
 
   const handleChange = (
@@ -45,6 +56,13 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
       });
     }
 
+  useEffect(() => {
+    setInviteeData((prev) => { return {
+      ...prev,
+      password: generatePassword()
+    }})  
+  }, [])
+
   const {mutateAsync, isPending} = useMutation({
     mutationFn: INVITE_ADMIN,
     onSuccess: (data) => {
@@ -57,7 +75,10 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
   })
 
   const handleInvite = () => {
-    mutateAsync(inviteeData);
+    mutateAsync({
+      ...inviteeData,
+      middle_name: inviteeData?.middle_name || undefined
+    });
   }
   
   return (
@@ -130,6 +151,19 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                         onChange={handleChange}
                     />
                 </InputField>
+                <InputField width='48%'>
+                    <p>Password</p>
+                    <input 
+                        placeholder='Enter Password'
+                        autoComplete="off"
+                        type="password"
+                        required
+                        id='password'
+                        disabled
+                        value={inviteeData?.password}
+                        onChange={handleChange}
+                    />
+                </InputField>
                 {/* <InputField width='48%'>
                     <p>Admin Type</p>
                     <select 
@@ -139,6 +173,14 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                     </select>
                 </InputField> */}
             </InputWrap>
+            <Typography 
+              text={`Note that generated passwords will be sent via email to the invited admins.`}
+              color='#8B6C23'
+              fontWeight={500}
+              fontSize='14px'
+              lineHeight='22px'
+              margin='0 0 0.4rem 0'
+            />
             <Button
                 bg='#23211D'
                 color='#fff'
@@ -151,7 +193,8 @@ const InviteAdmin = ({ closeFunc, openToggle }: PropArgs) => {
                   !inviteeData?.first_name || 
                   !inviteeData?.email || 
                   !inviteeData?.last_name || 
-                  !inviteeData?.phone
+                  !inviteeData?.phone || 
+                  !inviteeData?.password
                 }
             >
                 {isPending ? <Spinner /> : 'Create Admin'}
