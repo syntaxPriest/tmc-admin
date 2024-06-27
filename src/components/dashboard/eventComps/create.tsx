@@ -232,7 +232,7 @@ const CreateEvent = () => {
                     activeValue={eventType}
                     setActiveValue={setEventType}
                     id='other'
-                    width={window.innerWidth ? "100%" : "48%"}
+                    width={window.innerWidth < 728 ? "100%" : "48%"}
                 />
                 <CustomRadio 
                     labelText="Tuesday's Lunch"
