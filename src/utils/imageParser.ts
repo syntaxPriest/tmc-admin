@@ -6,7 +6,7 @@ export function getCdnLink (url: string | undefined, type: "event" | "inventory"
     let baseUrl = ""
     switch (type) {
         case "event":
-            baseUrl =  process.env.REACT_APP_EVENT_IMAGE_CDN_URL || ""
+            baseUrl =  process.env.REACT_APP_EVENT_IMAGE_CDN_URL || "https://d2jbgm8i49gmb2.cloudfront.net"
             break;
         case "inventory":
             baseUrl = "https://d1adgjnww1agdn.cloudfront.net";

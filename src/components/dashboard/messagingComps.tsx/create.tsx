@@ -31,14 +31,26 @@ import 'react-quill/dist/quill.snow.css';
 import { membershipTypeList } from "../modals/inviteMembers";
 import { useGeneralState } from "../../../store/general/useGeneral";
 import { updateProposedMessageData } from "../../../store/general/reducer";
+import { useMutation } from "@tanstack/react-query";
+import { GET_USERS } from "../../../api/getApis";
+import { User } from "../../../utils/types";
 
 const CreateMessage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchQuery] = useSearchParams();
+
+  const [largeUserData, setLargeUserData] = useState<Array<User>>([])
   const type = searchQuery.get('type');
   const id = searchQuery.get('id');
   const { proposedMessageData } = useGeneralState();
+
+  const {mutateAsync: getUsers, isPending:isGettingUsers} = useMutation({
+		mutationFn: GET_USERS,
+		onSuccess: (data) => {
+			setLargeUserData(data?.data?.body?.users)
+		}
+	})
 
   useEffect(() => {
     if (proposedMessageData){
@@ -64,6 +76,12 @@ const CreateMessage = () => {
     }))
     navigate(`/dashboard/messaging/preview${type === 'edit' ? `?type=edit&id=${id}` : ""}`)
   }
+
+  useEffect(() => {
+      getUsers({
+        limit: 10000
+      })
+  }, [])
 
   return (
     <>
