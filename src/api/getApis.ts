@@ -17,11 +17,12 @@ export const GET_USERS = async (data: {
     suspended?: boolean;
     type?: string;
     role?: string;
+    limit?: number;
 }) => {
     return tmcApi.get(`/user/filter-users`, {
         params: {
             ...data,
-            limit: 20
+            limit: data?.limit || 20
         }
     });
 }

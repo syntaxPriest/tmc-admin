@@ -34,6 +34,9 @@ import { updateProposedMessageData } from "../../../store/general/reducer";
 import { useMutation } from "@tanstack/react-query";
 import { GET_USERS } from "../../../api/getApis";
 import { User } from "../../../utils/types";
+import { CheckIcon } from "@heroicons/react/24/outline";
+import { CloseCircle, CloseSquare } from "iconsax-react";
+import { enqueueSnackbar } from "notistack";
 
 const CreateMessage = () => {
   const navigate = useNavigate();
@@ -41,6 +44,10 @@ const CreateMessage = () => {
   const [searchQuery] = useSearchParams();
 
   const [largeUserData, setLargeUserData] = useState<Array<User>>([])
+  const [mutableUser, setMutableUser] = useState<Array<User>>([])
+  const [selectedUsers, setSelectedUsers] = useState<Array<User>>([])
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const type = searchQuery.get('type');
   const id = searchQuery.get('id');
   const { proposedMessageData } = useGeneralState();
@@ -48,7 +55,8 @@ const CreateMessage = () => {
   const {mutateAsync: getUsers, isPending:isGettingUsers} = useMutation({
 		mutationFn: GET_USERS,
 		onSuccess: (data) => {
-			setLargeUserData(data?.data?.body?.users)
+			setLargeUserData(data?.data?.body?.users);
+      setMutableUser(data?.data?.body?.users);
 		}
 	})
 
@@ -62,7 +70,6 @@ const CreateMessage = () => {
     }
   }, [proposedMessageData])
 
-
   const [recipientArray, setRecipientArray] = useState<Array<string | number>>([])
   const [headline, setHeadline] = useState("")
   const [message, setMessage] = useState<any>("")
@@ -72,7 +79,7 @@ const CreateMessage = () => {
       ...proposedMessageData,
       headline,
       message,
-      receivers: recipientArray
+      receivers: [...recipientArray, ...selectedUsers.map((item) => { return item.id})]
     }))
     navigate(`/dashboard/messaging/preview${type === 'edit' ? `?type=edit&id=${id}` : ""}`)
   }
@@ -83,9 +90,49 @@ const CreateMessage = () => {
       })
   }, [])
 
+  const handleSearch = (keyword: string) => {
+    const modifiedKeyword = keyword.toLowerCase();
+    let mockData: User[] = [];
+    if (largeUserData && largeUserData.length > 0){
+      for (let i = 0; i < largeUserData.length; i++){
+        if (
+          largeUserData[i].first_name?.toLowerCase().includes(modifiedKeyword) ||
+          largeUserData[i].last_name?.toLowerCase().includes(modifiedKeyword) ||
+          largeUserData[i].email?.toLowerCase().includes(modifiedKeyword) ||
+          largeUserData[i].phone?.includes(modifiedKeyword)
+        ){
+          mockData.push(largeUserData[i])
+        }
+      }
+    }
+    setMutableUser(mockData)
+  }
+
+  const exists = (array: User[], id: number | string | undefined): boolean => array.some(obj => obj.id === id);
+
+  const addUserToList = (user: User) => {
+    if (!exists(selectedUsers, user?.id)){
+      setSelectedUsers((prev) => prev.concat(user))
+    }else {
+      enqueueSnackbar({
+        variant: 'warning',
+        message: 'Already added!'
+      })
+    }
+  }
+
+  const removeUserFromList = (user: User) => {
+    setSelectedUsers((prev) => prev.filter(p => p.id !== user?.id))
+  }
+
   return (
     <>
-      <MainWrap top="0rem" width="100%" maxWidth="1200px">
+      <MainWrap 
+        top="0rem" 
+        width="100%" 
+        maxWidth="1200px"
+        onClick={() => setShowSuggestions(false)}
+      >
         <DashboardFlex>
           <SideBarWidget />
           <DashboardMain>
@@ -128,7 +175,7 @@ const CreateMessage = () => {
                       id='membership_type'
                       value={(recipientArray && recipientArray.length > 0) ? `${recipientArray[0]}` : ""}
                       onChange={(e) => {
-                        setRecipientArray((prev:any) => [e.target.value, ...prev])
+                        setRecipientArray((prev:any) => [e.target.value])
                       }}
                     >
                         <option value="">Select Membership Type</option>
@@ -140,15 +187,108 @@ const CreateMessage = () => {
                         }
                     </select>
                 </InputField>
-                <InputField width="48%">
-                  <p>Search Recipient</p>
+                <InputField width="48%" className="!relative" >
+                  <p>Search Recipients from Members</p>
                   <input
                     placeholder="Enter Recipient"
                     autoComplete="off"
                     type="text"
                     required
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setSearchKeyword(e.target?.value)
+                      handleSearch(e.target?.value);
+                      // setShowSuggestions(true);
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowSuggestions(true)
+                    }}
                   />
+                  {
+                      showSuggestions && 
+                          <div 
+                              className="suggest-card"
+                              onClick={(e) => {
+                                  e.stopPropagation();
+                              }}
+                          >
+                              {
+                                  mutableUser && mutableUser.length > 0 ?
+                                      mutableUser.map((item, index) => (
+                                          <div 
+                                              className={`suggest-wrapper flex justify-between`}
+                                              key={index}
+                                              style={(index === mutableUser.length - 1)  ? {
+                                                  border: 'none'
+                                              } : {}}
+                                              onClick={() => {
+                                                addUserToList(item);
+                                                setShowSuggestions(false)
+                                              }}
+                                          >
+                                            <div className='flex items-center py-[0.6rem] cursor-pointer gap-[10px] w-[90%]'>
+                                              <img
+                                                src='/images/Avatar1.png'
+                                                                        className="w-[35px] h-[35px]"
+                                                alt='user'
+                                              />
+                                              <div className='w-[90%]'>
+                                                <h3 className='font-medium text-[14px] cursor-pointer'>
+                                                  {item.first_name} {item.last_name}
+                                                </h3>
+                                                <p className='font-light cursor-pointer text-[12px] text-[#70897B]'>
+                                                  {item.email ? item.email : "N/A"}
+                                                </p>
+                                              </div>
+                                            </div>
+                                              {/* <p 
+                                                  className=""
+                                                  dangerouslySetInnerHTML={{__html: `${highlightFoundSearchQuery(item.name, searchQuery || '')}`}}
+                                              ></p> */}
+                                              {
+                                                  (exists(selectedUsers, item?.id)) && (
+                                                      <CheckIcon className="w-4 h-4" />
+                                                  )
+                                              } 
+                                          </div>
+                                      ))
+                                  : 
+                                  <p 
+                                      className="indicator-text"
+                                      style={{
+                                          padding: '20px'
+                                      }}
+                                  >
+                                      Sorry, no matching result
+                                  </p>
+                              }
+                          </div>
+                  }
                 </InputField>
+
+                {
+                  (selectedUsers && selectedUsers.length > 0) && 
+                    <div className="flex items-center gap-[6px] flex-wrap my-[1rem]">
+                      {
+                        selectedUsers.map((item, index) => (
+                          <div 
+                            key={index} 
+                            className="flex items-center gap-[10px] text-[12px] border border-[#E5DFD9] text-[#898579] py-1 px-3 rounded-[8px]"
+                          >
+                              {item.first_name} {item.last_name}
+                              <CloseSquare 
+                                size={15} 
+                                variant="Bold" 
+                                color='#898579' 
+                                className="cursor-pointer"
+                                onClick={() => removeUserFromList(item)}
+                              />
+                          </div>
+                        ))
+                      }
+                    </div>
+                }
                 <InputField width="100%">
                   <p>Headline</p>
                   <input
