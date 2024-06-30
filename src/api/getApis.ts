@@ -191,3 +191,14 @@ export const GET_USER_WALLET = async (data: {
         }
     });
 }
+
+export const GET_USER_SUBSCRIPTIONS = async (data: {
+    user_id?: number,
+    offset?: number
+}) => {
+    return tmcApi.get(`/subscription/subscriptions`, {
+        params: {
+            ...data,
+        }
+    });
+}

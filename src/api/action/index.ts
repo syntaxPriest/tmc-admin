@@ -78,3 +78,9 @@ export const UPDATE_ORDER_STATUS = async (data:{
 }) => {
     return tmcApi.post(`/order/update-status`, data);
 }
+
+export const CANCEL_SUBSCRIPTION = async (data:{
+    id: number | undefined;
+}) => {
+    return tmcApi.post(`/event/cancel-subscription`, data);
+}
