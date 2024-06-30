@@ -21,10 +21,10 @@ import { useCurrentUser } from '../../../store/user/useCurrentUser';
 import { removeAfterLogout } from '../../../api/instance';
 import TransactionCard from '../TransactionCard';
 import { useMutation } from '@tanstack/react-query';
-import { GET_BOOKINGS, GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS, GET_USER_WALLET } from '../../../api/getApis';
+import { GET_BOOKINGS, GET_EVENTS, GET_SINGLE_USERS, GET_TRANSACTIONS, GET_USER_SUBSCRIPTIONS, GET_USER_WALLET } from '../../../api/getApis';
 import PageSpinner from '../../reusable/Spinner/Spinner';
 import { User } from '../../../utils/types';
-import { DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
+import { CANCEL_SUBSCRIPTION, DELETE_USER, EDIT_USER, SUSPEND_UNSUSPEND_ACTION } from '../../../api/action';
 import { enqueueSnackbar } from 'notistack';
 import { Spinner } from '../../reusable/spinner';
 import AskYesOrNo from '../modals/askYesOrNo';
@@ -44,6 +44,8 @@ interface userStateProps {
     eventsCount: number,
     bookings: any,
     bookingsCount: number,
+    subscriptions: any,
+    subscriptionsCount: number,
 }
 
 const MemberProfile = () => {
@@ -56,11 +58,13 @@ const MemberProfile = () => {
     const currentUser = useCurrentUser().user;
 
     const [transactionType, setTransactionType] = useState("")
+    const [subscriptionPage, setSubscriptionPage] = useState<number | undefined>(1)
     const [eventPage, setEventPage] = useState<number | undefined>(1)
     const [transactionPage, setTransactionPage] = useState<number | undefined>(1)
     const [bookingPage, setBookingPage] = useState<number | undefined>(1)
     const [askSuspend, setAskSuspend] = useState(false)
     const [askDelete, setAskDelete] = useState(false)
+    const [askCancel, setAskCancel] = useState(false)
     const [activePage, setActivePage] = useState('Overview');
     const [showPassword, setShowPassword] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
@@ -81,7 +85,9 @@ const MemberProfile = () => {
         events: {},
         eventsCount: 0,
         bookings: {},
-        bookingsCount: 0
+        bookingsCount: 0,
+        subscriptions: {},
+        subscriptionsCount: 0
     });
 
     const [mutableUser, setMutableUser] = useState<User>();
@@ -101,8 +107,7 @@ const MemberProfile = () => {
       };
 
     const { mutateAsync, isPending } = useMutation({
-        mutationFn: GET_SINGLE_USERS
-        ,
+        mutationFn: GET_SINGLE_USERS,
         onSuccess: (data) => {
           setUserState((prev) => {
             return {
@@ -182,6 +187,20 @@ const MemberProfile = () => {
         },
     });
 
+    // GET BOOKINGS UNDER A USER
+    const { mutateAsync: getUserSubscriptions, isPending: isGettingUserSubscriptions } = useMutation({
+        mutationFn: GET_USER_SUBSCRIPTIONS,
+        onSuccess: (data) => {
+          setUserState((prev) => {
+            return {
+              ...prev,
+              subscriptions: data?.data?.body?.subscriptions,
+              subscriptionsCount: data?.data?.body?.total_count,
+            };
+          });
+        },
+    });
+
     // EDIT USER INFORMATION
     const { mutateAsync:editUser, isPending:isEditing } = useMutation({
         mutationFn: EDIT_USER,
@@ -217,6 +236,16 @@ const MemberProfile = () => {
             message: "You have deleted this member's account successfully!"
           })
           navigate('/dashboard/members')
+        },
+    });
+
+    const { mutateAsync: cancel_action, isPending: isCancelling } = useMutation({
+        mutationFn: CANCEL_SUBSCRIPTION,
+        onSuccess: (data) => {
+          enqueueSnackbar({
+            variant: 'success',
+            message: "You have succesfully cancelled this member's subscription!"
+          })
         },
     });
 
@@ -258,6 +287,15 @@ const MemberProfile = () => {
 
       useEffect(() => {
         if (id){
+            getUserSubscriptions({
+                user_id: Number(id),
+                offset: Number(subscriptionPage) - 1,
+            })
+        }
+      }, [id, subscriptionPage]);
+
+      useEffect(() => {
+        if (id){
             getUserBookings({
                 user_id: id,
                 offset: Number(bookingPage) - 1,
@@ -293,6 +331,19 @@ const MemberProfile = () => {
                 })}
                 noAction={() => setAskDelete(false)}
                 actionInProgress={isDeleting}
+            />
+            {/* FOR CANCELLING SUBSCRIPTION */}
+            <AskYesOrNo 
+                openToggle={askCancel}
+                headerText={`Cancel Members's Subscription`}
+                question={`Are you sure you want to cancel this member's subscription?`}
+                declineText="Go back"
+                actionText={`Cancel Subscription`}
+                yesAction={() => cancel_action({
+                    id: mutableUser?.user_id
+                })}
+                noAction={() => setAskCancel(false)}
+                actionInProgress={isCancelling}
             />
             <MainWrap
                 top='0rem'
@@ -815,7 +866,7 @@ const MemberProfile = () => {
                                                     <div>
                                                         <img src="/icons/Medal.png" className='w-[60px] h-[60px] block mx-auto' alt="Medal" />
                                                         <Typography 
-                                                            text='Ordinary Membership'
+                                                            text={userState?.data?.membership_type ? userState?.data?.membership_type : ""}
                                                             color='#1B2229'
                                                             fontWeight={500}
                                                             fontSize='18px'
@@ -824,7 +875,7 @@ const MemberProfile = () => {
                                                             margin='1rem 0 0 0'
                                                         />
                                                         <Typography 
-                                                            text='Member since 12 May, 2024'
+                                                            text={`Member since ${moment(userState?.data?.created_at).format('LL')}`}
                                                             color='#898579'
                                                             fontWeight={400}
                                                             fontSize='14px'
@@ -839,6 +890,7 @@ const MemberProfile = () => {
                                                             width='auto'
                                                             top='0'
                                                             className='!my-4 !mx-auto'
+                                                            disabled
                                                         >
                                                             Renew Subcription
                                                         </Button>
@@ -846,12 +898,12 @@ const MemberProfile = () => {
                                                     <div className="flex items-center justify-between w-[80%] mx-auto mt-[3rem]">
                                                         <div className='text-center'>
                                                             <p className="font-[400] text-[11px] text-[#898579]">Last Subscription</p>
-                                                            <h3 className="font-[500] pt-1 text-[13px]">April 10, 2024</h3>
+                                                            <h3 className="font-[500] pt-1 text-[13px]">{userState?.subscriptions && userState?.subscriptions.length > 0 ? moment(userState?.subscriptions[0].created_at).format('LL') : "---"}</h3>
                                                         </div>
                                                         <div className="h-[4rem] border-r"></div>
                                                         <div className='text-center'>
-                                                            <p className="font-[400] text-[11px] text-[#898579]">Last Subscription</p>
-                                                            <h3 className="font-[500] pt-1 text-[13px]">April 10, 2024</h3>
+                                                            <p className="font-[400] text-[11px] text-[#898579]">Next Subscription</p>
+                                                            <h3 className="font-[500] pt-1 text-[13px]">{userState?.subscriptions && userState?.subscriptions.length > 0 ? `${moment(userState?.subscriptions[0].created_at).format('LL').split(",")[0]}, ${new Date(userState?.subscriptions[0].created_at).getFullYear() + 1}` : "---"}</h3>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -860,9 +912,37 @@ const MemberProfile = () => {
                                                     <div>
                                                         <h3 className="font-[900]">History</h3>
                                                         <div className="mt-[1rem]">
-                                                            <TransactionCard />
-                                                            <TransactionCard />
-                                                            <TransactionCard />
+                                                            {
+                                                                isGettingUserSubscriptions ? 
+                                                                    <TransactionSkeleton />
+                                                                    :
+                                                                (userState && userState?.subscriptions && userState?.subscriptions.length > 0) ? 
+                                                                    <div>
+                                                                        {
+                                                                            userState?.subscriptions.map((item:any, index:number) => (
+                                                                                <TransactionCard 
+                                                                                    key={index}
+                                                                                    amount={item?.amount}
+                                                                                    date={item.created_at}
+                                                                                    description={"Membership Subscription"}
+                                                                                    type={item.type}
+                                                                                />
+                                                                            ))
+                                                                        }
+                                                                        {userState?.subscriptionsCount > 20 && (
+                                                                            <Paginate
+                                                                                itemsPerPage={20}
+                                                                                pageCount={Math.ceil(Number(userState?.subscriptionsCount) / 20)}
+                                                                                page={subscriptionPage}
+                                                                                setPage={setSubscriptionPage}
+                                                                                totalItems={userState?.subscriptionsCount}
+                                                                            />
+                                                                        )}
+                                                                    </div> : 
+                                                                    <EmptyState 
+                                                                        text='No subscription made yet'
+                                                                    />
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -904,6 +984,7 @@ const MemberProfile = () => {
                                                         type='button'
                                                         width='auto'
                                                         top='0'
+                                                        onClick={() => setAskCancel(true)}
                                                     >
                                                         Cancel Subscription
                                                     </Button>

@@ -40,6 +40,9 @@ body {
   -webkit-appearance: none;
   -webkit-tap-highlight-color:transparent;
 }
+img {
+  object-fit:cover;
+}
 
 a {
   color: inherit;
