@@ -176,7 +176,7 @@ export const InputField = styled.div<InputWrapProps>`
 
     > select {
         background:#fff;
-        padding:14.5px 4%;
+        padding:14.5px 12px;
         font-size:14px;
         text-align:left;
         border: 1px solid #E5DFD9;

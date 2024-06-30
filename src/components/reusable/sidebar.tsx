@@ -61,6 +61,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
   const inventoryActive = activeIdentifier("inventory",  "inventories")
   const transactionsActive = activeIdentifier("transaction")
   const messagingActive = activeIdentifier("messaging")
+  const feedbackActive = activeIdentifier("feedback")
   const adminsActive = activeIdentifier("admin")
   const settingsActive = activeIdentifier("settings");
 
@@ -82,11 +83,6 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
   // Open Option
   // const [openOption, setOpenOption] = useState(false);
   // const [activeItem, setActiveItem] = useState<number>(-1);
-
-  // const handleOpenOption = (index:number) => {
-  //     setOpenOption(!openOption);
-  //     setActiveItem(index)
-  // }
 
   const navList = [
     {
@@ -143,6 +139,13 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
       icon: Icon.Messages1,
       link: "/dashboard/messaging",
       activeClass: messagingActive,
+      action: () => {},
+    },
+    {
+      name: "Feedback",
+      icon: Icon.LikeDislike,
+      link: "/dashboard/feedback",
+      activeClass: feedbackActive,
       action: () => {},
     },
     {
@@ -221,6 +224,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
                   <div>
                     {React.createElement(item.icon, {
                       className: "w-5 w-5",
+                      variant: "TwoTone"
                     })}
                     <p>{item.name}</p>
                   </div>
@@ -233,7 +237,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
                   className={`nav-class ${settingsActive ? "active-nav" : ""}`}
                 >
                   <div>
-                    <Icon.Setting2 className="w-5 h-5" />
+                    <Icon.Setting2 className="w-5 h-5" variant="TwoTone" />
                     <p>Settings</p>
                   </div>
                 </NavItem>
@@ -246,7 +250,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
                 }}
               >
                 <div>
-                  <Icon.LogoutCurve className="w-5 h-5" color="#c82b32" />
+                  <Icon.LogoutCurve className="w-5 h-5" color="#c82b32" variant="TwoTone" />
                   <p className="text-[#c82b32]">Logout</p>
                 </div>
               </NavItem>
