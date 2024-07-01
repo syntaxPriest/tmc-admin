@@ -122,13 +122,14 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
                         onChange={handleChange}
                     />
                 </InputField>
-                <InputField width='100%'>
+                <InputField width='48%'>
                     <p>Membership Type</p>
                     <select 
                         required
                         id='membership_type'
                         value={inviteeData?.membership_type}
                         onChange={handleChange}
+                        className="!py-[17px]"
                     >
                         <option value="">Select Membership Type</option>
                         {
@@ -138,6 +139,18 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
                           ))
                         }
                     </select>
+                </InputField>
+                <InputField width='48%'>
+                    <p>Subscription Start Date</p>
+                    <input 
+                        placeholder='Enter Subscription Start Date'
+                        autoComplete="off"
+                        type="date"
+                        required
+                        // id='membership_id'
+                        // value={inviteeData?.membership_id}
+                        // onChange={handleChange}
+                    />
                 </InputField>
             </InputWrap>
             <Button
