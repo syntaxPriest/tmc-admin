@@ -132,7 +132,7 @@ const FeedbackResponse = () => {
                   <p
                     className="text-[14px] text-[#23211D] font-[400] mt-[3rem]"
                   >
-                    What are your suggestions or comments on this. 
+                    {feedback?.subtext}
                   </p>
 
                   <div className="mt-[4rem]">
