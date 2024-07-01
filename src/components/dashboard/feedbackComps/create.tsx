@@ -1,69 +1,118 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
-  BoxFlex,
-  Line,
   MainWrap,
-  PageListItem,
-  PageListItemWrap,
-  PageToggleText,
-  RandomCircle,
 } from "../../../styles/reusable/index";
 import SideBarWidget from "../../reusable/sidebar";
 import {
   DashboardFlex,
   DashboardHeader,
-  DashboardInner,
   DashboardMain,
-  ProfileBoxWrap,
 } from "./../style";
-import QuickActionWidget from "../../reusable/quickaction";
 import Typography from "../../reusable/typography";
 import * as Icon from "react-feather";
+import * as IconSax from "iconsax-react";
 import { Button } from "../../../styles/reusable";
 import { useNavigate } from "react-router-dom";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
 import BottomNavComp from "../../reusable/bottomNav";
 import { useDispatch } from "react-redux";
-import { useCookies } from "react-cookie";
-import { useCurrentUser } from "../../../store/user/useCurrentUser";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { membershipTypeList } from "../modals/inviteMembers";
-import { useGeneralState } from "../../../store/general/useGeneral";
-import { updateProposedMessageData } from "../../../store/general/reducer";
 import CustomRadio from "../../reusable/customRadio";
+import { useMutation } from "@tanstack/react-query";
+import { GET_EVENTS } from "../../../api/getApis";
+import { CREATE_FEEDBACK } from "../../../api/action";
+import { enqueueSnackbar } from "notistack";
+import { Spinner } from "../../reusable/spinner";
+
+export interface QuestionLineObject {
+  question: string;
+  type: string;
+  subtext?: string;
+}
 
 const CreateFeedback = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [answerType, setAnswerType] = useState<string | boolean>("")
-  const { proposedMessageData } = useGeneralState();
-  const [questionArray, setQuestionArray] = useState([{
+  const [selectedEvent, setSelectedEvent] = useState<number | undefined>()
+
+  const [firstRatingIndex, setFirstRatingIndex] = useState(-1);
+  const [questionArray, setQuestionArray] = useState<QuestionLineObject[]>([{
     question: "",
-    answerType: ""
+    type: ""
   }]);
 
-  useEffect(() => {
-    if (proposedMessageData){
-      setHeadline(proposedMessageData?.headline)
-      setMessage(proposedMessageData?.message)
-    }
-  }, [proposedMessageData])
-
-
-  const [recipientArray, setRecipientArray] = useState<Array<string | number>>([])
-  const [headline, setHeadline] = useState("")
-  const [message, setMessage] = useState<any>("")
-
-  const handleContinueToPreview = () => {
-    dispatch(updateProposedMessageData({
-      ...proposedMessageData,
-      headline,
-      message,
-      receivers: recipientArray
-    }))
-    navigate("/dashboard/messaging/preview")
+  const addLineQuestion = (e: ChangeEvent<HTMLInputElement>, index:number) => {
+    questionArray[index].question = e?.target?.value;
+    setQuestionArray([...questionArray]);
   }
+
+  const addLineSubtext = (e: ChangeEvent<HTMLInputElement>, index:number) => {
+    questionArray[index].subtext = e?.target?.value;
+    if (!e.target.value){
+      questionArray[index].subtext = undefined;
+    }
+    setQuestionArray([...questionArray]);
+  }
+
+  const addLineType = (value: string, index:number) => {
+    questionArray[index].type = value;
+    setQuestionArray([...questionArray]);
+  }
+
+  const deleteLine = (index:number) => {
+    const mockData = questionArray.filter((p, pIndex) => index !== pIndex);
+    setQuestionArray([...mockData]);
+  }
+
+  // PAST EVENTS
+  const [eventsState, setEventsState] = useState({
+    events: [],
+  });
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: GET_EVENTS,
+    onSuccess: (data) => {
+      setEventsState((prev) => {
+        return {
+          ...prev,
+          events: data?.data?.body?.events,
+        };
+      });
+    },
+  });
+
+  useEffect(() => {
+    mutateAsync({
+      limit: 200,
+      status: "completed",
+    });
+  }, []);
+
+  // CREATE_FEEDBACK
+  const { mutateAsync: createFeedback, isPending:isCreating } = useMutation({
+    mutationFn: CREATE_FEEDBACK,
+    onSuccess: (data) => {
+      enqueueSnackbar({
+        variant: 'success',
+        message: "Feedback created successfully!"
+      })
+      navigate("/dashboard/feedback")
+    },
+  });
+
+  const handleSend = () => {
+    createFeedback({
+      event_id: selectedEvent,
+      questions: questionArray
+    })
+  }
+
+  const isFieldEmpty = <T extends Record<string, any>>(array: T[], field: keyof T): boolean => {
+    return array.some((obj: T) => obj[field] === '' || obj[field] === null || obj[field] === undefined);
+  };
+
+  useEffect(() => {
+    setFirstRatingIndex(questionArray.findIndex((p) => p.type === 'rating'))
+  }, [questionArray])
 
   return (
     <>
@@ -73,7 +122,10 @@ const CreateFeedback = () => {
           <DashboardMain>
             <DashboardHeader>
               <div className="flex gap-[8px] items-center">
-                <Icon.ArrowLeft />
+                <Icon.ArrowLeft 
+                  className="cursor-pointer"
+                  onClick={() => navigate(-1)}
+                />
                 <Typography
                   text="Create New Feedback"
                   color="#091525"
@@ -86,12 +138,12 @@ const CreateFeedback = () => {
               <Button
                 bg='#23211D'
                 color='#fff'
-                disabled={recipientArray.length < 1 || !headline || !message}
+                disabled={!selectedEvent ||isFieldEmpty(questionArray, 'question') || isFieldEmpty(questionArray, 'type')}
                 onClick={() => {
-                  handleContinueToPreview()
+                  handleSend()
                 }}
               >
-                Send
+                {isCreating ? <Spinner /> : "Send"}
               </Button>
             </DashboardHeader>
             <div className="my-[2rem]">
@@ -104,10 +156,16 @@ const CreateFeedback = () => {
                       required
                       id='membership_type'
                       onChange={(e) => {
-                        setRecipientArray((prev:any) => [e.target.value, ...prev])
+                        setSelectedEvent(Number(e.target.value))
                       }}
                     >
-                        <option value="">General Feedback - Sends to everyone</option>
+                      <option value="">Select from past event</option>
+                      {
+                        (eventsState?.events && eventsState?.events.length > 0) && 
+                          eventsState?.events.map((item:any, index) => (
+                            <option key={index} value={item?.id}>{item?.title}</option>
+                          ))
+                      }
                     </select>
                 </InputField>
                 {
@@ -118,14 +176,26 @@ const CreateFeedback = () => {
                                 className="w-full flex flex-wrap justify-between border-b pb-4 mb-3"
                             >
                               <InputField width="100%">
-                                  <p className="!font-bold">Question {questionArray.length > 1 ? `#${index + 1}` : ""}</p>
+
+                                  <div className="flex items-center justify-between py-[1rem]">
+                                    <p className="!font-bold">Question {questionArray.length > 1 ? `#${index + 1}` : ""}</p>
+                                    {
+                                      index > 0 &&
+                                        <div 
+                                          className="cursor-pointer flex items-center justify-center w-[50px] h-[50px] rounded-full bg-[#fafafa] hover:opacity-[0.6]"
+                                          onClick={() => deleteLine(index)}
+                                        >
+                                          <IconSax.Trash color="#c82b32" />
+                                        </div>
+                                    }
+                                  </div>
                                   <input
                                       placeholder="Enter Question"
                                       autoComplete="off"
                                       type="text"
                                       required
-                                      value={""}
-                                      // onChange={}
+                                      value={item.question}
+                                      onChange={(e) => addLineQuestion(e, index)}
                                   />
                               </InputField>
                               <InputField width="100%">
@@ -135,29 +205,39 @@ const CreateFeedback = () => {
                                       autoComplete="off"
                                       type="text"
                                       required
-                                      value={""}
-                                      // onChange={}
+                                      value={item.subtext}
+                                      onChange={(e) => addLineSubtext(e, index)}
                                   />
                               </InputField>
                               <InputField width="100%" className="!relative top-[10px]">
                                   <p>Question Type</p>
                               </InputField>
                               <CustomRadio 
-                                labelText='Rating Scale'
-                                name='answerType'
-                                activeValue={answerType}
-                                setActiveValue={setAnswerType}
-                                id='other'
+                                labelText='Rating'
+                                name={`${index}answerType`}
+                                activeValue={item.type}
+                                id={`${index}rating`}
                                 width={"48%"}
+                                altFunc={() => addLineType("rating", index)}
                               />
                               <CustomRadio 
-                                labelText="Text Answer"
-                                name='answerType'
-                                activeValue={answerType}
-                                setActiveValue={setAnswerType}
-                                id='tuesday'
+                                labelText="Text"
+                                name={`${index}answerType`}
+                                activeValue={item.type}
+                                id={`${index}atext`}
                                 width={"48%"}
+                                altFunc={() => addLineType("text", index)}
                               />
+                              {
+                                index === firstRatingIndex &&
+                                  <>
+                                    <img 
+                                      src="/images/rating.png" 
+                                      alt="Disclaimer"
+                                      className="w-full mt-3" 
+                                    />
+                                  </>
+                              }
                           </div>
                         </>
                     ))
@@ -170,7 +250,7 @@ const CreateFeedback = () => {
                 onClick={() => {
                   setQuestionArray((prev) => prev.concat({
                     question: "",
-                    answerType: ""
+                    type: ""
                   }))
                 }}
                 className="!py-[8px] !text-[13px]"

@@ -8,13 +8,17 @@ interface Props {
     labelText: string;
     activeValue: string | boolean;
     id: string;
-    setActiveValue: Dispatch<SetStateAction<string | boolean>>;
+    setActiveValue?: Dispatch<SetStateAction<string | boolean>>;
+    altFunc?: () => void;
 }
 
-const CustomRadio = ({id, width, name, img, labelText, activeValue, setActiveValue} : Props) => {
+const CustomRadio = ({id, width, name, img, labelText, activeValue, setActiveValue, altFunc} : Props) => {
     return(
         <>
-            <InputField width={width}>
+            <InputField 
+                width={width}
+                className='cursor-pointer hover:opacity-[0.6]'
+            >
                 <label htmlFor={id}>
                     <section
                         style={(typeof activeValue === 'boolean' && activeValue) ||  (labelText && (labelText.replaceAll(' ', '_').toLocaleLowerCase() === activeValue)) ? {
@@ -40,7 +44,10 @@ const CustomRadio = ({id, width, name, img, labelText, activeValue, setActiveVal
                                 name={name} 
                                 type='radio'
                                 id={id}
-                                onChange={() => setActiveValue(labelText && labelText.replaceAll(' ', '_').toLocaleLowerCase())}
+                                onChange={() => {
+                                    altFunc && altFunc();
+                                    setActiveValue && setActiveValue(labelText && labelText.replaceAll(' ', '_').toLocaleLowerCase())
+                                }}
                                 checked={typeof activeValue === 'boolean' ? activeValue : (labelText && (labelText.replaceAll(' ', '_').toLocaleLowerCase() === activeValue) ? true : false)}
                             />
                         </div>

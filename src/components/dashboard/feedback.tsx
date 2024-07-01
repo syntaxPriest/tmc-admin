@@ -16,7 +16,7 @@ import * as Icon from 'iconsax-react';
 import commaNumber from 'comma-number';
 import SelectMessageChannel from './modals/selectMessageChannel';
 import { useMutation } from '@tanstack/react-query';
-import { GET_MESSAGES } from '../../api/getApis';
+import { GET_FEEDBACKS, GET_MESSAGES } from '../../api/getApis';
 import EmptyState from '../reusable/emptyState';
 import { Paginate } from '../reusable/paginationComp';
 import MessagesSkeleton from '../skeletons/messages';
@@ -31,31 +31,31 @@ const Feedback = () => {
     const [showSelectModal, setShowSelectModal] = useState(false);
 
     const [page, setPage] = useState<number | undefined>(1)
-    const [messagesState, setMessagesState] = useState({
+    const [feedbacksState, setFeedbacksState] = useState({
         page: 1,
         activeIndex: -1,
         searchQuery: "",
-        messages: [],
-        messagesCount: 0,
+        feedbacks: [],
+        feedbacksCount: 0,
       });
     
       const { mutateAsync, isPending } = useMutation({
-        mutationFn: GET_MESSAGES,
+        mutationFn: GET_FEEDBACKS,
         onSuccess: (data) => {
-          setMessagesState((prev) => {
+          setFeedbacksState((prev) => {
             return {
               ...prev,
-              messages: data?.data?.body?.messages,
-              messagesCount: data?.data?.body?.total_count,
+              feedbacks: data?.data?.body?.feedbacks,
+              feedbacksCount: data?.data?.body?.total_count,
             };
           });
         },
       });
     
       useEffect(() => {
-        // mutateAsync({
-        //   offset: Number(page) - 1,
-        // });
+        mutateAsync({
+          offset: Number(page) - 1,
+        });
       }, [page]);
 
     return(
@@ -75,8 +75,8 @@ const Feedback = () => {
                         <DashboardHeader>
                             <Typography 
                                 text={`Feedback ${
-                                    messagesState?.messagesCount
-                                      ? `(${messagesState?.messagesCount})`
+                                    feedbacksState?.feedbacksCount
+                                      ? `(${feedbacksState?.feedbacksCount})`
                                       : ""
                                   }`}
                                 color='#091525'
@@ -96,37 +96,31 @@ const Feedback = () => {
                         {isPending ? (
                             <MessagesSkeleton />
                             ) : 
-                            // messagesState?.messages.length > 0 
-                            true
+                            feedbacksState?.feedbacks.length > 0 
                             ? (
                         <div className="mt-5">
                             {
-                                // messagesState?.messages &&
-								// messagesState?.messages.length > 0 
-                                true
+                                (feedbacksState?.feedbacks &&
+								feedbacksState?.feedbacks.length > 0) 
                                 &&
-								Array(2).fill(0).map((item: any, index: number) => (
+								feedbacksState?.feedbacks.map((item: any, index: number) => (
 									<div
 										className='w-full items-center flex justify-between gap-[10px] py-[20px] cursor-pointer border-b text-[#05150C]'
                                         onClick={() => {
-                                            // dispatch(updateProposedMessageData({
-                                            //     message: item.message,
-                                            //     headline: item.headline
-                                            // }))
-                                            // navigate(`/dashboard/Feedback/preview?type=view`)
+                                            navigate(`/dashboard/feedback/response/${item.id}`)
                                         }}
 									>
 										<div className='w-[90%] flex flex-col cursor-pointer gap-[10px]'>
 											<div className='w-[100%] flex gap-[10px]'>
 												<p className='cursor-pointer font-black text-[16px] max-w-[80%]'>
-                                                    {"What did you enjoy in today’s lunch menu?"}
+                                                    {item.question}
 												</p>
                                                 <div className="flex gap-[8px]">
                                                     {/* {
                                                         (item.channels && JSON.parse(item.channels).length > 0) ?
                                                             JSON.parse(item.channels).map((item:string, index:number) => ( */}
                                                                 <p className="border border-[#d0d5dd] shadow-[0px_1px_2px_0px_#1018280D] py-[4px] px-[10px] rounded-[6px] text-center w-auto text-[10px] capitalize">
-                                                                    70 feedbacks
+                                                                    {item.response_count} feedbacks
                                                                 </p>
                                                             {/* ))
                                                             : null
@@ -140,24 +134,24 @@ const Feedback = () => {
                                             </p>
                                             <p 
                                                 className='text-[12px] text-[#898579] font-[400]'>
-                                                    {moment(new Date()).format('LL')}
+                                                    {moment(new Date(item.created_at)).format('LL')}
                                             </p>
 										</div>
                                         <p className="text-[#8B6C23] text-[14px] font-[500]">View</p>
 									</div>
 								))}
-                                {messagesState?.messagesCount > 20 && (
+                                {feedbacksState?.feedbacksCount > 20 && (
                                     <Paginate
                                         itemsPerPage={20}
-                                        pageCount={Math.ceil(Number(messagesState?.messagesCount) / 20)}
+                                        pageCount={Math.ceil(Number(feedbacksState?.feedbacksCount) / 20)}
                                         page={page}
                                         setPage={setPage}
-                                        totalItems={messagesState?.messagesCount}
+                                        totalItems={feedbacksState?.feedbacksCount}
                                     />
                                 )}
                                 </div>
                         ) : (
-                            <EmptyState text="There are no messages at the moment" />
+                            <EmptyState text="There are no feedback created at the moment" />
                         )}
                     </DashboardMain>
                 </DashboardFlex>
