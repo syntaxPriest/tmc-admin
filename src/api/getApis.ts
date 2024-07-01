@@ -43,11 +43,12 @@ export const GET_EVENTS = async (data: {
     offset?: number;
     type?: string;
     user_id?: string;
+    limit?: number;
 }) => {
     return tmcApi.get(`/event/filter-event`, {
         params: {
             ...data,
-            limit: 20
+            limit: data?.limit || 20
         }
     });
 }
@@ -199,6 +200,39 @@ export const GET_USER_SUBSCRIPTIONS = async (data: {
     return tmcApi.get(`/subscription/subscriptions`, {
         params: {
             ...data,
+        }
+    });
+}
+
+export const GET_FEEDBACKS = async (data: {
+    offset?: number
+}) => {
+    return tmcApi.get(`/feedback/list-feedbacks`, {
+        params: {
+            ...data,
+            limit: 20
+        }
+    });
+}
+
+export const GET_FEEDBACK = async (data: {
+    id?: number
+}) => {
+    return tmcApi.get(`/feedback/get-feedback`, {
+        params: {
+            ...data,
+        }
+    });
+}
+
+export const GET_RESPONSE = async (data: {
+    id?: number,
+    offset?: number
+}) => {
+    return tmcApi.get(`/feedback/list-responses`, {
+        params: {
+            ...data,
+            limit: 40
         }
     });
 }

@@ -43,6 +43,7 @@ import CreateMessage from './components/dashboard/messagingComps.tsx/create';
 import PreviewMessage from './components/dashboard/messagingComps.tsx/preview';
 import Feedback from './components/dashboard/feedback';
 import CreateFeedback from './components/dashboard/feedbackComps/create';
+import FeedbackResponse from './components/dashboard/feedbackComps/response';
 
 function App() {
 
@@ -160,6 +161,10 @@ function App() {
 
           <Route path='/dashboard/feedback' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
             <Route path='/dashboard/feedback' element={<Feedback />} />
+          </Route>
+
+          <Route path='/dashboard/feedback/response/:id' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >
+            <Route path='/dashboard/feedback/response/:id' element={<FeedbackResponse />} />
           </Route>
 
           <Route path='/dashboard/settings' element={<PrivateLoginRoute isAuthenticated={isAuthenticated} isInVerifyLobby={false} />} >

@@ -1,3 +1,4 @@
+import { QuestionLineObject } from "../../components/dashboard/feedbackComps/create";
 import { messageCreationDataProps } from "../../store/general/reducer";
 import { User } from "../../utils/types";
 import { tmcApi } from "./../instance";
@@ -83,4 +84,11 @@ export const CANCEL_SUBSCRIPTION = async (data:{
     id: number | undefined;
 }) => {
     return tmcApi.post(`/event/cancel-subscription`, data);
+}
+
+export const CREATE_FEEDBACK = async (data:{
+    event_id: number | undefined,
+    questions: QuestionLineObject[]
+}) => {
+    return tmcApi.post(`/feedback/create-feedback`, data);
 }
