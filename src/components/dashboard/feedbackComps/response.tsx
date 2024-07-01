@@ -140,12 +140,51 @@ const FeedbackResponse = () => {
                         (responses && responses.length > 0) ?
                             <>
                                 <h3>{feedback?.response_count} Responses</h3>
-                                {responses.map((item:any, index:number) => (
-                                    <div className="mt-2 border-b py-4">
-                                        <h3 className="text-[16px] text-[#898579]">{item?.response}</h3>
-                                        <p className="text-[14px] text-[#23211D]">{item?.user?.first_name} {item?.user?.last_name}</p>
-                                    </div>
-                                ))}
+                                {
+                                    feedback?.type === 'text' ?
+                                        <>
+                                            {responses.map((item:any, index:number) => (
+                                                <div className="mt-2 border-b py-4">
+                                                    <h3 className="text-[16px] text-[#898579]">{item?.response}</h3>
+                                                    <p className="text-[14px] text-[#23211D]">{item?.user?.first_name} {item?.user?.last_name}</p>
+                                                </div>
+                                            ))}
+                                        </>
+                                        :
+                                        <div className="my-[3rem] flex flex-col gap-[20px] w-[100%]">
+                                            <div className="flex items-center gap-[10px] w-[100%] min-w-[20%]">
+                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                                    Very Satisfied
+                                                </div>
+                                                <p>230</p>
+                                            </div>
+                                            <div className="flex items-center gap-[10px] w-[60%] min-w-[20%]">
+                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                                    Satisfied
+                                                </div>
+                                                <p>170</p>
+                                            </div>
+                                            <div className="flex items-center gap-[10px] w-[20%] min-w-[20%]">
+                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                                    Neutral
+                                                </div>
+                                                <p>50</p>
+                                            </div>
+                                            <div className="flex items-center gap-[10px] w-[15%] min-w-[20%]">
+                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                                    UnSatisfied
+                                                </div>
+                                                <p>23</p>
+                                            </div>
+                                            <div className="flex items-center gap-[10px] w-[40%] min-w-[20%]">
+                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                                    Very UnSatisfied
+                                                </div>
+                                                <p>60</p>
+                                            </div>
+                                        </div>
+                                }
+                                
                             </>
                         :
                         <EmptyState 
