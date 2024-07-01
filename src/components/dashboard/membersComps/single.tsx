@@ -34,6 +34,7 @@ import TransactionSkeleton from '../../skeletons/transaction/transaction';
 import commaNumber from 'comma-number';
 import moment from 'moment';
 import { getCdnLink } from '../../../utils/imageParser';
+import { membershipTypeList } from '../modals/inviteMembers';
 
 interface userStateProps {
     data: User,
@@ -57,11 +58,13 @@ const MemberProfile = () => {
     const cookieUtils = useCookies();
     const currentUser = useCurrentUser().user;
 
+    const [membershipType, setMembershipType] = useState("")
     const [transactionType, setTransactionType] = useState("")
     const [subscriptionPage, setSubscriptionPage] = useState<number | undefined>(1)
     const [eventPage, setEventPage] = useState<number | undefined>(1)
     const [transactionPage, setTransactionPage] = useState<number | undefined>(1)
     const [bookingPage, setBookingPage] = useState<number | undefined>(1)
+    const [askModify, setAskModify] = useState(false);
     const [askSuspend, setAskSuspend] = useState(false)
     const [askDelete, setAskDelete] = useState(false)
     const [askCancel, setAskCancel] = useState(false)
@@ -209,6 +212,7 @@ const MemberProfile = () => {
             variant: 'success',
             message: 'Save changes made successfully!'
           })
+          setAskModify(false)
         },
     });
 
@@ -306,6 +310,20 @@ const MemberProfile = () => {
 
     return(
         <>
+            {/* FOR MODIFY */}
+            <AskYesOrNo 
+                openToggle={askModify}
+                headerText={`"Modify Account"`}
+                question={`Are you sure you want to modify this member's membership type?`}
+                declineText="Cancel"
+                actionText={`Modify`}
+                yesAction={() => editUser({
+                    user_id: mutableUser?.user_id,
+                    membership_type: membershipType
+                })}
+                noAction={() => setAskModify(false)}
+                actionInProgress={isEditing}
+            />
             {/* FOR SUSPENSION */}
             <AskYesOrNo 
                 openToggle={askSuspend}
@@ -948,17 +966,27 @@ const MemberProfile = () => {
                                                 </div>
                                             </div>  
                                             <div className="border-t py-[2rem]">
-                                                <div className="flex items-center justify-between">
+                                                <div className="flex items-end justify-between">
                                                     <div className='w-[40%]'>
                                                         <h3 className="font-[500]">Change Subscription</h3>
                                                         <p className="font-[400] text-[12px] text-[#898579] pt-[2rem] pb-2">Select Subscription</p>
-                                                        <select
+                                                            <select 
+                                                                required
+                                                                id='membership_type'
+                                                                value={membershipType}
+                                                                onChange={(e) => setMembershipType(e.target.value)}
                                                                 className="w-[15rem] py-3 px-3 text-[14px] rounded-[8px] !border !border-[1px] !border-[#E5DFD9]"
                                                                 style={{
                                                                     border: "1px solid #E5DFD9"
                                                                 }}
                                                             >
-                                                                <option value="">Diplomatic Member</option>
+                                                                <option value="">Select Membership Type</option>
+                                                                {
+                                                                membershipTypeList.map((item, index) => (
+
+                                                                    <option value={`${item.name}ship`}>{`${item.name}ship`}</option>
+                                                                ))
+                                                                }
                                                             </select>
                                                     </div>
                                                     <Button
@@ -967,6 +995,7 @@ const MemberProfile = () => {
                                                         type='button'
                                                         width='auto'
                                                         top='0'
+                                                        onClick={() => setAskModify(true)}
                                                     >
                                                         Modify
                                                     </Button>
