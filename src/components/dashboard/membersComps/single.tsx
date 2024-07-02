@@ -250,6 +250,7 @@ const MemberProfile = () => {
             variant: 'success',
             message: "You have succesfully cancelled this member's subscription!"
           })
+          setAskCancel(false)
         },
     });
 
@@ -432,25 +433,28 @@ const MemberProfile = () => {
                                 >
                                     Export
                                 </Button>
-                                <Button
-                                    bg='#23211D'
-                                    color='#fff'
-                                    type='button'
-                                    width='auto'
-                                    top='0'
-                                    onClick={() => {
-                                        if (actionType !== 'edit'){
-                                            setActiontype('edit')
-                                        }else {
-                                            editUser({
-                                                ...mutableUser,
-                                                middle_name: mutableUser?.middle_name ? mutableUser?.middle_name : undefined
-                                            })
-                                        }
-                                    }}
-                                >
-                                    {isEditing ? <Spinner /> : actionType === 'edit' ? 'Save Changes' : 'Edit profile'}
-                                </Button>
+                                {
+                                    activePage === 'Overview' &&
+                                        <Button
+                                            bg='#23211D'
+                                            color='#fff'
+                                            type='button'
+                                            width='auto'
+                                            top='0'
+                                            onClick={() => {
+                                                if (actionType !== 'edit'){
+                                                    setActiontype('edit')
+                                                }else {
+                                                    editUser({
+                                                        ...mutableUser,
+                                                        middle_name: mutableUser?.middle_name ? mutableUser?.middle_name : undefined
+                                                    })
+                                                }
+                                            }}
+                                        >
+                                            {isEditing ? <Spinner /> : actionType === 'edit' ? 'Save Changes' : 'Edit profile'}
+                                        </Button>
+                                }
                             </div>
                         </div>
                         <PageToggleHeader
