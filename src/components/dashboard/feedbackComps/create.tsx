@@ -35,6 +35,7 @@ const CreateFeedback = () => {
   const [selectedEvent, setSelectedEvent] = useState<number | undefined>()
 
   const [firstRatingIndex, setFirstRatingIndex] = useState(-1);
+  const [firstTextIndex, setFirstTextIndex] = useState(-1);
   const [questionArray, setQuestionArray] = useState<QuestionLineObject[]>([{
     question: "",
     type: ""
@@ -112,6 +113,7 @@ const CreateFeedback = () => {
 
   useEffect(() => {
     setFirstRatingIndex(questionArray.findIndex((p) => p.type === 'rating'))
+    setFirstTextIndex(questionArray.findIndex((p) => p.type === 'text'))
   }, [questionArray])
 
   return (
@@ -159,7 +161,7 @@ const CreateFeedback = () => {
                         setSelectedEvent(Number(e.target.value))
                       }}
                     >
-                      <option value="">Select from past event</option>
+                      <option value="">Select from past events</option>
                       {
                         (eventsState?.events && eventsState?.events.length > 0) && 
                           eventsState?.events.map((item:any, index) => (
@@ -233,6 +235,16 @@ const CreateFeedback = () => {
                                   <>
                                     <img 
                                       src="/images/rating.png" 
+                                      alt="Disclaimer"
+                                      className="w-full mt-3" 
+                                    />
+                                  </>
+                              }
+                              {
+                                index === firstTextIndex &&
+                                  <>
+                                    <img 
+                                      src="/images/text-discl.png" 
                                       alt="Disclaimer"
                                       className="w-full mt-3" 
                                     />
