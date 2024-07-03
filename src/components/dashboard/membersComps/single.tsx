@@ -673,7 +673,7 @@ const MemberProfile = () => {
                                                     <div className="border-t py-[1rem]">
                                                         <div className=''>
                                                             <p className="font-[400] text-[12px] text-[#898579]">Minimum Balanced Reached </p>
-                                                            <h3 className="font-[500] pt-1">{Number(userState?.wallet?.total_spent_this_year) > 100000 ? "Yes" : "No"}</h3>
+                                                            <h3 className="font-[500] pt-1">{Number(userState?.wallet?.balance) <= 20000 ? "Yes" : "No"}</h3>
                                                         </div>
                                                     </div>
                                                     <div className="border-t py-[1rem]">
