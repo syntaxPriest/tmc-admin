@@ -1,53 +1,32 @@
-import React, { type Dispatch, ChangeEvent, useState, SetStateAction, useEffect } from "react";
+import { type Dispatch, ChangeEvent, useState, SetStateAction, useEffect } from "react";
 import {
-  BoxFlex,
-  Line,
-  MainWrap,
-  PageListItem,
-  PageListItemWrap,
-  PageToggleText,
-  RandomCircle,
+  MainWrap
 } from "../../../styles/reusable/index";
 import SideBarWidget from "../../reusable/sidebar";
 import {
   DashboardFlex,
-  DashboardHeader,
-  DashboardInner,
-  DashboardMain,
-  ProfileBoxWrap,
+  DashboardHeader, DashboardMain
 } from "./../style";
-import QuickActionWidget from "../../reusable/quickaction";
 import Typography from "../../reusable/typography";
-import {
-  PageToggleHeader,
-  IconFlex,
-  ButtonFlex,
-} from "../../../styles/reusable/index";
 import * as Icon from "react-feather";
 import { Button } from "../../../styles/reusable";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { InputWrap, InputField } from "../../../styles/authentication/index";
-import EditProfile from "./../edit-profile";
-import BottomNavComp from "../../reusable/bottomNav";
-import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
-import { useDispatch } from "react-redux";
-import { useCookies } from "react-cookie";
-import { setUser } from "../../../store/user/reducer";
-import { clearState } from "../../../store/properties/reducer";
-import { useCurrentUser } from "../../../store/user/useCurrentUser";
-import { removeAfterLogout } from "../../../api/instance";
 import CustomRadio from "../../reusable/customRadio";
 import { NumericFormat } from "react-number-format";
 import classNames from "classnames";
 import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
-import { CREATE_EVENT, EDIT_EVENT } from "../../../api/action";
+import { CREATE_EVENT, EDIT_EVENT, REMOVE_MENU_MEAL } from "../../../api/action";
 import { Spinner } from "../../reusable/spinner";
-import { EventStateProps } from "./single";
 import { GET_SINGLE_EVENT } from "../../../api/getApis";
 import { getCdnLink } from "../../../utils/imageParser";
+import { inventoryDataProps } from "../modals/addInventoryItem";
+import commaNumber from "comma-number";
+import AddMeal from "../modals/addMenu";
 
 export interface eventDataProps {
+  id?: string,
   title?: string,
   location?: string,
   amount?: number,
@@ -67,6 +46,10 @@ export interface eventDataProps {
   }>
   initialMedia?: Array<{
     url: string;
+  }>,
+  menu_items?: Array<{
+    id?: string,
+    product: inventoryDataProps
   }>
 }
 
@@ -74,6 +57,7 @@ const CreateEvent = () => {
   const navigate = useNavigate();
   const {id} = useParams();
   const location = useLocation();
+  const [showAddMeal, setShowAddMeal] = useState(false);
 
   const isStringInRoute = location.pathname.includes('edit');
 
@@ -152,11 +136,11 @@ const CreateEvent = () => {
       formData.delete("date")
       formData.delete("initialCover")
       formData.delete("initialMedia")
+      formData.delete("menu_items")
 
       galleryFiles.forEach((file) => {
         formData.append('media', file); // Use the same key for all files
       });
-
 
       uploadsFiles.forEach((file) => {
         formData.append('docs', file); // Use the same key for all files
@@ -187,6 +171,7 @@ const CreateEvent = () => {
         reminder_time_to_event_in_days: data?.data?.body?.event?.reminder_time_to_event_in_days,
         initialCover: data?.data?.body?.event?.cover,
         initialMedia: data?.data?.body?.event?.media,
+        menu_items: data?.data?.body?.event?.menu_items
       });
       setEventType(data?.data?.body?.event?.type.replaceAll(" ", "_").toLowerCase());
     },
@@ -200,10 +185,42 @@ const CreateEvent = () => {
     }
   }, [id]);
 
+
+  const { mutateAsync: removeMeal, isPending: isRemovingMeal } = useMutation({
+      mutationFn: REMOVE_MENU_MEAL,
+      onSuccess: (data) => {
+        enqueueSnackbar({
+          variant: "success",
+          message: `Meal removed successfully!`,
+        });
+        if (id){
+          getEvent({
+              id,
+          });
+        }
+        // setInventoryCreationData({
+        //   amount: 0,
+        //   type: 'restaurant_item'
+        // })
+      },
+    });
+
   const today = new Date().toISOString().split('T')[0];
 
   return (
     <>
+      <AddMeal 
+        openToggle={showAddMeal}
+        closeFunc={() => setShowAddMeal(false)}
+        event_id={Number(id)}
+        triggerReload={() => {
+          if (id){
+            getEvent({
+                id,
+            });
+          }
+        }}
+      />
       <MainWrap top="0rem" width="100%" maxWidth="1200px">
         <DashboardFlex>
           <SideBarWidget />
@@ -357,6 +374,57 @@ const CreateEvent = () => {
                   ></textarea>
                 </InputField>
               </InputWrap>
+              {((eventCreationData?.menu_items &&
+                eventCreationData?.menu_items.length > 0) || (eventType === "tuesday's_lunch")) && (
+                  <>
+                    <div className="border-b pt-[2rem] pb-[0.5rem]">
+                      <div className="flex items-center justify-between">
+                        <div className="w-[40%]">
+                          <h3 className="font-[500] text-[#898579]">
+                            Menu
+                          </h3>
+                        </div>
+                        <div
+                          className={"cursor-pointer bg-[#F3F1EF] text-[#23211D] rounded-[8px] py-3 px-5 font-[500]"}
+                          onClick={() => setShowAddMeal(true)}
+                        >
+                          Add
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-start flex-wrap my-[1rem] mb-[2rem] gap-[25px]">
+                      {
+                        (eventCreationData?.menu_items && eventCreationData?.menu_items.length > 0) &&
+                          eventCreationData?.menu_items.map((item, index) => (
+                            <div 
+                              key={index}
+                              className="flex items-center gap-[10px] w-[48%]"
+                            >
+                              <img
+                                src={item?.product?.cover ? `${getCdnLink(`${item?.product?.cover}`, 'inventory')}` : "/images/eat.png"}
+                                className="w-[90px] h-[90px] rounded-[8px]"
+                                alt=""
+                              />
+                              <div className="w-[70%]">
+                                <p className="font-semibold">
+                                  {item?.product?.title}
+                                </p>
+                                <p>₦{commaNumber(Number(item?.product?.amount))}</p>
+                                <p 
+                                  className="text-[#8B6C23] font-semibold cursor-pointer hover:opacity-[0.6]"
+                                  onClick={() => removeMeal({
+                                    id: Number(item.id)
+                                  })}
+                                >
+                                  Remove
+                                </p>
+                              </div>
+                            </div>
+                        ))
+                      }
+                    </div>
+                  </>
+                )}
               <div className="border-b pt-[2rem] pb-[0.5rem]">
                 <div className="flex items-center justify-between">
                   <div className="w-[40%]">

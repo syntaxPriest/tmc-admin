@@ -120,11 +120,12 @@ export const GET_INVENTORIES = async (data: {
     status?: string;
     offset?: number;
     type?: string;
+    limit?: number;
 }) => {
     return tmcApi.get(`/inventory/filter-products`, {
         params: {
             ...data,
-            limit: 20
+            limit: data?.limit || 20
         }
     });
 }

@@ -7,6 +7,19 @@ export const CREATE_EVENT = async (data: FormData) => {
     return tmcApi.post(`/event/create-event`, data);
 }
 
+export const ADD_MENU_MEAL = async (data: {
+    event_id: number,
+    product_id: number
+}) => {
+    return tmcApi.post(`/event/add-menu-item`, data);
+}
+
+export const REMOVE_MENU_MEAL = async (data: {
+    id: number
+}) => {
+    return tmcApi.post(`/event/remove-menu-item`, data);
+}
+
 export const EDIT_EVENT = async (data: FormData) => {
     return tmcApi.post(`/event/edit-event`, data);
 }
