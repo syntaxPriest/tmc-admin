@@ -20,6 +20,7 @@ import BookingsSkeleton from '../skeletons/bookings';
 import EmptyState from '../reusable/emptyState';
 import { Paginate } from '../reusable/paginationComp';
 import { getCdnLink } from '../../utils/imageParser';
+import moment from 'moment';
 
 const Bookings = () => {
     const [page, setPage] = useState<number | undefined>(1)
@@ -148,6 +149,7 @@ const Bookings = () => {
 								<p className='flex-[3] text-[14px]'>Date</p>
 								<p className='flex-[3] text-[14px]'>Time</p>
 								<p className='flex-[5] text-[14px]'>Scheduled By</p>
+                                <p className='flex-[4] text-[14px]'>Scheduled On</p>
 								<p className='flex-[2] text-[14px]'>Action</p>
 							</div>
                             {bookingsState?.bookings &&
@@ -180,6 +182,9 @@ const Bookings = () => {
 										</p>
 										<p className='flex-[5] cursor-pointer text-[14px]'>
                                             {item.user?.first_name} {item.user?.last_name}
+										</p>
+                                        <p className='flex-[4] cursor-pointer text-[14px]'>
+                                            {moment(item.created_at).format('LL')}
 										</p>
 										<p className='flex-[2] text-[12px] font-semibold text-[#8B6C23] cursor-pointer flex text-center'>
 											View
