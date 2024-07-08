@@ -231,6 +231,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
                 </NavItem>
               </NavLink>
             ))}
+            <div className="absolute bottom-[3rem]">
             <div className="mt-7 sm:border-t">
               <NavLink to={"/dashboard/settings"}>
                 <NavItem
@@ -258,7 +259,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
             <NavLink to="/dashboard/settings" className={"sm:hidden"}>
               <BoxFlex 
                 gap="8px" 
-                margin="3rem 0 0 0"
+                margin="1.5rem 0 0 0"
                 className="border-t border-[#F3F1EF] pt-5"
               >
                 <RandomCircle size={"40px"}>
@@ -291,6 +292,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
                 </div>
               </BoxFlex>
             </NavLink>
+            </div>
           </div>
         </div>
       </MainWidget>
