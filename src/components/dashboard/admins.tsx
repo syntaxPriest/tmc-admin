@@ -171,21 +171,21 @@ const Transactions = () => {
                                                 {item.suspended ? "Unsuspend" : "Suspend"}
                                             </Button>
 										</div>
-                                        {/* FOR SUSPENSION */}
-                                        <AskYesOrNo 
-                                            openToggle={askSuspend}
-                                            headerText={`${item.suspended ? `Unsuspend ${item.role}` : `Suspend ${item.role}`}`}
-                                            question={`Are you sure you want to ${item.suspended ? "unsuspend" : "suspend"} this ${item.role}?`}
-                                            declineText="Cancel"
-                                            actionText={`${item.suspended ? "Unsuspend" : "Suspend"}`}
-                                            yesAction={() => suspend_action({
-                                                user_id: item?.id
-                                            })}
-                                            noAction={() => setAskSuspend(false)}
-                                            actionInProgress={isSuspending}
-                                        />
 									</div>
 								))}
+                                {/* FOR SUSPENSION */}
+                                <AskYesOrNo 
+                                    openToggle={askSuspend}
+                                    headerText={`${userOnSuspension.suspended ? `Unsuspend ${userOnSuspension.role}` : `Suspend ${userOnSuspension.role}`}`}
+                                    question={`Are you sure you want to ${userOnSuspension.suspended ? "unsuspend" : "suspend"} this ${userOnSuspension.role}?`}
+                                    declineText="Cancel"
+                                    actionText={`${userOnSuspension.suspended ? "Unsuspend" : "Suspend"}`}
+                                    yesAction={() => suspend_action({
+                                        user_id: Number(userOnSuspension?.id)
+                                    })}
+                                    noAction={() => setAskSuspend(false)}
+                                    actionInProgress={isSuspending}
+                                />
                                 {usersState?.usersCount > 20 && (
                                     <Paginate
                                         itemsPerPage={20}

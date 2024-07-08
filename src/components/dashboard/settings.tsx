@@ -116,6 +116,7 @@ const DashboardProfile = () => {
                 resendOtp={() => initPasswordChange({
                     email: currentUser?.email
                 })}
+                password={passwordObject?.password}
             />
             <MainWrap
                 top='0rem'
@@ -308,7 +309,7 @@ const DashboardProfile = () => {
                                                         <input 
                                                             placeholder='Enter Password'
                                                             autoComplete="off"
-                                                            type="text"
+                                                            type="password"
                                                             required
                                                             value={passwordObject?.password}
                                                             id='password'
@@ -320,7 +321,7 @@ const DashboardProfile = () => {
                                                         <input 
                                                             placeholder='Confirm password'
                                                             autoComplete="off"
-                                                            type="text"
+                                                            type="password"
                                                             required
                                                             value={passwordObject?.confirmPassword}
                                                             id='confirmPassword'

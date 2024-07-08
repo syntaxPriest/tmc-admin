@@ -49,6 +49,14 @@ export const INIT_PASSWORD_CHANGE = async (data: {
     return tmcApi.post('/auth/init-forgot-password', data);
 }
 
+export const CHANGE_PASSWORD = async (data: {
+    email?: string | null,
+    password?: string;
+    otp?: string;
+}) => {
+    return tmcApi.post('/auth/reset-password', data);
+}
+
 export const CREATE_PASSWORD = async (data: {
     identifier: string | null,
     password: string,

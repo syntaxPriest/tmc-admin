@@ -58,7 +58,8 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
   const handleInvite = () => {
     mutateAsync(inviteeData);
   }
-  
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <>
       {openToggle && (
@@ -146,10 +147,11 @@ const InviteMembers = ({ closeFunc, openToggle }: PropArgs) => {
                         placeholder='Enter Subscription Start Date'
                         autoComplete="off"
                         type="date"
-                        required
+                        max={today}
+                        id='subscription_start_date'
                         // id='membership_id'
                         // value={inviteeData?.membership_id}
-                        // onChange={handleChange}
+                        onChange={handleChange}
                     />
                 </InputField>
             </InputWrap>

@@ -15,16 +15,18 @@ import { LinkText, PinInputWrap } from "../../../styles/authentication";
 import OTPInput from "react-otp-input";
 import { inputStyle } from "../../auth/verify";
 import { useCurrentUser } from "../../../store/user/useCurrentUser";
+import { CHANGE_PASSWORD } from "../../../api/auth/onboarding";
 
 interface PropArgs {
   openToggle: boolean;
   closeFunc: any;
   resendOtp: () => void;
   resendOnProcess: boolean;
+  password: string;
 }
 
 
-const OTPVerifyScreen = ({ closeFunc, openToggle, resendOtp, resendOnProcess }: PropArgs) => {
+const OTPVerifyScreen = ({ closeFunc, openToggle, resendOtp, resendOnProcess, password }: PropArgs) => {
 
     const navigate = useNavigate();
     const currentUser = useCurrentUser()?.user;
@@ -33,18 +35,24 @@ const OTPVerifyScreen = ({ closeFunc, openToggle, resendOtp, resendOnProcess }: 
     const [timer, setTimer] = useState(120);
 
   const {mutateAsync, isPending} = useMutation({
-    mutationFn: DECLINE_ORDER,
+    mutationFn: CHANGE_PASSWORD,
     onSuccess: (data) => {
       enqueueSnackbar({
         variant: 'success',
-        message: 'Order declined successfully!'
+        message: 'Password changed successfully!'
       })
-      navigate("/dashboard/orders");
+      setVerificationCode("")
+      navigate("/dashboard");
       closeFunc();
     }
   })
 
   const handleCreate = () => {
+    mutateAsync({
+      password,
+      otp: verificationCode,
+      email: currentUser?.email
+    })
   }
 
   // Resend OTP mutate
@@ -147,7 +155,7 @@ const OTPVerifyScreen = ({ closeFunc, openToggle, resendOtp, resendOnProcess }: 
                     onClick={() => handleCreate()}
                     disabled={
                         isPending || 
-                        !reason
+                        verificationCode.length < 4
                     }
                 >
                     {isPending ? <Spinner /> : "Continue"}
