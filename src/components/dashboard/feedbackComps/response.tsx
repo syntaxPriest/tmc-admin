@@ -51,22 +51,26 @@ import EmptyState from "../../reusable/emptyState";
 const FeedbackResponse = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [feedback, setFeedback] = useState<any>()
-  const [responses, setResponses] = useState<any>([])
+  const [phase, setPhase] = useState("questions");
+  const [selectedFeedback, setSelectedFeedback] = useState<any>()
+  const [feedback, setFeedback] = useState<any>();
+  const [responses, setResponses] = useState<any>([]);
 
-  const { mutateAsync: getFeedback, isPending: isGettingFeedback } = useMutation({
-    mutationFn: GET_FEEDBACK,
-    onSuccess: (data) => {
-        setFeedback(data?.data?.body?.feedback)
-    },
-  });
+  const { mutateAsync: getFeedback, isPending: isGettingFeedback } =
+    useMutation({
+      mutationFn: GET_FEEDBACK,
+      onSuccess: (data) => {
+        setFeedback(data?.data?.body?.feedback);
+      },
+    });
 
-  const { mutateAsync: getResponse, isPending: isGettingResponse } = useMutation({
-    mutationFn: GET_RESPONSE,
-    onSuccess: (data) => {
-        setResponses(data?.data?.body?.responses)
-    },
-  });
+  const { mutateAsync: getResponse, isPending: isGettingResponse } =
+    useMutation({
+      mutationFn: GET_RESPONSE,
+      onSuccess: (data) => {
+        setResponses(data?.data?.body?.responses);
+      },
+    });
 
   useEffect(() => {
     if (id) {
@@ -77,10 +81,12 @@ const FeedbackResponse = () => {
   }, [id]);
 
   useEffect(() => {
-    getResponse({
-        id: id ? Number(id) : 0
-    })
-  }, [])
+    if (selectedFeedback){
+      getResponse({
+        id: selectedFeedback?.id ? Number(selectedFeedback?.id) : 0,
+      });
+    }
+  }, [selectedFeedback]);
 
   return (
     <>
@@ -113,86 +119,120 @@ const FeedbackResponse = () => {
                     />
                   </div>
                 </DashboardHeader>
-                <div className="my-[2rem]">
-                  <p
-                    className="text-[14px] text-[#6B6B6B] font-[400] mt-[2rem] uppercase"
-                  >
-                    General Feedback
-                  </p>
-                  <h3 
-                    className="text-[20px] text-[#23211D] font-[400] mt-[2rem] uppercase font-black"
-                  >
-                    {feedback?.question}
-                  </h3>
-                  <p 
-                    className='text-[14px] text-[#898579] font-[400] mt-1'>
-                        {feedback?.feedback?.event?.title} • {moment(feedback?.feedback?.event?.time).format('LL')} Feedback 
-                        {/* {moment(`${item?.created_at}`).startOf('hour').fromNow()} */}
-                  </p>
-                  <p
-                    className="text-[14px] text-[#23211D] font-[400] mt-[3rem]"
-                  >
-                    {feedback?.subtext}
-                  </p>
-
-                  <div className="mt-[4rem]">
-                    {
-                        (responses && responses.length > 0) ?
-                            <>
-                                <h3>{feedback?.response_count} Responses</h3>
-                                {
-                                    feedback?.type === 'text' ?
-                                        <>
-                                            {responses.map((item:any, index:number) => (
-                                                <div className="mt-2 border-b py-4">
-                                                    <h3 className="text-[16px] text-[#898579]">{item?.response}</h3>
-                                                    <p className="text-[14px] text-[#23211D]">{item?.user?.first_name} {item?.user?.last_name}</p>
-                                                </div>
-                                            ))}
-                                        </>
-                                        :
-                                        <div className="my-[3rem] flex flex-col gap-[20px] w-[100%]">
-                                            <div className="flex items-center gap-[10px] w-[100%] min-w-[20%]">
-                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                                    Very Satisfied
-                                                </div>
-                                                <p>230</p>
-                                            </div>
-                                            <div className="flex items-center gap-[10px] w-[60%] min-w-[20%]">
-                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                                    Satisfied
-                                                </div>
-                                                <p>170</p>
-                                            </div>
-                                            <div className="flex items-center gap-[10px] w-[20%] min-w-[20%]">
-                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                                    Neutral
-                                                </div>
-                                                <p>50</p>
-                                            </div>
-                                            <div className="flex items-center gap-[10px] w-[15%] min-w-[20%]">
-                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                                    UnSatisfied
-                                                </div>
-                                                <p>23</p>
-                                            </div>
-                                            <div className="flex items-center gap-[10px] w-[40%] min-w-[20%]">
-                                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                                    Very UnSatisfied
-                                                </div>
-                                                <p>60</p>
-                                            </div>
-                                        </div>
-                                }
-                                
-                            </>
-                        :
-                        <EmptyState 
-                            text="There are no response yet!"
-                        />
-                    }
+                {phase === "questions" ? (
+                  <div className="my-[2rem]">
+                    <p className="text-[14px] text-[#6B6B6B] font-[400] mt-[2rem] uppercase">
+                      General Feedback
+                    </p>
+                    <p className="text-[14px] text-[#898579] font-[600] mt-1">
+                      {feedback?.event?.title} •{" "}
+                      {moment(feedback?.event?.time).format("LL")}{" "}
+                      Feedback
+                      {/* {moment(`${item?.created_at}`).startOf('hour').fromNow()} */}
+                    </p>
+                    <div className="flex flex-col gap-[25px] mt-[2rem] w-[100%] max-w-[750px]">
+                      {
+                        (feedback?.feedback_questions && feedback?.feedback_questions.length > 0) &&
+                          feedback?.feedback_questions.map((item:any, index:number) => (
+                            <div 
+                              key={index}
+                              className="relative py-[16px] px-[12px] border rounded-[8px] cursor-pointer hover:opacity-[0.5] hover:top-[-5px]"
+                              onClick={() => {
+                                setSelectedFeedback(item);
+                                setPhase("response")
+                              }}
+                              style={{
+                                transition: '2s'
+                              }}
+                            >
+                              <p className='cursor-pointer font-black text-[16px] max-w-[80%]'>
+                                {item?.question ? item?.question : "---"}
+                              </p>
+                              <p className='text-[14px] text-[#898579] font-[400] mt-1'>
+                                  {item.subtext}
+                              </p>
+                            </div>
+                          ))
+                      }
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="my-[2rem]">
+                    <p className="text-[14px] text-[#6B6B6B] font-[400] mt-[2rem] uppercase">
+                      General Feedback
+                    </p>
+                    <h3 className="text-[20px] text-[#23211D] font-[400] mt-[2rem] uppercase font-black">
+                      {selectedFeedback?.question}
+                    </h3>
+                    <p className="text-[14px] text-[#898579] font-[400] mt-1">
+                      {feedback?.event?.title} •{" "}
+                      {moment(feedback?.event?.time).format("LL")}{" "}
+                      Feedback
+                      {/* {moment(`${item?.created_at}`).startOf('hour').fromNow()} */}
+                    </p>
+                    <p className="text-[14px] text-[#23211D] font-[400] mt-[3rem]">
+                      {selectedFeedback?.subtext}
+                    </p>
+
+                    <div className="mt-[4rem]">
+                      {responses && responses.length > 0 ? (
+                        <>
+                          <h3>{feedback?.response_count} Responses</h3>
+                          {selectedFeedback?.type === "text" ? (
+                            <>
+                              {responses.map((item: any, index: number) => (
+                                <div className="mt-2 border-b py-4">
+                                  <h3 className="text-[16px] text-[#898579]">
+                                    {item?.response}
+                                  </h3>
+                                  <p className="text-[14px] text-[#23211D]">
+                                    {item?.user?.first_name}{" "}
+                                    {item?.user?.last_name}
+                                  </p>
+                                </div>
+                              ))}
+                            </>
+                          ) : (
+                            <div className="my-[3rem] flex flex-col gap-[20px] w-[100%]">
+                              <div className="flex items-center gap-[10px] w-[100%] min-w-[20%]">
+                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                  Very Satisfied
+                                </div>
+                                <p>230</p>
+                              </div>
+                              <div className="flex items-center gap-[10px] w-[60%] min-w-[20%]">
+                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                  Satisfied
+                                </div>
+                                <p>170</p>
+                              </div>
+                              <div className="flex items-center gap-[10px] w-[20%] min-w-[20%]">
+                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                  Neutral
+                                </div>
+                                <p>50</p>
+                              </div>
+                              <div className="flex items-center gap-[10px] w-[15%] min-w-[20%]">
+                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                  UnSatisfied
+                                </div>
+                                <p>23</p>
+                              </div>
+                              <div className="flex items-center gap-[10px] w-[40%] min-w-[20%]">
+                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
+                                  Very UnSatisfied
+                                </div>
+                                <p>60</p>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <EmptyState text="There are no response yet!" />
+                      )}
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </DashboardMain>

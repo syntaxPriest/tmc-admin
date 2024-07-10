@@ -113,7 +113,7 @@ const Feedback = () => {
 										<div className='w-[90%] flex flex-col cursor-pointer gap-[10px]'>
 											<div className='w-[100%] flex gap-[10px]'>
 												<p className='cursor-pointer font-black text-[16px] max-w-[80%]'>
-                                                    {item.question}
+                                                    {item?.feedback_questions && item?.feedback_questions.length > 0 ? item?.feedback_questions[0].question : "---"}
 												</p>
                                                 <div className="flex gap-[8px]">
                                                     {/* {
@@ -129,7 +129,7 @@ const Feedback = () => {
 											</div> 
                                             <p 
                                                 className='text-[14px] text-[#898579] font-[400]'>
-                                                    Tuesday Lunch • 21st May Feedback 
+                                                    {item?.event?.title} • {moment(new Date(item?.event?.time)).format('LL')} Feedback 
                                                     {/* {moment(`${item?.created_at}`).startOf('hour').fromNow()} */}
                                             </p>
                                             <p 
