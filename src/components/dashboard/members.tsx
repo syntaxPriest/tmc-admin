@@ -154,7 +154,7 @@ const Members = () => {
                             {/* Table Header */}
 							<div className='flex items-end mt-[2rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]'>
 								<p className='flex-[6] text-[14px]'>Member</p>
-								<p className='flex-[2] text-[14px]'>ID No.</p>
+								<p className='flex-[2] text-[14px]'>Mem. ID</p>
 								<p className='flex-[3] text-[14px]'>Phone Number</p>
 								<p className='flex-[3] text-[14px]'>Date Joined</p>
 								<p className='flex-[2] text-[14px]'>Type</p>
