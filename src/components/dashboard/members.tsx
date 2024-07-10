@@ -184,7 +184,7 @@ const Members = () => {
 											</div>
 										</div>
 										<p className='flex-[2] cursor-pointer text-[14px] ellipse w-[3rem]'>
-											{item.id ? item.id : "N/A"}
+											{item.membership_id ? item.membership_id : "N/A"}
 										</p>
 										<p className='flex-[3] cursor-pointer text-[14px]'>
 											{item.phone ? item.phone : "N/A"}

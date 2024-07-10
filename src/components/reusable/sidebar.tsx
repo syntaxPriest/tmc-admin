@@ -231,7 +231,7 @@ const SideBarWidget = ({ closeNav, mobileDisplay }: SideBarProps) => {
                 </NavItem>
               </NavLink>
             ))}
-            <div className="absolute bottom-[3rem]">
+            <div className="">
             <div className="mt-7 sm:border-t">
               <NavLink to={"/dashboard/settings"}>
                 <NavItem
