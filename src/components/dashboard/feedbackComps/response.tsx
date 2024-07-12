@@ -106,7 +106,13 @@ const FeedbackResponse = () => {
                 <DashboardHeader>
                   <div className="flex gap-[8px] items-center">
                     <Icon.ArrowLeft
-                      onClick={() => navigate(-1)}
+                      onClick={() => {
+                        if (phase !== 'questions'){
+                          setPhase("questions")
+                        }else {
+                          navigate(-1);
+                        }
+                      }}
                       className="cursor-pointer"
                     />
                     <Typography
