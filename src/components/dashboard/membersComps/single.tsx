@@ -37,7 +37,6 @@ import { getCdnLink } from '../../../utils/imageParser';
 import { membershipTypeList } from '../modals/inviteMembers';
 
 interface userStateProps {
-    subscription_start_date: any;
     data: User,
     wallet: any,
     transactions: any,
@@ -926,7 +925,7 @@ const MemberProfile = () => {
                                                         <div className="h-[4rem] border-r"></div>
                                                         <div className='text-center'>
                                                             <p className="font-[400] text-[11px] text-[#898579]">Next Subscription</p>
-                                                            <h3 className="font-[500] pt-1 text-[13px]">{userState?.subscription_start_date ? `${moment(userState?.subscription_start_date).format('LL')}` : userState?.subscriptions && userState?.subscriptions.length > 0 ? `${moment(userState?.subscriptions[0].created_at).format('LL').split(",")[0]}, ${new Date(userState?.subscriptions[0].created_at).getFullYear() + 1}` : "---"}</h3>
+                                                            <h3 className="font-[500] pt-1 text-[13px]">{userState?.data?.subscription_start_date ? `${moment(userState?.data?.subscription_start_date).format('LL')}` : userState?.subscriptions && userState?.subscriptions.length > 0 ? `${moment(userState?.subscriptions[0].created_at).format('LL').split(",")[0]}, ${new Date(userState?.subscriptions[0].created_at).getFullYear() + 1}` : "---"}</h3>
                                                         </div>
                                                     </div>
                                                 </div>

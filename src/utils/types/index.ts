@@ -1,4 +1,5 @@
 export interface User {
+    subscription_start_date?: string;
     created_at?: string;
     deleted_at?: string | null;
     dob?: string | null;
