@@ -47,14 +47,31 @@ import { GET_FEEDBACK, GET_MESSAGE, GET_RESPONSE } from "../../../api/getApis";
 import PageSpinner from "../../reusable/Spinner/Spinner";
 import moment from "moment";
 import EmptyState from "../../reusable/emptyState";
+import classNames from "classnames";
 
 const FeedbackResponse = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [phase, setPhase] = useState("questions");
-  const [selectedFeedback, setSelectedFeedback] = useState<any>()
+  const [selectedFeedback, setSelectedFeedback] = useState<any>();
   const [feedback, setFeedback] = useState<any>();
+  const [ratingResponse, setRatingResponse] = useState<any>();
   const [responses, setResponses] = useState<any>([]);
+
+  function splitArrayIntoObject(array: any) {
+    const result: any = {};
+
+    array.forEach((item: any) => {
+      const identifier = item.response;
+      if (!result[item]) {
+        result[identifier] = { title: item?.response, count: 1 };
+      } else {
+        result[item].count++;
+      }
+    });
+
+    return result;
+  }
 
   const { mutateAsync: getFeedback, isPending: isGettingFeedback } =
     useMutation({
@@ -69,6 +86,9 @@ const FeedbackResponse = () => {
       mutationFn: GET_RESPONSE,
       onSuccess: (data) => {
         setResponses(data?.data?.body?.responses);
+        if (selectedFeedback?.type === "rating") {
+          setRatingResponse(splitArrayIntoObject(data?.data?.body?.responses));
+        }
       },
     });
 
@@ -81,13 +101,14 @@ const FeedbackResponse = () => {
   }, [id]);
 
   useEffect(() => {
-    if (selectedFeedback){
+    if (selectedFeedback) {
       getResponse({
         id: selectedFeedback?.id ? Number(selectedFeedback?.id) : 0,
       });
     }
   }, [selectedFeedback]);
 
+  console.log(ratingResponse);
   return (
     <>
       <MainWrap top="0rem" width="100%" maxWidth="1200px">
@@ -107,9 +128,9 @@ const FeedbackResponse = () => {
                   <div className="flex gap-[8px] items-center">
                     <Icon.ArrowLeft
                       onClick={() => {
-                        if (phase !== 'questions'){
-                          setPhase("questions")
-                        }else {
+                        if (phase !== "questions") {
+                          setPhase("questions");
+                        } else {
                           navigate(-1);
                         }
                       }}
@@ -132,34 +153,34 @@ const FeedbackResponse = () => {
                     </p>
                     <p className="text-[14px] text-[#898579] font-[600] mt-1">
                       {feedback?.event?.title} •{" "}
-                      {moment(feedback?.event?.time).format("LL")}{" "}
-                      Feedback
+                      {moment(feedback?.event?.time).format("LL")} Feedback
                       {/* {moment(`${item?.created_at}`).startOf('hour').fromNow()} */}
                     </p>
                     <div className="flex flex-col gap-[25px] mt-[2rem] w-[100%] max-w-[750px]">
-                      {
-                        (feedback?.feedback_questions && feedback?.feedback_questions.length > 0) &&
-                          feedback?.feedback_questions.map((item:any, index:number) => (
-                            <div 
+                      {feedback?.feedback_questions &&
+                        feedback?.feedback_questions.length > 0 &&
+                        feedback?.feedback_questions.map(
+                          (item: any, index: number) => (
+                            <div
                               key={index}
                               className="relative py-[16px] px-[12px] border rounded-[8px] cursor-pointer hover:opacity-[0.5] hover:top-[-5px]"
                               onClick={() => {
                                 setSelectedFeedback(item);
-                                setPhase("response")
+                                setPhase("response");
                               }}
                               style={{
-                                transition: '2s'
+                                transition: "2s",
                               }}
                             >
-                              <p className='cursor-pointer font-black text-[16px] max-w-[80%]'>
+                              <p className="cursor-pointer font-black text-[16px] max-w-[80%]">
                                 {item?.question ? item?.question : "---"}
                               </p>
-                              <p className='text-[14px] text-[#898579] font-[400] mt-1'>
-                                  {item.subtext}
+                              <p className="text-[14px] text-[#898579] font-[400] mt-1">
+                                {item.subtext}
                               </p>
                             </div>
-                          ))
-                      }
+                          )
+                        )}
                     </div>
                   </div>
                 ) : (
@@ -172,8 +193,7 @@ const FeedbackResponse = () => {
                     </h3>
                     <p className="text-[14px] text-[#898579] font-[400] mt-1">
                       {feedback?.event?.title} •{" "}
-                      {moment(feedback?.event?.time).format("LL")}{" "}
-                      Feedback
+                      {moment(feedback?.event?.time).format("LL")} Feedback
                       {/* {moment(`${item?.created_at}`).startOf('hour').fromNow()} */}
                     </p>
                     <p className="text-[14px] text-[#23211D] font-[400] mt-[3rem]">
@@ -200,35 +220,134 @@ const FeedbackResponse = () => {
                             </>
                           ) : (
                             <div className="my-[3rem] flex flex-col gap-[20px] w-[100%]">
-                              <div className="flex items-center gap-[10px] w-[100%] min-w-[20%]">
-                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                  Very Satisfied
+                              <div className="font-[500] font-[14px]">
+                                <p className="mb-2">Very Satisfied</p>
+                                <div
+                                  className={
+                                    "flex items-center gap-[10px] w-[100%]"
+                                  }
+                                >
+                                  <div
+                                    className={classNames(
+                                      "py-[20px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] font-[500]",
+                                      `!w-[${
+                                        ratingResponse["Very Satisfied"]
+                                          ? (ratingResponse["Very Satisfied"]
+                                              .count /
+                                              responses.length) *
+                                            70
+                                          : 0
+                                      }%]`
+                                    )}
+                                    style={{
+                                      width: `${
+                                        ratingResponse["Very Satisfied"]
+                                          ? (ratingResponse["Very Satisfied"]
+                                              .count /
+                                              responses.length) *
+                                            100
+                                          : 0
+                                      }%`,
+                                    }}
+                                  ></div>
+                                  <p>
+                                    {ratingResponse["Very Satisfied"]
+                                      ? ratingResponse["Very Satisfied"].count
+                                      : 0}
+                                  </p>
                                 </div>
-                                <p>230</p>
                               </div>
-                              <div className="flex items-center gap-[10px] w-[60%] min-w-[20%]">
-                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                  Satisfied
+                              <div className="font-[500] font-[14px]">
+                                <p className="mb-2">Satisfied</p>
+                                <div className="flex items-center gap-[10px] w-[60%] min-w-[20%]">
+                                  <div
+                                    className="py-[20px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]"
+                                    style={{
+                                      width: `${
+                                        ratingResponse["Satisfied"]
+                                          ? (ratingResponse["Satisfied"].count /
+                                              responses.length) *
+                                            100
+                                          : 0
+                                      }%`
+                                    }}
+                                  ></div>
+                                  <p>
+                                    {ratingResponse["Satisfied"]
+                                      ? ratingResponse["Satisfied"].count
+                                      : 0}
+                                  </p>
                                 </div>
-                                <p>170</p>
                               </div>
-                              <div className="flex items-center gap-[10px] w-[20%] min-w-[20%]">
-                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                  Neutral
+                              <div className="font-[500] font-[14px]">
+                                <p className="mb-2">Neutral</p>
+                                <div className="flex items-center gap-[10px] w-[20%] min-w-[20%]">
+                                  <div
+                                    className="py-[20px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]"
+                                    style={{
+                                      width: `${
+                                        ratingResponse["Neutral"]
+                                          ? (ratingResponse["Neutral"].count /
+                                              responses.length) *
+                                            100
+                                          : 0
+                                      }%`,
+                                    }}
+                                  ></div>
+                                  <p>
+                                    {ratingResponse["Neutral"]
+                                      ? ratingResponse["Neutral"].count
+                                      : 0}
+                                  </p>
                                 </div>
-                                <p>50</p>
                               </div>
-                              <div className="flex items-center gap-[10px] w-[15%] min-w-[20%]">
-                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                  UnSatisfied
+                              <div className="font-[500] font-[14px]">
+                                <p className="mb-2">UnSatisfied</p>
+                                <div className="flex items-center gap-[10px] w-[15%] min-w-[20%]">
+                                  <div
+                                    className="py-[20px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]"
+                                    style={{
+                                      width: `${
+                                        ratingResponse["UnSatisfied"]
+                                          ? (ratingResponse["UnSatisfied"]
+                                              .count /
+                                              responses.length) *
+                                            100
+                                          : 0
+                                      }%`,
+                                    }}
+                                  >
+                                  </div>
+                                  <p>
+                                    {ratingResponse["Unsatisfied"]
+                                      ? ratingResponse["Unsatisfied"].count
+                                      : 0}
+                                  </p>
                                 </div>
-                                <p>23</p>
                               </div>
-                              <div className="flex items-center gap-[10px] w-[40%] min-w-[20%]">
-                                <div className="py-[14px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]">
-                                  Very UnSatisfied
+                              <div className="font-[500] font-[14px]">
+                                <p className="mb-2">Very UnSatisfied</p>
+                                <div className="flex items-center gap-[10px] w-[40%] min-w-[20%]">
+                                  <div
+                                    className="py-[20px] px-[12px] rounded-[4px] text-[14px] bg-[#C5E6F4] w-[100%] font-[500]"
+                                    style={{
+                                      width: `${
+                                        ratingResponse["Very UnSatisfied"]
+                                          ? (ratingResponse["Very UnSatisfied"]
+                                              .count /
+                                              responses.length) *
+                                            100
+                                          : 0
+                                      }%`,
+                                    }}
+                                  >
+                                  </div>
+                                  <p>
+                                    {ratingResponse["Very Unsatisfied"]
+                                      ? ratingResponse["Very Unsatisfied"].count
+                                      : 0}
+                                  </p>
                                 </div>
-                                <p>60</p>
                               </div>
                             </div>
                           )}
