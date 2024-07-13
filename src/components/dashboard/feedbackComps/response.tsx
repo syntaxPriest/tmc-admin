@@ -178,6 +178,9 @@ const FeedbackResponse = () => {
                               <p className="text-[14px] text-[#898579] font-[400] mt-1">
                                 {item.subtext}
                               </p>
+                              <p className="text-[14px] text-[#898579] font-[400] mt-1 capitalize">
+                                <b>Response Type:</b> {item.type}
+                              </p>
                             </div>
                           )
                         )}
