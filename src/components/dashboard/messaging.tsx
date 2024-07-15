@@ -166,7 +166,7 @@ const Messaging = () => {
                                                 className='text-[14px] font-[300] ellipse'
                                                 dangerouslySetInnerHTML={{__html: `${item.message}`}}
                                             ></p>    
-                                            <p className='text-[12px] text-[#898579] font-[400]'>121 Recipients • {moment(`${item?.created_at}`).startOf('hour').fromNow()}</p>
+                                            <p className='text-[12px] text-[#898579] font-[400]'>{item?.number_of_receivers} Recipients • {moment(`${item?.created_at}`).startOf('hour').fromNow()}</p>
 										</div>
                                         <BoxFlex
                                             width='auto'
