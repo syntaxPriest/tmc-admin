@@ -100,7 +100,7 @@ const SingleEvent = () => {
           return {
             ...prev,
             attendees: data?.data?.body?.attendees,
-            attendeesCount: data?.data?.body?.attendeesCount,
+            attendeesCount: data?.data?.body?.total_attendees,
           };
         });
       },
@@ -235,7 +235,7 @@ const SingleEvent = () => {
                           ).toLocaleTimeString()}`}</h3>
                         </div>
                         <div>
-                          <p className="text-[13px]">Attendees</p>
+                          <p className="text-[13px]">Expected Attendees</p>
                           <h3 className="text-[15px] font-[600]">{`${eventState?.data?.expected_number_of_attendees}`}</h3>
                         </div>
                         <div>
@@ -252,7 +252,7 @@ const SingleEvent = () => {
                         </div>
                         <div>
                           <p className="text-[13px]">Special Guest(s)</p>
-                          <h3 className="text-[15px] font-[600]">{`${eventState?.data?.special_guests}`}</h3>
+                          <h3 className="text-[15px] font-[600]">{`${eventState?.data?.special_guests ? eventState?.data?.special_guests: 'Non'}`}</h3>
                         </div>
                         <div>
                           <p className="text-[13px]">Total Payment Collected</p>
@@ -367,6 +367,8 @@ const SingleEvent = () => {
                       {isGettingAttendees ? (
                         <MembersSkeleton />
                       ) : eventState?.attendees.length > 0 ? (
+                        <>
+                        <p className="my-5"><b>Number of registered attendees: </b> {eventState?.attendeesCount}</p>
                         <div className="overflow-x-auto">
                           {/* Table Header */}
                           <div className="flex items-end mt-[0rem] py-2 border-b gap-[10px] font-[500] text-[#23211D] sm:w-[50rem]">
@@ -425,6 +427,7 @@ const SingleEvent = () => {
                                                             </p> */}
                                 </div>
                               )
+                              
                             )}
                           {eventState?.attendeesCount > 20 && (
                             <Paginate
@@ -438,8 +441,10 @@ const SingleEvent = () => {
                             />
                           )}
                         </div>
+                        </>
                       ) : (
                         <EmptyState text="No registered attendee yet" />
+                      
                       )}
                     </DashboardInner>
                   </>
