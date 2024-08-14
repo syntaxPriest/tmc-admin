@@ -69,7 +69,7 @@ const Transactions = () => {
         onSuccess: (data) => {
           enqueueSnackbar({
             variant: 'success',
-            message: `${userOnSuspension?.suspended ? `You have suspended this ${userOnSuspension?.role} successfully!` : `You have reverted suspension on this ${userOnSuspension?.role} successfully!`}`
+            message: `${userOnSuspension?.suspended ? `You have reverted suspension on this ${userOnSuspension?.role} successfully!` : `You have suspended this ${userOnSuspension?.role} successfully!`}`
           })
           if (userOnSuspension?.id){
             mutateAsync({

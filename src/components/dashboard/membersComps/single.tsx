@@ -221,7 +221,7 @@ const MemberProfile = () => {
         onSuccess: (data) => {
           enqueueSnackbar({
             variant: 'success',
-            message: `${isSuspended ? "You have suspended this user successfully!" : "You have reverted suspension on this user successfully!"}`
+            message: `${isSuspended ? "You have reverted suspension on this user successfully!" : "You have suspended this user successfully!"}`
           })
           if (id){
             mutateAsync({
