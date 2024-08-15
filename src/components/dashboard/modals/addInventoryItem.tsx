@@ -28,6 +28,7 @@ import { Spinner } from "../../reusable/spinner";
 import { CREATE_INVENTORY, EDIT_INVENTORY } from "../../../api/action";
 import CustomRadio from "../../reusable/customRadio";
 import { getCdnLink } from "../../../utils/imageParser";
+import { GET_CATEGORIES } from "../../../api/getApis";
 
 interface PropArgs {
   openToggle: boolean;
@@ -38,7 +39,7 @@ interface PropArgs {
 }
 
 export interface inventoryDataProps {
-  type?: string;
+  type?: "booking" | "restaurant_item" | "lessons" | "store_item";
   vat?: number | string;
   id?: string | number;
   title?: string;
@@ -56,6 +57,13 @@ export interface inventoryDataProps {
   };
 }
 
+export interface CategoryResponseProps {
+  lessons: string[],
+  restaurant_item: string[],
+  booking: string[],
+  store_item: string[]
+}
+
 const AddInventoryItem = ({
   closeFunc,
   openToggle,
@@ -64,6 +72,7 @@ const AddInventoryItem = ({
   inventoryData
 }: PropArgs) => {
   const [inventoryType, setInventoryType] = useState<string | boolean>("");
+  const [categories, setCategories] = useState<CategoryResponseProps>();
   const [coverFiles, setCoverFiles] = useState<File[]>([]);
   const [coverFormDataArray, setCoverFormDataArray] = useState<FormData[]>([]);
   // Event creation datas
@@ -151,6 +160,17 @@ const AddInventoryItem = ({
       closeFunc();
     },
   });
+
+  const {mutateAsync: getCategories} = useMutation({
+    mutationFn: GET_CATEGORIES,
+    onSuccess: (data) => {
+      setCategories(data?.data?.body);
+    }
+  })
+
+  useEffect(() => {
+    getCategories();
+  }, [])
 
   const handleCreate = () => {
     const formData: any = new FormData();
@@ -366,12 +386,32 @@ const AddInventoryItem = ({
                 </>
               )}
               <InputField width="100%">
-                <p>Category</p>
+                  <p>Category</p>
+                  <select
+                    required
+                    id="category"
+                    value={inventoryCreationData?.category}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Category</option>
+                    {
+                      inventoryCreationData?.type && (categories && categories[inventoryCreationData?.type].length > 0) && 
+                      <>
+                        {
+                          categories[inventoryCreationData?.type].map((item, index) => (
+                            <option value={item}>{item}</option>
+                          ))
+                        }
+                      </>  
+                    }
+                  </select>
+                </InputField>
+              <InputField width="100%">
+                <p>Specified Category (If category is not listed above)</p>
                 <input
-                  placeholder="Enter Category"
+                  placeholder="Enter Specified Category"
                   autoComplete="off"
                   type="text"
-                  required
                   value={inventoryCreationData?.category}
                   id="category"
                   onChange={handleChange}

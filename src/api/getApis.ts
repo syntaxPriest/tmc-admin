@@ -130,6 +130,14 @@ export const GET_INVENTORIES = async (data: {
     });
 }
 
+export const GET_CATEGORIES = async () => {
+    return tmcApi.get(`/inventory/categories`, {
+        params: {
+            limit: 500
+        }
+    });
+}
+
 export const GET_SINGLE_INVENTORY = async (data: {
     id: string | number
 }) => {
