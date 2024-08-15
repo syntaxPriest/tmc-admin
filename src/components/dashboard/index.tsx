@@ -96,15 +96,15 @@ const DashboardIndex = () => {
                                 <p className='text-[12px] text-[#898579]'>Members</p>
                             </div>
                             <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_events_count ? commaNumber(dashboardOverview?.upcoming_events_count) : "---"}</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_events_count ? commaNumber(dashboardOverview?.upcoming_events_count) : 0}</h3>
                                 <p className='text-[12px] text-[#898579]'>Upcoming Events</p>
                             </div>
                             <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_bookings ? commaNumber(dashboardOverview?.upcoming_bookings) : "---"}</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.upcoming_bookings ? commaNumber(dashboardOverview?.upcoming_bookings) : 0}</h3>
                                 <p className='text-[12px] text-[#898579]'>Scheduled Bookings</p>
                             </div>
                             <div className="border py-[32px] sm:py-[12px] px-[24px] text-center rounded-[8px]">
-                                <h3 className="text-[20px] font-black">{dashboardOverview?.products_count ? commaNumber(dashboardOverview?.products_count) : "---"}</h3>
+                                <h3 className="text-[20px] font-black">{dashboardOverview?.products_count ? commaNumber(dashboardOverview?.products_count) : 0}</h3>
                                 <p className='text-[12px] text-[#898579]'>Available Products</p>
                             </div>
                         </div>
