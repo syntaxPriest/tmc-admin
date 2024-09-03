@@ -44,6 +44,7 @@ import PreviewMessage from './components/dashboard/messagingComps.tsx/preview';
 import Feedback from './components/dashboard/feedback';
 import CreateFeedback from './components/dashboard/feedbackComps/create';
 import FeedbackResponse from './components/dashboard/feedbackComps/response';
+import PrivacyPolicy from './pages/privacy-policy';
 
 function App() {
 
@@ -67,6 +68,7 @@ function App() {
     <IdleTimerContainer />
     <Router>
       <Routes>
+        <Route path='/privacy-policy' element={<PrivacyPolicy />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
         {/* Authentication */}
         <Route path='/login' element={<PreventAuthRoute isAuthenticated={isAuthenticated} />}>
